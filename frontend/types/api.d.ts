@@ -376,6 +376,7 @@ export interface components {
             source_file: string;
             readonly owner: number;
             readonly status: string;
+            schema?: unknown;
             /** Format: date-time */
             readonly created_at: string;
         };

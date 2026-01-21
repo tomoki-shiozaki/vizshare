@@ -844,6 +844,7 @@
                         "type": "string",
                         "readOnly": true
                     },
+                    "schema": {},
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
