@@ -11,6 +11,7 @@ export default function DatasetPage() {
   const [file, setFile] = useState<File | null>(null);
   const [timeColumn, setTimeColumn] = useState(""); // schema: time列
   const [valueColumn, setValueColumn] = useState(""); // schema: value列
+  const [seriesColumn, setSeriesColumn] = useState("");
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -38,11 +39,17 @@ export default function DatasetPage() {
       formData.append("name", file.name);
       formData.append("source_file", file);
 
-      // schema を JSON 文字列で送信
-      formData.append(
-        "schema",
-        JSON.stringify({ time: timeColumn, value: valueColumn }),
-      );
+      // schema を JSON 文字列で送信（series は任意）
+      const schema: Record<string, string> = {
+        time: timeColumn,
+        value: valueColumn,
+      };
+
+      if (seriesColumn) {
+        schema.series = seriesColumn;
+      }
+
+      formData.append("schema", JSON.stringify(schema));
 
       const res = await apiClient.post("/dataset/upload/", formData, {
         headers: {
@@ -136,6 +143,19 @@ export default function DatasetPage() {
               onChange={(e) => setValueColumn(e.target.value)}
               className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
               placeholder="例: value"
+              disabled={uploading}
+            />
+
+            <Label htmlFor="series-column">
+              Series列 <span className="text-muted-foreground">(任意)</span>
+            </Label>
+            <input
+              id="series-column"
+              type="text"
+              value={seriesColumn}
+              onChange={(e) => setSeriesColumn(e.target.value)}
+              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              placeholder="例: Country.Code"
               disabled={uploading}
             />
           </div>

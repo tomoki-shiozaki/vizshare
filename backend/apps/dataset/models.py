@@ -16,48 +16,41 @@ class Dataset(models.Model):
         related_name="datasets",
     )
     name = models.CharField(max_length=255)
-
-    source_file = models.FileField(
-        upload_to="datasets/source/",
-    )
-
+    source_file = models.FileField(upload_to="datasets/source/")
     status = models.CharField(
-        max_length=20,
-        choices=Status.choices,
-        default=Status.UPLOADED,
+        max_length=20, choices=Status.choices, default=Status.UPLOADED
     )
 
+    # ユーザーが指定した列情報
     schema = models.JSONField(blank=True, null=True)
+
+    # 解析結果やエラー情報
+    parse_result = models.JSONField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # --- 状態管理メソッド ---
     def mark_processing(self) -> bool:
-        """
-        uploaded → processing への遷移をアトミックに行う
-        """
         with transaction.atomic():
             locked = (
                 Dataset.objects.select_for_update().only("id", "status").get(pk=self.pk)
             )
-
             if locked.status != self.Status.UPLOADED:
                 return False
-
             locked.status = self.Status.PROCESSING
             locked.save(update_fields=["status"])
-
         return True
 
-    def mark_parsed(self, schema: dict | None = None):
+    def mark_parsed(self, result: dict | None = None):
         self.status = self.Status.PARSED
-        if schema is not None:
-            self.schema = schema
-        self.save(update_fields=["status", "schema"])
+        if result is not None:
+            self.parse_result = result
+        self.save(update_fields=["status", "parse_result"])
 
     def mark_failed(self, error: Exception):
         self.status = self.Status.FAILED
-        self.schema = {"error": str(error)}
-        self.save(update_fields=["status", "schema"])
+        self.parse_result = {"error": str(error)}
+        self.save(update_fields=["status", "parse_result"])
 
 
 class DataPoint(models.Model):
@@ -66,12 +59,23 @@ class DataPoint(models.Model):
         on_delete=models.CASCADE,
         related_name="data_points",
     )
-    time = models.CharField(max_length=50)
+
+    time = models.DateTimeField()
     value = models.FloatField()
-    series = models.CharField(max_length=255, blank=True)
+    series = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+    )
     row_index = models.IntegerField()
 
     class Meta:
         indexes = [
             models.Index(fields=["dataset", "time"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["dataset", "row_index"],
+                name="uniq_dataset_row",
+            )
         ]
