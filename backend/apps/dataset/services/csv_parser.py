@@ -1,5 +1,6 @@
 import csv
 import io
+from datetime import datetime
 
 from django.db import transaction
 from django.utils.dateparse import parse_datetime
@@ -16,11 +17,24 @@ BATCH_SIZE = 1000
 def parse_row_time(raw_time: str, row_idx: int):
     if not raw_time:
         raise ValueError(f"time が空です (row={row_idx})")
+
     dt = parse_datetime(raw_time)
+
     if dt is None:
-        raise ValueError(f"Invalid datetime format: {raw_time} (row={row_idx})")
+        # 年だけなら補完して datetime 作成
+        if raw_time.isdigit() and len(raw_time) == 4:
+            dt = datetime(int(raw_time), 1, 1)
+        # 年月なら補完
+        elif len(raw_time) == 7 and raw_time[4] == "-":  # YYYY-MM
+            year, month = map(int, raw_time.split("-"))
+            dt = datetime(year, month, 1)
+        else:
+            # 正確な日時に変換できなければ None を返す
+            return None
+
     if is_naive(dt):
         dt = make_aware(dt)
+
     return dt
 
 
@@ -82,6 +96,7 @@ def parse_dataset_csv(dataset: Dataset) -> None:
 
                 dp = DataPoint(
                     dataset=dataset,
+                    raw_time=dt_str,
                     time=parse_row_time(dt_str, idx),
                     value=parse_row_value(val_str, idx),
                     series=series_val,

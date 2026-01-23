@@ -60,13 +60,15 @@ class DataPoint(models.Model):
         related_name="data_points",
     )
 
-    time = models.DateTimeField()
-    value = models.FloatField()
-    series = models.CharField(
-        max_length=255,
-        blank=True,
-        default="",
+    raw_time = models.CharField(
+        max_length=50, blank=True, default=""  # CSV に書かれている文字列をそのまま保存
     )
+    time = models.DateTimeField(
+        blank=True,
+        null=True,  # 正確な日時がない場合は None
+    )
+    value = models.FloatField()
+    series = models.CharField(max_length=255, blank=True, default="")
     row_index = models.IntegerField()
 
     class Meta:
