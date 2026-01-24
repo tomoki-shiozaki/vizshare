@@ -2,6 +2,7 @@ from rest_framework import generics, permissions
 
 from apps.api.dataset.serializers import DatasetSerializer
 from apps.dataset.models import Dataset
+from apps.dataset.services.enqueue import enqueue_parse_dataset
 
 
 class DatasetUploadAPIView(generics.CreateAPIView):
@@ -15,6 +16,10 @@ class DatasetUploadAPIView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]  # ログイン必須
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        # Dataset を保存
+        dataset = serializer.save(owner=self.request.user)
+
+        # アップロード完了次第、解析タスクをキューに投げる
+        enqueue_parse_dataset(dataset.id)
 
     # DRFはデフォルトで multipart/form-data をサポートするので特別な設定は不要
