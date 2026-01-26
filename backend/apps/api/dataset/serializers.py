@@ -104,3 +104,17 @@ class DatasetSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 f"CSVに存在しない列名: {', '.join(missing)}"
             )
+
+
+class DatasetListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dataset
+        fields = [
+            "id",
+            "name",
+            "status",
+            "created_at",
+            "schema",
+            "parse_result",
+        ]
+        read_only_fields = fields

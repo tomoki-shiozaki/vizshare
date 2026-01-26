@@ -98,6 +98,58 @@
                 }
             }
         },
+        "/api/v1/dataset/list/": {
+            "get": {
+                "operationId": "dataset_list_list",
+                "description": "ログインユーザーの Dataset 一覧を返す API",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "required": false,
+                        "in": "query",
+                        "description": "The initial index from which to return the results.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedDatasetListList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/dataset/upload/": {
             "post": {
                 "operationId": "dataset_upload_create",
@@ -860,6 +912,48 @@
                     "status"
                 ]
             },
+            "DatasetList": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "status": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/StatusEnum"
+                            }
+                        ],
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "schema": {
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "parse_result": {
+                        "readOnly": true,
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "id",
+                    "name",
+                    "parse_result",
+                    "schema",
+                    "status"
+                ]
+            },
             "JWT": {
                 "type": "object",
                 "description": "Serializer for JWT authentication.",
@@ -897,6 +991,37 @@
                 "required": [
                     "password"
                 ]
+            },
+            "PaginatedDatasetListList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=400&limit=100"
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=200&limit=100"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DatasetList"
+                        }
+                    }
+                }
             },
             "PasswordChange": {
                 "type": "object",
@@ -1046,6 +1171,16 @@
                 "required": [
                     "detail"
                 ]
+            },
+            "StatusEnum": {
+                "enum": [
+                    "uploaded",
+                    "processing",
+                    "parsed",
+                    "failed"
+                ],
+                "type": "string",
+                "description": "* `uploaded` - アップロード済み\n* `processing` - 処理中\n* `parsed` - 解析完了\n* `failed` - 失敗"
             },
             "TokenRefresh": {
                 "type": "object",

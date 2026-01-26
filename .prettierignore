@@ -1,2 +1,2 @@
 # 自動生成 API ファイルを除外
-frontend/src/types/api.d.ts
+frontend/types/api.d.ts

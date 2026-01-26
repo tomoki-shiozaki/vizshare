@@ -29,14 +29,13 @@ export default function HomePage() {
           </p>
         </CardLink>
 
-        {/* Dataset アップロード */}
+        {/* Dataset 一覧 */}
         <CardLink href="/dataset">
           <h2 className="text-xl font-semibold text-blue-600 mb-2">
-            データセットアップロード
+            データセット管理
           </h2>
           <p className="text-gray-500 text-sm">
-            CSV
-            ファイルなどの気候データをアップロードして、分析用に登録できます。
+            CSVファイルをアップロードしたり、データの一覧を確認できます。
           </p>
         </CardLink>
       </div>
