@@ -98,6 +98,48 @@
                 }
             }
         },
+        "/api/v1/dataset/{id}/": {
+            "get": {
+                "operationId": "dataset_retrieve",
+                "description": "Dataset の詳細情報を返す API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasetDetail"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/dataset/list/": {
             "get": {
                 "operationId": "dataset_list_list",
@@ -908,6 +950,54 @@
                     "id",
                     "name",
                     "owner",
+                    "source_file",
+                    "status"
+                ]
+            },
+            "DatasetDetail": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "status": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/StatusEnum"
+                            }
+                        ],
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "schema": {
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "parse_result": {
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "source_file": {
+                        "type": "string",
+                        "format": "uri",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "id",
+                    "name",
+                    "parse_result",
+                    "schema",
                     "source_file",
                     "status"
                 ]

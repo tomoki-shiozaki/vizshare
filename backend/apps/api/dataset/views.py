@@ -1,6 +1,10 @@
 from rest_framework import generics, permissions
 
-from apps.api.dataset.serializers import DatasetListSerializer, DatasetSerializer
+from apps.api.dataset.serializers import (
+    DatasetDetailSerializer,
+    DatasetListSerializer,
+    DatasetSerializer,
+)
 from apps.dataset.models import Dataset
 from apps.dataset.services.enqueue import enqueue_parse_dataset
 
@@ -35,3 +39,19 @@ class DatasetListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         return Dataset.objects.filter(owner=self.request.user).order_by("-created_at")
+
+
+class DatasetDetailAPIView(generics.RetrieveAPIView):
+    """
+    Dataset の詳細情報を返す API
+    """
+
+    queryset = Dataset.objects.all()
+    serializer_class = DatasetDetailSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        ログインユーザーのデータのみに制限
+        """
+        return self.queryset.filter(owner=self.request.user)

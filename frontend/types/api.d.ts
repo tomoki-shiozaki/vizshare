@@ -44,6 +44,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/dataset/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Dataset の詳細情報を返す API */
+        get: operations["dataset_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/dataset/list/": {
         parameters: {
             query?: never;
@@ -397,6 +414,17 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
         };
+        DatasetDetail: {
+            readonly id: number;
+            readonly name: string;
+            readonly status: components["schemas"]["StatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly schema: unknown;
+            readonly parse_result: unknown;
+            /** Format: uri */
+            readonly source_file: string;
+        };
         DatasetList: {
             readonly id: number;
             readonly name: string;
@@ -575,6 +603,27 @@ export interface operations {
                             global_average?: number | null;
                         }[];
                     };
+                };
+            };
+        };
+    };
+    dataset_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetDetail"];
                 };
             };
         };

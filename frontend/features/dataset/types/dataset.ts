@@ -5,4 +5,8 @@ export type DatasetUploadResponse =
 
 export type DatasetList =
   paths["/api/v1/dataset/list/"]["get"]["responses"][200]["content"]["application/json"];
+
+export type DatasetDetail =
+  paths["/api/v1/dataset/{id}/"]["get"]["responses"][200]["content"]["application/json"];
+
 export type DatasetStatus = components["schemas"]["StatusEnum"];

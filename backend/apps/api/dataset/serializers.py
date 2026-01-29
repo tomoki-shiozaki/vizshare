@@ -117,4 +117,34 @@ class DatasetListSerializer(serializers.ModelSerializer):
             "schema",
             "parse_result",
         ]
-        read_only_fields = fields
+        read_only_fields = [
+            "id",
+            "name",
+            "status",
+            "created_at",
+            "schema",
+            "parse_result",
+        ]
+
+
+class DatasetDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dataset
+        fields = [
+            "id",
+            "name",
+            "status",
+            "created_at",
+            "schema",
+            "parse_result",
+            "source_file",
+        ]
+        read_only_fields = [
+            "id",
+            "name",
+            "status",
+            "created_at",
+            "schema",
+            "parse_result",
+            "source_file",
+        ]
