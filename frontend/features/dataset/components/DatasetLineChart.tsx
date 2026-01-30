@@ -18,14 +18,16 @@ type Props = {
 export const DatasetLineChart = ({ datasetId }: Props) => {
   const { data, isLoading, error } = useDatasetDataPoints(datasetId);
 
+  const points = data?.results ?? [];
+
   if (isLoading) return <p>Loading chart...</p>;
   if (error) return <p>Failed to load chart</p>;
-  if (!data?.length) return <p>No data</p>;
+  if (!points.length) return <p>No data</p>;
 
   return (
     <div className="w-full h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
+        <LineChart data={points}>
           <CartesianGrid strokeDasharray="3 3" />
 
           <XAxis
