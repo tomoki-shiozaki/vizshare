@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useMemo } from "react";
 import { useDatasetDataPoints } from "../hooks/useDatasetDataPoints";
 
 type Props = {
@@ -18,6 +19,11 @@ type Props = {
 export const DatasetLineChart = ({ datasetId }: Props) => {
   const { data: points, isLoading, error } = useDatasetDataPoints(datasetId);
 
+  const seriesList = useMemo(() => {
+    if (!points) return [];
+    return Array.from(new Set(points.map((p) => p.series ?? "value")));
+  }, [points]);
+
   if (isLoading) return <p>Loading chart...</p>;
   if (error) return <p>Failed to load chart</p>;
   if (!points?.length) return <p>No data</p>;
@@ -25,7 +31,7 @@ export const DatasetLineChart = ({ datasetId }: Props) => {
   return (
     <div className="w-full h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={points}>
+        <LineChart>
           <CartesianGrid strokeDasharray="3 3" />
 
           <XAxis
@@ -37,7 +43,16 @@ export const DatasetLineChart = ({ datasetId }: Props) => {
 
           <Tooltip labelFormatter={(v) => new Date(v).toLocaleString()} />
 
-          <Line type="monotone" dataKey="value" dot={false} />
+          {seriesList.map((s) => (
+            <Line
+              key={s}
+              type="monotone"
+              data={points.filter((p) => (p.series ?? "value") === s)}
+              dataKey="value"
+              dot={false}
+              name={s}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
