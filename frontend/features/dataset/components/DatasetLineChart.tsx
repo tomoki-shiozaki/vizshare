@@ -16,13 +16,11 @@ type Props = {
 };
 
 export const DatasetLineChart = ({ datasetId }: Props) => {
-  const { data, isLoading, error } = useDatasetDataPoints(datasetId);
-
-  const points = data?.results ?? [];
+  const { data: points, isLoading, error } = useDatasetDataPoints(datasetId);
 
   if (isLoading) return <p>Loading chart...</p>;
   if (error) return <p>Failed to load chart</p>;
-  if (!points.length) return <p>No data</p>;
+  if (!points?.length) return <p>No data</p>;
 
   return (
     <div className="w-full h-[400px]">
