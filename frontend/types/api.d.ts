@@ -44,7 +44,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/dataset/{id}/": {
+    "/api/v1/datasets/{id}/": {
         parameters: {
             query?: never;
             header?: never;
@@ -52,7 +52,7 @@ export interface paths {
             cookie?: never;
         };
         /** @description Dataset の詳細情報を返す API */
-        get: operations["dataset_retrieve"];
+        get: operations["datasets_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -61,7 +61,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/dataset/list/": {
+    "/api/v1/datasets/list/": {
         parameters: {
             query?: never;
             header?: never;
@@ -69,7 +69,7 @@ export interface paths {
             cookie?: never;
         };
         /** @description ログインユーザーの Dataset 一覧を返す API */
-        get: operations["dataset_list_list"];
+        get: operations["datasets_list_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -78,7 +78,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/dataset/upload/": {
+    "/api/v1/datasets/upload/": {
         parameters: {
             query?: never;
             header?: never;
@@ -91,7 +91,7 @@ export interface paths {
          * @description Dataset のアップロード専用 API
          *     Next.js からファイルをアップロード可能
          */
-        post: operations["dataset_upload_create"];
+        post: operations["datasets_upload_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -607,7 +607,7 @@ export interface operations {
             };
         };
     };
-    dataset_retrieve: {
+    datasets_retrieve: {
         parameters: {
             query?: never;
             header?: never;
@@ -628,7 +628,7 @@ export interface operations {
             };
         };
     };
-    dataset_list_list: {
+    datasets_list_list: {
         parameters: {
             query?: {
                 /** @description Number of results to return per page. */
@@ -652,7 +652,7 @@ export interface operations {
             };
         };
     };
-    dataset_upload_create: {
+    datasets_upload_create: {
         parameters: {
             query?: never;
             header?: never;

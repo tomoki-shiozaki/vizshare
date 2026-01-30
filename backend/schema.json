@@ -98,9 +98,9 @@
                 }
             }
         },
-        "/api/v1/dataset/{id}/": {
+        "/api/v1/datasets/{id}/": {
             "get": {
-                "operationId": "dataset_retrieve",
+                "operationId": "datasets_retrieve",
                 "description": "Dataset の詳細情報を返す API",
                 "parameters": [
                     {
@@ -113,7 +113,7 @@
                     }
                 ],
                 "tags": [
-                    "dataset"
+                    "datasets"
                 ],
                 "security": [
                     {
@@ -140,9 +140,9 @@
                 }
             }
         },
-        "/api/v1/dataset/list/": {
+        "/api/v1/datasets/list/": {
             "get": {
-                "operationId": "dataset_list_list",
+                "operationId": "datasets_list_list",
                 "description": "ログインユーザーの Dataset 一覧を返す API",
                 "parameters": [
                     {
@@ -165,7 +165,7 @@
                     }
                 ],
                 "tags": [
-                    "dataset"
+                    "datasets"
                 ],
                 "security": [
                     {
@@ -192,12 +192,12 @@
                 }
             }
         },
-        "/api/v1/dataset/upload/": {
+        "/api/v1/datasets/upload/": {
             "post": {
-                "operationId": "dataset_upload_create",
+                "operationId": "datasets_upload_create",
                 "description": "Dataset のアップロード専用 API\nNext.js からファイルをアップロード可能",
                 "tags": [
-                    "dataset"
+                    "datasets"
                 ],
                 "requestBody": {
                     "content": {

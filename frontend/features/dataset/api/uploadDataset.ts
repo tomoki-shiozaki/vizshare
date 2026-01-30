@@ -26,7 +26,7 @@ export async function uploadDataset(
   formData.append("schema", JSON.stringify(schema));
 
   const res = await apiClient.post<DatasetUploadResponse>(
-    "/dataset/upload/",
+    "/datasets/upload/",
     formData,
     { headers: { "Content-Type": "multipart/form-data" } },
   );
