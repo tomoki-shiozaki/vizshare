@@ -98,6 +98,116 @@
                 }
             }
         },
+        "/api/v1/datasets/{dataset_id}/data-points/": {
+            "get": {
+                "operationId": "datasets_data_points_list",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "dataset_id",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^\\d+$"
+                        },
+                        "required": true
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "required": false,
+                        "in": "query",
+                        "description": "The initial index from which to return the results.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedDataPointList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/datasets/{dataset_id}/data-points/{id}/": {
+            "get": {
+                "operationId": "datasets_data_points_retrieve",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "dataset_id",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^\\d+$"
+                        },
+                        "required": true
+                    },
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DataPoint"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/{id}/": {
             "get": {
                 "operationId": "datasets_retrieve",
@@ -915,6 +1025,31 @@
                     "co2_data"
                 ]
             },
+            "DataPoint": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "raw_time": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "value": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "series": {
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "required": [
+                    "value"
+                ]
+            },
             "Dataset": {
                 "type": "object",
                 "properties": {
@@ -1081,6 +1216,37 @@
                 "required": [
                     "password"
                 ]
+            },
+            "PaginatedDataPointList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=400&limit=100"
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=200&limit=100"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DataPoint"
+                        }
+                    }
+                }
             },
             "PaginatedDatasetListList": {
                 "type": "object",
