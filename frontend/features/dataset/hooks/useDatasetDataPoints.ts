@@ -8,7 +8,7 @@ export const useDatasetDataPoints = (datasetId: string) => {
       const res = await fetchDatasetDataPoints(datasetId);
 
       return res.results.map((p) => ({
-        time: p.time ?? p.raw_time!, // 正規化
+        time: p.raw_time,
         value: p.value,
         series: p.series,
       }));
