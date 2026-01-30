@@ -5,7 +5,7 @@ export const useDatasetDataPoints = (datasetId: string) => {
   return useQuery({
     queryKey: ["dataset-datapoints", datasetId],
     queryFn: async () => {
-      const res = await fetchDatasetDataPoints(datasetId!);
+      const res = await fetchDatasetDataPoints(datasetId);
 
       return res.results.map((p) => ({
         time: p.time ?? p.raw_time!, // 正規化
@@ -13,6 +13,5 @@ export const useDatasetDataPoints = (datasetId: string) => {
         series: p.series,
       }));
     },
-    enabled: !!datasetId,
   });
 };
