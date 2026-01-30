@@ -11,7 +11,7 @@ export default function DatasetDetailPage() {
 
   return (
     <>
-      <DatasetDetail />;
+      <DatasetDetail id={id} />
       <DatasetLineChart datasetId={id} />
     </>
   );
