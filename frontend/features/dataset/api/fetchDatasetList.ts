@@ -1,5 +1,5 @@
 import { apiClient } from "@/features/auth/api/apiClient";
-import type { DatasetList } from "@/features/dataset/types/dataset";
+import type { DatasetListResponse } from "@/features/dataset/types/dataset";
 
 interface FetchDatasetListParams {
   limit: number;
@@ -9,8 +9,8 @@ interface FetchDatasetListParams {
 export async function fetchDatasetList({
   limit,
   offset,
-}: FetchDatasetListParams): Promise<DatasetList> {
-  const { data } = await apiClient.get<DatasetList>("/datasets/list/", {
+}: FetchDatasetListParams): Promise<DatasetListResponse> {
+  const { data } = await apiClient.get<DatasetListResponse>("/datasets/list/", {
     params: { limit, offset },
   });
   return data;

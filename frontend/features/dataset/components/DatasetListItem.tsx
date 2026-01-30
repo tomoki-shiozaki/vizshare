@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import type { DatasetList } from "@/features/dataset/types/dataset";
+import type { DatasetListResponse } from "@/features/dataset/types/dataset";
 import { STATUS_LABEL, STATUS_VARIANT } from "@/features/dataset/constants";
 
-type Dataset = DatasetList["results"][number];
+type Dataset = DatasetListResponse["results"][number];
 
 type Props = {
   dataset: Dataset;
