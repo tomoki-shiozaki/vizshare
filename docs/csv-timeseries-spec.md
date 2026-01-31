@@ -1,0 +1,185 @@
+# Time Series CSV Specification (v1)
+
+本ドキュメントは、時系列折れ線グラフ用データを本アプリケーションに取り込むための
+CSVフォーマットおよび内部正規形を定義する。
+
+目的は以下である：
+
+- ユーザーがExcel等で容易に作成できるCSV形式を提供する
+- 内部DBでは拡張性の高い正規形（long format）で保持する
+- Entity切替・複数系列（metric）表示に対応する
+
+---
+
+## 外部CSV仕様（アップロード形式）
+
+### 基本構造
+
+外部CSVは以下の列構造を持つものとする：
+
+[time][entity][metric...]
+
+例：
+
+```csv
+Year,Entity,anomaly,lower,upper
+2000,Japan,0.12,0.05,0.18
+2001,Japan,0.15,0.09,0.21
+2000,USA,0.08,0.03,0.14
+```
+
+### 列の意味
+
+- time（必須・1列）
+  - 時系列軸
+
+  - 例：Year, Date, Datetime
+
+  - 全行でパース可能であること
+
+- entity（任意・最大1列）
+  - 系列を識別するカテゴリ（国、地域、センサーなど）
+
+  - 文字列として扱う
+
+  - 存在しない場合は `"default"` を自動補完する
+
+- metric（1列以上必須）
+  - 数値データ列
+
+  - 各列が1つの系列（例：anomaly / lower / upper）
+
+  - すべて数値または空であること
+
+## 内部正規形（DB保存形式）
+
+外部CSVはアップロード時に以下の正規形へ変換され、そのままDBへ保存される。
+
+### 正規形スキーマ
+
+```text
+time | entity | metric | value
+```
+
+例：
+
+```csv
+Year,Entity,metric,value
+2000,Japan,anomaly,0.12
+2000,Japan,lower,0.05
+2000,Japan,upper,0.18
+2001,Japan,anomaly,0.15
+```
+
+### 各フィールド
+
+- time
+  - 時系列値
+
+- entity
+  - 外部CSVの entity 列
+
+  - 無い場合 `"default"`
+
+- metric
+  - 外部CSVのヘッダ名（anomaly / lower / upper など）
+
+- value
+  - 数値
+
+## wide形式 と long形式について
+
+本仕様では、外部CSVと内部DBで異なるデータ形式を採用する。
+
+### wide形式（外部CSV）
+
+wide形式とは、1行に複数の metric 列を持つ「横に広い」構造である。
+
+例：
+
+```csv
+Year,Entity,anomaly,lower,upper
+2000,Japan,0.12,0.05,0.18
+2001,Japan,0.15,0.09,0.21
+```
+
+特徴：
+
+- metric ごとに列が増える
+
+- Excel等で人間が編集しやすい
+
+- グラフ用CSVとして一般的
+
+本アプリケーションでは、ユーザー入力のしやすさを優先し、
+外部CSVは wide形式を採用する。
+
+### long形式（内部DB）
+
+long形式とは、1つの値を1行として保持する「縦に長い」正規化構造である。
+
+例：
+
+```
+Year,Entity,metric,value
+2000,Japan,anomaly,0.12
+2000,Japan,lower,0.05
+2000,Japan,upper,0.18
+```
+
+特徴：
+
+- metric が増えても列は増えず、行が増えるのみ
+
+- SQLでの集計・フィルタリングが容易
+
+- Entity / Metric の動的追加に強い
+
+- 可視化UIで系列を柔軟に構成できる
+
+本アプリケーションでは、拡張性と検索性を重視し、
+内部DBでは long形式を採用する。
+
+---
+
+要約：
+
+- 外部CSV：人間向け → wide形式
+
+- 内部DB：システム向け → long形式
+
+## 変換フロー
+
+1. ユーザーがCSVをアップロード
+
+2. サーバー側でCSVを行単位でパース
+
+3. 各行について metric 列を展開
+
+4. 正規形（time, entity, metric, value）へ変換
+
+5. そのままDBへ bulk insert
+
+※ 中間CSVファイルは生成しない
+
+## 制約・ルール
+
+- metric列は最低1つ必要
+
+- value は数値型であること（空欄は許容）
+
+- entity は1列のみ対応（複数次元はユーザー側で連結）
+
+- DB側では以下を基本インデックスとする：
+
+- (dataset_id, entity, metric, time)
+
+## 設計方針
+
+- 外部CSVは「人間が作りやすい wide 形式」
+
+- 内部DBは「拡張しやすい long 形式」
+
+- Entity / Metric の増加によって schema migration が発生しない設計とする
+
+- 可視化UIでは entity をセレクトボックス、metric を系列選択として扱う
