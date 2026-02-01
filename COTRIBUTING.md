@@ -12,6 +12,54 @@ echo "UID=$(id -u)" > .env
 echo "GID=$(id -g)" >> .env
 ```
 
+## 🛠 Terraform Service Account インポート手順
+
+このプロジェクトでは、既存の cloudbuild_runner および terraform_sa サービスアカウントを Terraform 管理下に置く必要があります。
+
+### 1. cloudbuild_runner SA のインポート
+
+```bash
+terraform import google_service_account.cloudbuild_runner \
+cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com
+```
+
+### 2. terraform_sa SA のインポート
+
+```bash
+terraform import google_service_account.terraform_sa \
+terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com
+```
+
+### 3. IAM メンバー（オプション）
+
+Terraform で IAM 権限も管理したい場合は、以下を順番に import します：
+
+```bash
+terraform import google_project_iam_member.runner_cloudbuild \
+projects/apps-portfolio-469805/serviceAccounts/cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com roles/cloudbuild.builds.builder
+
+terraform import google_project_iam_member.runner_artifact_registry \
+projects/apps-portfolio-469805/serviceAccounts/cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com roles/artifactregistry.writer
+
+terraform import google_project_iam_member.runner_cloudrun \
+projects/apps-portfolio-469805/serviceAccounts/cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com roles/run.admin
+
+terraform import google_project_iam_member.runner_sa_user \
+projects/apps-portfolio-469805/serviceAccounts/cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com roles/iam.serviceAccountUser
+
+terraform import google_project_iam_member.runner_log_writer \
+projects/apps-portfolio-469805/serviceAccounts/cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com roles/logging.logWriter
+
+terraform import google_project_iam_member.terraform_sa_viewer \
+projects/apps-portfolio-469805/serviceAccounts/terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com roles/viewer
+
+terraform import google_service_account_iam_member.terraform_wif_binding \
+projects/apps-portfolio-469805/serviceAccounts/terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com roles/iam.workloadIdentityUser:principalSet://iam.googleapis.com/projects/1066453624488/locations/global/workloadIdentityPools/github-pool/attribute.repository_owner/tomoki-shiozaki
+
+```
+
+⚠️ IAM メンバーの import はオプションですが、Terraform 管理下で状態をクリーンに保つため推奨です。
+
 ## 📦 データ仕様：ISO A3（ISO 3166-1 alpha-3）と OWID 独自コード
 
 本プロジェクトでは、国別データ（CO₂ 排出量など）を扱うために、  
@@ -62,7 +110,6 @@ OWID の CO₂ データにおける `Code`（または `code`）列は、
 OWID 独自コードには厳密な仕様はありませんが、以下が推奨されています：
 
 1. `OWID_` の後につくコードは、既存の ISO A3 と重複させない
-
    - （例外：`OWID_NAM` は Namibia の `NAM` と衝突している）
 
 2. 国の下位地域を表す場合は、  
