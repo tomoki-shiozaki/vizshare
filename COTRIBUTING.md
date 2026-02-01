@@ -35,26 +35,29 @@ terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com
 Terraform で IAM 権限も管理したい場合は、以下を順番に import します：
 
 ```bash
+# Cloud Build Runner 用 IAM
 terraform import google_project_iam_member.runner_cloudbuild \
-projects/apps-portfolio-469805/serviceAccounts/cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com roles/cloudbuild.builds.builder
+"apps-portfolio-469805 roles/cloudbuild.builds.builder serviceAccount:cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com"
 
 terraform import google_project_iam_member.runner_artifact_registry \
-projects/apps-portfolio-469805/serviceAccounts/cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com roles/artifactregistry.writer
+"apps-portfolio-469805 roles/artifactregistry.writer serviceAccount:cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com"
 
 terraform import google_project_iam_member.runner_cloudrun \
-projects/apps-portfolio-469805/serviceAccounts/cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com roles/run.admin
+"apps-portfolio-469805 roles/run.admin serviceAccount:cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com"
 
 terraform import google_project_iam_member.runner_sa_user \
-projects/apps-portfolio-469805/serviceAccounts/cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com roles/iam.serviceAccountUser
+"apps-portfolio-469805 roles/iam.serviceAccountUser serviceAccount:cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com"
 
 terraform import google_project_iam_member.runner_log_writer \
-projects/apps-portfolio-469805/serviceAccounts/cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com roles/logging.logWriter
+"apps-portfolio-469805 roles/logging.logWriter serviceAccount:cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com"
 
+# Terraform Service Account 用 IAM
 terraform import google_project_iam_member.terraform_sa_viewer \
-projects/apps-portfolio-469805/serviceAccounts/terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com roles/viewer
+"apps-portfolio-469805 roles/viewer serviceAccount:terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com"
 
 terraform import google_service_account_iam_member.terraform_wif_binding \
-projects/apps-portfolio-469805/serviceAccounts/terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com roles/iam.workloadIdentityUser:principalSet://iam.googleapis.com/projects/1066453624488/locations/global/workloadIdentityPools/github-pool/attribute.repository_owner/tomoki-shiozaki
+"projects/apps-portfolio-469805/serviceAccounts/terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com roles/iam.workloadIdentityUser principalSet://iam.googleapis.com/projects/1066453624488/locations/global/workloadIdentityPools/github-pool/attribute.repository_owner/tomoki-shiozaki"
+
 
 ```
 
