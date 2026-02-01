@@ -17,7 +17,7 @@ variable "region" {
 variable "service_name" {
   description = "サービス名 / プロジェクト内リソースのプレフィックス"
   type        = string
-  default     = "climate-change-app-v2"
+  default     = "vizshare"
 }
 
 variable "github_owner" {
@@ -29,5 +29,5 @@ variable "github_owner" {
 variable "github_repo" {
   description = "GitHub リポジトリ名"
   type        = string
-  default     = "climate-change-app-v2"
+  default     = "vizshare"
 }
