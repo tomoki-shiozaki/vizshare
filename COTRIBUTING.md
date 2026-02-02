@@ -63,6 +63,75 @@ terraform import google_service_account_iam_member.terraform_wif_binding \
 
 ⚠️ IAM メンバーの import はオプションですが、Terraform 管理下で状態をクリーンに保つため推奨です。
 
+### 4. 📂 import_iam.sh スクリプトによる一括 import
+
+上記の import コマンドを手作業で実行する代わりに、infra/import_iam.sh という Bash スクリプトを作成して 一括で import することもできます。
+
+1. スクリプト作成
+
+infra/import_iam.sh に以下を保存：
+
+```bash
+#!/bin/bash
+set -euo pipefail
+
+ENV_FILE=".env.terraform"
+
+if [ ! -f "$ENV_FILE" ]; then
+echo "❌ $ENV_FILE が見つかりません。作成してください。"
+exit 1
+fi
+
+export $(grep -v '^#' "$ENV_FILE" | xargs)
+
+CLOUDRUNNER_SA="cloud-build-runner-tf@$PROJECT_ID.iam.gserviceaccount.com"
+TERRAFORM_SA="terraform-sa@$PROJECT_ID.iam.gserviceaccount.com"
+
+terraform import google_service_account.cloudbuild_runner "$CLOUDRUNNER_SA"
+terraform import google_service_account.terraform_sa "$TERRAFORM_SA"
+
+terraform import google_project_iam_member.runner_cloudbuild \
+ "$PROJECT_ID roles/cloudbuild.builds.builder serviceAccount:$CLOUDRUNNER_SA"
+terraform import google_project_iam_member.runner_artifact_registry \
+ "$PROJECT_ID roles/artifactregistry.writer serviceAccount:$CLOUDRUNNER_SA"
+terraform import google_project_iam_member.runner_cloudrun \
+ "$PROJECT_ID roles/run.admin serviceAccount:$CLOUDRUNNER_SA"
+terraform import google_project_iam_member.runner_sa_user \
+ "$PROJECT_ID roles/iam.serviceAccountUser serviceAccount:$CLOUDRUNNER_SA"
+terraform import google_project_iam_member.runner_log_writer \
+ "$PROJECT_ID roles/logging.logWriter serviceAccount:$CLOUDRUNNER_SA"
+terraform import google_project_iam_member.terraform_sa_viewer \
+ "$PROJECT_ID roles/viewer serviceAccount:$TERRAFORM_SA"
+terraform import google_service_account_iam_member.terraform_wif_binding \
+ "projects/$PROJECT_ID/serviceAccounts/$TERRAFORM_SA roles/iam.workloadIdentityUser:principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository_owner/tomoki-shiozaki"
+
+echo "✅ Import complete!"
+```
+
+2. 実行前準備
+
+infra/.env.terraform に環境変数を定義します：
+
+```bash
+PROJECT_ID=*******
+PROJECT_NUMBER=*********
+```
+
+3. 実行権限を付与
+
+```bash
+chmod +x infra/import_iam.sh
+```
+
+4. スクリプト実行
+
+```bash
+cd infra
+./import_iam.sh
+```
+
+これで一括 import が完了し、Terraform 管理下に置くことができます。
+
 ## 📦 データ仕様：ISO A3（ISO 3166-1 alpha-3）と OWID 独自コード
 
 本プロジェクトでは、国別データ（CO₂ 排出量など）を扱うために、  
