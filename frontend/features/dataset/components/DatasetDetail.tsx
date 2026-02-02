@@ -2,11 +2,12 @@
 
 import { fetchDatasetDetail } from "@/features/dataset/api/fetchDatasetDetail";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
 
-export function DatasetDetail() {
-  const { id } = useParams<{ id: string }>();
+type Props = {
+  id: string;
+};
 
+export function DatasetDetail({ id }: Props) {
   const {
     data: dataset,
     isLoading,

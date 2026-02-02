@@ -12,6 +12,126 @@ echo "UID=$(id -u)" > .env
 echo "GID=$(id -g)" >> .env
 ```
 
+## 🛠 Terraform Service Account インポート手順
+
+このプロジェクトでは、既存の cloudbuild_runner および terraform_sa サービスアカウントを Terraform 管理下に置く必要があります。
+
+### 1. cloudbuild_runner SA のインポート
+
+```bash
+terraform import google_service_account.cloudbuild_runner \
+cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com
+```
+
+### 2. terraform_sa SA のインポート
+
+```bash
+terraform import google_service_account.terraform_sa \
+terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com
+```
+
+### 3. IAM メンバー（オプション）
+
+Terraform で IAM 権限も管理したい場合は、以下を順番に import します：
+
+```bash
+# Cloud Build Runner 用 IAM
+terraform import google_project_iam_member.runner_cloudbuild \
+"apps-portfolio-469805 roles/cloudbuild.builds.builder serviceAccount:cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com"
+
+terraform import google_project_iam_member.runner_artifact_registry \
+"apps-portfolio-469805 roles/artifactregistry.writer serviceAccount:cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com"
+
+terraform import google_project_iam_member.runner_cloudrun \
+"apps-portfolio-469805 roles/run.admin serviceAccount:cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com"
+
+terraform import google_project_iam_member.runner_sa_user \
+"apps-portfolio-469805 roles/iam.serviceAccountUser serviceAccount:cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com"
+
+terraform import google_project_iam_member.runner_log_writer \
+"apps-portfolio-469805 roles/logging.logWriter serviceAccount:cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com"
+
+# Terraform Service Account 用 IAM
+terraform import google_project_iam_member.terraform_sa_viewer \
+"apps-portfolio-469805 roles/viewer serviceAccount:terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com"
+
+terraform import google_service_account_iam_member.terraform_wif_binding \
+"projects/apps-portfolio-469805/serviceAccounts/terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com roles/iam.workloadIdentityUser principalSet://iam.googleapis.com/projects/1066453624488/locations/global/workloadIdentityPools/github-pool/attribute.repository_owner/tomoki-shiozaki"
+
+
+```
+
+⚠️ IAM メンバーの import はオプションですが、Terraform 管理下で状態をクリーンに保つため推奨です。
+
+### 4. 📂 import_iam.sh スクリプトによる一括 import
+
+上記の import コマンドを手作業で実行する代わりに、infra/import_iam.sh という Bash スクリプトを作成して 一括で import することもできます。
+
+1. スクリプト作成
+
+infra/import_iam.sh に以下を保存：
+
+```bash
+#!/bin/bash
+set -euo pipefail
+
+ENV_FILE=".env.terraform"
+
+if [ ! -f "$ENV_FILE" ]; then
+echo "❌ $ENV_FILE が見つかりません。作成してください。"
+exit 1
+fi
+
+export $(grep -v '^#' "$ENV_FILE" | xargs)
+
+CLOUDRUNNER_SA="cloud-build-runner-tf@$PROJECT_ID.iam.gserviceaccount.com"
+TERRAFORM_SA="terraform-sa@$PROJECT_ID.iam.gserviceaccount.com"
+
+terraform import google_service_account.cloudbuild_runner "$CLOUDRUNNER_SA"
+terraform import google_service_account.terraform_sa "$TERRAFORM_SA"
+
+terraform import google_project_iam_member.runner_cloudbuild \
+ "$PROJECT_ID roles/cloudbuild.builds.builder serviceAccount:$CLOUDRUNNER_SA"
+terraform import google_project_iam_member.runner_artifact_registry \
+ "$PROJECT_ID roles/artifactregistry.writer serviceAccount:$CLOUDRUNNER_SA"
+terraform import google_project_iam_member.runner_cloudrun \
+ "$PROJECT_ID roles/run.admin serviceAccount:$CLOUDRUNNER_SA"
+terraform import google_project_iam_member.runner_sa_user \
+ "$PROJECT_ID roles/iam.serviceAccountUser serviceAccount:$CLOUDRUNNER_SA"
+terraform import google_project_iam_member.runner_log_writer \
+ "$PROJECT_ID roles/logging.logWriter serviceAccount:$CLOUDRUNNER_SA"
+terraform import google_project_iam_member.terraform_sa_viewer \
+ "$PROJECT_ID roles/viewer serviceAccount:$TERRAFORM_SA"
+terraform import google_service_account_iam_member.terraform_wif_binding \
+ "projects/$PROJECT_ID/serviceAccounts/$TERRAFORM_SA roles/iam.workloadIdentityUser:principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository_owner/tomoki-shiozaki"
+
+echo "✅ Import complete!"
+```
+
+2. 実行前準備
+
+infra/.env.terraform に環境変数を定義します：
+
+```bash
+PROJECT_ID=*******
+PROJECT_NUMBER=*********
+```
+
+3. 実行権限を付与
+
+```bash
+chmod +x infra/import_iam.sh
+```
+
+4. スクリプト実行
+
+```bash
+cd infra
+./import_iam.sh
+```
+
+これで一括 import が完了し、Terraform 管理下に置くことができます。
+
 ## 📦 データ仕様：ISO A3（ISO 3166-1 alpha-3）と OWID 独自コード
 
 本プロジェクトでは、国別データ（CO₂ 排出量など）を扱うために、  
@@ -62,7 +182,6 @@ OWID の CO₂ データにおける `Code`（または `code`）列は、
 OWID 独自コードには厳密な仕様はありませんが、以下が推奨されています：
 
 1. `OWID_` の後につくコードは、既存の ISO A3 と重複させない
-
    - （例外：`OWID_NAM` は Namibia の `NAM` と衝突している）
 
 2. 国の下位地域を表す場合は、  

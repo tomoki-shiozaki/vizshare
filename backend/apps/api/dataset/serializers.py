@@ -2,7 +2,7 @@ import csv
 
 from rest_framework import serializers
 
-from apps.dataset.models import Dataset
+from apps.dataset.models import DataPoint, Dataset
 
 
 class DatasetSerializer(serializers.ModelSerializer):
@@ -147,4 +147,15 @@ class DatasetDetailSerializer(serializers.ModelSerializer):
             "schema",
             "parse_result",
             "source_file",
+        ]
+
+
+class DataPointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataPoint
+        fields = [
+            "time",
+            "raw_time",
+            "value",
+            "series",
         ]

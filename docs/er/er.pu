@@ -1,52 +1,60 @@
 @startuml er
 skinparam defaultFontName "Noto Sans CJK JP"
 
-entity "ユーザーマスター" as User {
-  +ユーザーID <<PK>>
-  +ログイン名 <<UNIQUE>>
-  +メールアドレス <<UNIQUE>>
-  +パスワード
-  +登録日
+package "Authentication" {
+  entity "ユーザー" as User {
+    +id <<PK>>
+    username <<UNIQUE>>
+    email
+    password
+    name
+  }
 }
 
-entity "地域マスター" as Region {
-  +地域ID <<PK>>
-  +地域名
-  +ISOコード <<UNIQUE>>
+package "Climate Domain" {
+
+  entity "地域マスター" as Region {
+    +id <<PK>>
+    name
+    code <<UNIQUE>>
+  }
+
+  entity "指標グループ" as IndicatorGroup {
+    +id <<PK>>
+    name <<UNIQUE>>
+    description
+  }
+
+  entity "指標マスター" as Indicator {
+    +id <<PK>>
+    group <<FK>>
+    name
+    unit
+    description
+    data_source_name
+    data_source_url
+    metadata_url
+    <<UNIQUE(group, name)>>
+  }
+
+  entity "気候データ" as ClimateData {
+    +id <<PK>>
+    region <<FK>>
+    indicator <<FK>>
+    year
+    value
+    updated_at
+    <<UNIQUE(region, indicator, year)>>
+  }
+
+  IndicatorGroup ||--o{ Indicator : group
+
+  Region ||--o{ ClimateData : region
+  Indicator ||--o{ ClimateData : indicator
 }
 
-entity "指標マスター" as Indicator {
-  +指標ID <<PK>>
-  +指標名
-  +単位
-  +説明
-  +データソース名
-  +データソースURL
-  +取得日
-}
-
-entity "気候データ" as ClimateData {
-  +データID <<PK>>
-  +地域ID <<FK>>
-  +指標ID <<FK>>
-  + 年
-  + 値
-  +取得日
-}
-
-entity "ユーザーお気に入り" as Favorite {
-  +お気に入りID <<PK>>
-  +ユーザーID <<FK>>
-  +地域ID <<FK>>
-  +指標ID <<FK>>
-  +登録日
-}
-
-Region ||--o{ ClimateData : 地域ID
-Indicator ||--o{ ClimateData : 指標ID
-
-User ||--o{ Favorite : ユーザーID
-Region ||--o{ Favorite : 地域ID
-Indicator ||--o{ Favorite : 指標ID
+note bottom of User
+現在は認証専用エンティティ。
+end note
 
 @enduml

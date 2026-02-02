@@ -1,11 +1,14 @@
-from rest_framework import generics, permissions
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from apps.api.dataset.serializers import (
+    DataPointSerializer,
     DatasetDetailSerializer,
     DatasetListSerializer,
     DatasetSerializer,
 )
-from apps.dataset.models import Dataset
+from apps.dataset.models import DataPoint, Dataset
 from apps.dataset.services.enqueue import enqueue_parse_dataset
 
 
@@ -17,7 +20,7 @@ class DatasetUploadAPIView(generics.CreateAPIView):
 
     queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
-    permission_classes = [permissions.IsAuthenticated]  # ログイン必須
+    permission_classes = [IsAuthenticated]  # ログイン必須
 
     def perform_create(self, serializer):
         # Dataset を保存
@@ -35,7 +38,7 @@ class DatasetListAPIView(generics.ListAPIView):
     """
 
     serializer_class = DatasetListSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Dataset.objects.filter(owner=self.request.user).order_by("-created_at")
@@ -48,10 +51,22 @@ class DatasetDetailAPIView(generics.RetrieveAPIView):
 
     queryset = Dataset.objects.all()
     serializer_class = DatasetDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
         ログインユーザーのデータのみに制限
         """
         return self.queryset.filter(owner=self.request.user)
+
+
+class DatasetDataPointViewSet(ReadOnlyModelViewSet):
+    serializer_class = DataPointSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        dataset_id = self.kwargs["dataset_id"]
+
+        return DataPoint.objects.filter(dataset_id=dataset_id).order_by(
+            "time", "row_index"
+        )

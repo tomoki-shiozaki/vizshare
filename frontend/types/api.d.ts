@@ -44,7 +44,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/dataset/{id}/": {
+    "/api/v1/datasets/{dataset_id}/data-points/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["datasets_data_points_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/{dataset_id}/data-points/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["datasets_data_points_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/{id}/": {
         parameters: {
             query?: never;
             header?: never;
@@ -52,7 +84,7 @@ export interface paths {
             cookie?: never;
         };
         /** @description Dataset の詳細情報を返す API */
-        get: operations["dataset_retrieve"];
+        get: operations["datasets_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -61,7 +93,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/dataset/list/": {
+    "/api/v1/datasets/list/": {
         parameters: {
             query?: never;
             header?: never;
@@ -69,7 +101,7 @@ export interface paths {
             cookie?: never;
         };
         /** @description ログインユーザーの Dataset 一覧を返す API */
-        get: operations["dataset_list_list"];
+        get: operations["datasets_list_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -78,7 +110,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/dataset/upload/": {
+    "/api/v1/datasets/upload/": {
         parameters: {
             query?: never;
             header?: never;
@@ -91,7 +123,7 @@ export interface paths {
          * @description Dataset のアップロード専用 API
          *     Next.js からファイルをアップロード可能
          */
-        post: operations["dataset_upload_create"];
+        post: operations["datasets_upload_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -403,6 +435,14 @@ export interface components {
                 };
             };
         };
+        DataPoint: {
+            /** Format: date-time */
+            time?: string | null;
+            raw_time?: string;
+            /** Format: double */
+            value: number;
+            series?: string;
+        };
         Dataset: {
             readonly id: number;
             name: string;
@@ -445,6 +485,21 @@ export interface components {
             /** Format: email */
             email?: string;
             password: string;
+        };
+        PaginatedDataPointList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=400&limit=100
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=200&limit=100
+             */
+            previous?: string | null;
+            results: components["schemas"]["DataPoint"][];
         };
         PaginatedDatasetListList: {
             /** @example 123 */
@@ -607,7 +662,55 @@ export interface operations {
             };
         };
     };
-    dataset_retrieve: {
+    datasets_data_points_list: {
+        parameters: {
+            query?: {
+                /** @description Number of results to return per page. */
+                limit?: number;
+                /** @description The initial index from which to return the results. */
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedDataPointList"];
+                };
+            };
+        };
+    };
+    datasets_data_points_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataPoint"];
+                };
+            };
+        };
+    };
+    datasets_retrieve: {
         parameters: {
             query?: never;
             header?: never;
@@ -628,7 +731,7 @@ export interface operations {
             };
         };
     };
-    dataset_list_list: {
+    datasets_list_list: {
         parameters: {
             query?: {
                 /** @description Number of results to return per page. */
@@ -652,7 +755,7 @@ export interface operations {
             };
         };
     };
-    dataset_upload_create: {
+    datasets_upload_create: {
         parameters: {
             query?: never;
             header?: never;

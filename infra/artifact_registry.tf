@@ -1,8 +1,8 @@
-resource "google_artifact_registry_repository" "climate_v2_repo" {
+resource "google_artifact_registry_repository" "vizshare_repo" {
   repository_id = var.service_name
   location      = var.region
   format        = "DOCKER"
-  description   = "Docker repo for climate change app"
+  description   = "Docker repo for vizshare"
 
   cleanup_policy_dry_run = false
 
