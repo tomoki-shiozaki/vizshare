@@ -37,7 +37,16 @@ Year,Entity,anomaly,lower,upper
 
 - time 列（必須・1列）
 - entity 列（任意・最大1列）
-- metric 列（1列以上・複数指定可）
+- metrics 列（1列以上・複数指定可）
+
+※ schema には以下のキーが存在する：
+
+- time（必須）
+- metrics（必須・1列以上）
+- entity（任意）
+
+time と metrics は必須キーであり、指定されない場合はアップロードをエラーとする。
+entity が未指定の場合、サーバー側では "default" が自動的に使用される。
 
 例：
 
