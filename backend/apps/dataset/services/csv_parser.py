@@ -1,5 +1,6 @@
 import csv
 import io
+import re
 from datetime import datetime
 
 from django.db import transaction
@@ -12,26 +13,51 @@ BATCH_SIZE = 1000
 
 
 def parse_row_time(raw_time: str):
+    """
+    CSV の time 列文字列を datetime に変換（MVP対応）。
+    - 対応: 年のみ, 年-月, 年/月, 完全日付(YYYY-MM-DD, YYYY/MM/DD, DD/MM/YYYY)
+    - 非対応形式は None
+    """
     if not raw_time:
         return None
 
+    # まず ISO 形式の日時や YYYY-MM-DD は parse_datetime で対応
     dt = parse_datetime(raw_time)
+    if dt:
+        if is_naive(dt):
+            dt = make_aware(dt)
+        return dt
 
-    if dt is None:
-        # YYYY
-        if raw_time.isdigit() and len(raw_time) == 4:
-            dt = datetime(int(raw_time), 1, 1)
-        # YYYY-MM
-        elif len(raw_time) == 7 and raw_time[4] == "-":
-            year, month = map(int, raw_time.split("-"))
-            dt = datetime(year, month, 1)
-        else:
-            return None
+    # 年のみ: YYYY または YYYY.0
+    match_year = re.fullmatch(r"(\d{4})(?:\.0)?", raw_time)
+    if match_year:
+        year = int(match_year.group(1))
+        dt = datetime(year, 1, 1)
+        return make_aware(dt)
 
-    if is_naive(dt):
-        dt = make_aware(dt)
+    # 年-月: YYYY-MM または YYYY/MM
+    match_ym = re.fullmatch(r"(\d{4})[-/](\d{1,2})", raw_time)
+    if match_ym:
+        year, month = map(int, match_ym.groups())
+        dt = datetime(year, month, 1)
+        return make_aware(dt)
 
-    return dt
+    # 完全日付: YYYY-MM-DD, YYYY/MM/DD
+    match_ymd = re.fullmatch(r"(\d{4})[-/](\d{1,2})[-/](\d{1,2})", raw_time)
+    if match_ymd:
+        year, month, day = map(int, match_ymd.groups())
+        dt = datetime(year, month, day)
+        return make_aware(dt)
+
+    # 完全日付: DD/MM/YYYY
+    match_dmy = re.fullmatch(r"(\d{1,2})/(\d{1,2})/(\d{4})", raw_time)
+    if match_dmy:
+        day, month, year = map(int, match_dmy.groups())
+        dt = datetime(year, month, day)
+        return make_aware(dt)
+
+    # それ以外（期間ラベルや任意ステップなど）は None
+    return None
 
 
 def validate_schema(schema, headers):
