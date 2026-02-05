@@ -34,6 +34,25 @@ def parse_row_time(raw_time: str):
     return dt
 
 
+def validate_schema(schema, headers):
+    time_col = schema.get("time")
+    metrics = schema.get("metrics")
+
+    if not time_col:
+        raise ValueError("time 必須")
+
+    if not metrics:
+        raise ValueError("metrics は最低1つ必要")
+
+    for col in [time_col, schema.get("entity")]:
+        if col and col not in headers:
+            raise ValueError(f"{col} が存在しません")
+
+    for m in metrics:
+        if m not in headers:
+            raise ValueError(f"metric {m} が存在しません")
+
+
 def parse_dataset_csv(dataset: Dataset) -> int:
     """
     wide CSV を long DataPoint へ変換
@@ -49,23 +68,12 @@ def parse_dataset_csv(dataset: Dataset) -> int:
 
         # schema から列名取得
         schema = dataset.schema or {}
+
+        validate_schema(schema, headers)
+
         time_col = schema.get("time")
         entity_col = schema.get("entity")
-
-        if not time_col:
-            raise ValueError("schema に time 列が定義されていません")
-
-        if time_col not in headers:
-            raise ValueError(f"time 列が CSV に存在しません: {time_col}")
-
-        metric_cols = schema.get("metrics")
-
-        if not metric_cols:
-            raise ValueError("metrics が schema に定義されていません")
-
-        for m in metric_cols:
-            if m not in headers:
-                raise ValueError(f"metric 列が CSV に存在しません: {m}")
+        metric_cols = schema["metrics"]
 
         buffer: list[DataPoint] = []
         total = 0
