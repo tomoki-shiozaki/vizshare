@@ -31,6 +31,32 @@ Year,Entity,anomaly,lower,upper
 2000,USA,0.08,0.03,0.14
 ```
 
+### Schema 指定（列マッピング）
+
+アップロード時、ユーザーは CSV ヘッダーの中から以下を指定する：
+
+- time 列（必須・1列）
+- entity 列（任意・最大1列）
+- metric 列（1列以上・複数指定可）
+
+例：
+
+```json
+{
+  "time": "Year",
+  "entity": "Entity",
+  "metrics": ["anomaly", "lower", "upper"]
+}
+```
+
+この schema に基づき、サーバー側は：
+
+- time / entity 列を固定フィールドとして扱う
+- metrics に指定された列のみを展開対象とする
+- 指定されなかった列は無視される。
+- metrics に含まれない数値列が存在しても、それらは取り込まれない。
+- metrics は最低1列以上指定する必要がある。
+
 ### 列の意味
 
 ### time（必須・1列）
@@ -74,34 +100,6 @@ Year,Entity,anomaly,lower,upper
   - 各列が1つの系列（例：anomaly / lower / upper）
 
   - すべて数値または空であること
-
-### Schema 指定（列マッピング）
-
-アップロード時、ユーザーは CSV ヘッダーの中から以下を指定する：
-
-- time 列（必須・1列）
-- entity 列（任意・最大1列）
-- metric 列（1列以上・複数指定可）
-
-例：
-
-```json
-{
-  "time": "Year",
-  "entity": "Entity",
-  "metrics": ["anomaly", "lower", "upper"]
-}
-```
-
-この schema に基づき、サーバー側は：
-
-time / entity 列を固定フィールドとして扱う
-
-metrics に指定された列のみを展開対象とする
-
-指定されなかった列は無視される。
-
-entity が指定されない場合は "default" が自動補完される。
 
 ## 内部正規形（DB保存形式）
 
