@@ -11,25 +11,21 @@ from apps.dataset.models import DataPoint, Dataset
 BATCH_SIZE = 1000
 
 
-# -----------------------------
-# 1️⃣ 時刻パース関数
-# -----------------------------
-def parse_row_time(raw_time: str, row_idx: int):
+def parse_row_time(raw_time: str):
     if not raw_time:
-        raise ValueError(f"time が空です (row={row_idx})")
+        return None
 
     dt = parse_datetime(raw_time)
 
     if dt is None:
-        # 年だけなら補完して datetime 作成
+        # YYYY
         if raw_time.isdigit() and len(raw_time) == 4:
             dt = datetime(int(raw_time), 1, 1)
-        # 年月なら補完
-        elif len(raw_time) == 7 and raw_time[4] == "-":  # YYYY-MM
+        # YYYY-MM
+        elif len(raw_time) == 7 and raw_time[4] == "-":
             year, month = map(int, raw_time.split("-"))
             dt = datetime(year, month, 1)
         else:
-            # 正確な日時に変換できなければ None を返す
             return None
 
     if is_naive(dt):
@@ -38,79 +34,78 @@ def parse_row_time(raw_time: str, row_idx: int):
     return dt
 
 
-# -----------------------------
-# 2️⃣ 値パース関数
-# -----------------------------
-def parse_row_value(value_str: str, row_idx: int):
-    try:
-        return float(value_str)
-    except (TypeError, ValueError):
-        raise ValueError(f"Invalid value: {value_str} (row={row_idx})")
-
-
-# -----------------------------
-# 3️⃣ メイン CSV パース関数
-# -----------------------------
 def parse_dataset_csv(dataset: Dataset) -> int:
     """
-    Dataset.source_file の CSV を parse して DataPoint を作成する
+    wide CSV を long DataPoint へ変換
     """
-    # CSV 解析だけに集中 → 状態変更はタスク側で行う
-
-    # 解析に使う列名
-    schema_columns = dataset.schema or {}
-    time_col = schema_columns.get("time")
-    value_col = schema_columns.get("value")
-    series_col = schema_columns.get("series", "")
-
-    if not time_col or not value_col:
-        raise ValueError("schema に time 列と value 列の情報がありません")
-
     with dataset.source_file.open("rb") as f:
         # バイナリファイルをテキストとして読み込み、CSVを辞書形式で扱えるようにする
         text_file = io.TextIOWrapper(f, encoding="utf-8")
         reader = csv.DictReader(text_file)
 
-        # CSV に指定列が存在するかチェック
-        csv_columns = set(reader.fieldnames or [])
-        required_columns = {time_col, value_col}
-        if not required_columns.issubset(csv_columns):
-            raise ValueError(
-                f"CSV に指定された列が存在しません: required={required_columns}, csv={csv_columns}"
-            )
+        headers = reader.fieldnames or []
+        if not headers:
+            raise ValueError("CSV にヘッダーがありません")
+
+        # schema から列名取得
+        schema = dataset.schema or {}
+        time_col = schema.get("time")
+        entity_col = schema.get("entity")
+
+        if not time_col:
+            raise ValueError("schema に time 列が定義されていません")
+
+        if time_col not in headers:
+            raise ValueError(f"time 列が CSV に存在しません: {time_col}")
+
+        # metric 列 = time/entity 以外すべて
+        metric_cols = [h for h in headers if h not in {time_col, entity_col}]
+
+        if not metric_cols:
+            raise ValueError("metric 列が存在しません")
 
         buffer: list[DataPoint] = []
-        total_rows = 0
+        total = 0
 
-        # CSV を1行ずつ読み込む。
-        # idx は 0 から始まる行番号で、DataPoint の row_index に使用
-        for idx, row in enumerate(reader):
-            # 指定された列名で値を取得
-            dt_str = row.get(time_col, "")
-            val_str = row.get(value_col, "")
-            series_val = row.get(series_col, "") if series_col else ""
+        for row_idx, row in enumerate(reader):
+            raw_time = row.get(time_col, "")
+            parsed_time = parse_row_time(raw_time)
 
-            dp = DataPoint(
-                dataset=dataset,
-                raw_time=dt_str,
-                time=parse_row_time(dt_str, idx),
-                value=parse_row_value(val_str, idx),
-                series=series_val,
-                row_index=idx,
-            )
-            buffer.append(dp)
+            entity = row.get(entity_col, "default") if entity_col else "default"
+            if not entity:
+                entity = "default"
 
-            # chunk insert
+            for metric in metric_cols:
+                value_str = row.get(metric, "")
+
+                try:
+                    value = float(value_str) if value_str != "" else None
+                except ValueError:
+                    raise ValueError(
+                        f"Invalid value: {value_str} (row={row_idx}, metric={metric})"
+                    )
+
+                buffer.append(
+                    DataPoint(
+                        dataset=dataset,
+                        raw_time=raw_time,
+                        time=parsed_time,
+                        entity=entity,
+                        metric=metric,
+                        value=value,
+                        order_index=row_idx,
+                    )
+                )
+
             if len(buffer) >= BATCH_SIZE:
                 with transaction.atomic():
                     DataPoint.objects.bulk_create(buffer)
-                total_rows += len(buffer)
+                total += len(buffer)
                 buffer.clear()
 
         if buffer:
             with transaction.atomic():
                 DataPoint.objects.bulk_create(buffer)
-            total_rows += len(buffer)
+            total += len(buffer)
 
-    # CSV 解析自体は成功 → タスク側で mark_parsed を呼ぶ
-    return total_rows
+    return total
