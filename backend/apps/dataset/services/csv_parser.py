@@ -58,11 +58,14 @@ def parse_dataset_csv(dataset: Dataset) -> int:
         if time_col not in headers:
             raise ValueError(f"time 列が CSV に存在しません: {time_col}")
 
-        # metric 列 = time/entity 以外すべて
-        metric_cols = [h for h in headers if h not in {time_col, entity_col}]
+        metric_cols = schema.get("metrics")
 
         if not metric_cols:
-            raise ValueError("metric 列が存在しません")
+            raise ValueError("metrics が schema に定義されていません")
+
+        for m in metric_cols:
+            if m not in headers:
+                raise ValueError(f"metric 列が CSV に存在しません: {m}")
 
         buffer: list[DataPoint] = []
         total = 0
