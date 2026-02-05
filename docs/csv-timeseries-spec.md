@@ -75,6 +75,34 @@ Year,Entity,anomaly,lower,upper
 
   - すべて数値または空であること
 
+### Schema 指定（列マッピング）
+
+アップロード時、ユーザーは CSV ヘッダーの中から以下を指定する：
+
+- time 列（必須・1列）
+- entity 列（任意・最大1列）
+- metric 列（1列以上・複数指定可）
+
+例：
+
+```json
+{
+  "time": "Year",
+  "entity": "Entity",
+  "metrics": ["anomaly", "lower", "upper"]
+}
+```
+
+この schema に基づき、サーバー側は：
+
+time / entity 列を固定フィールドとして扱う
+
+metrics に指定された列のみを展開対象とする
+
+指定されなかった列は無視される。
+
+entity が指定されない場合は "default" が自動補完される。
+
 ## 内部正規形（DB保存形式）
 
 外部CSVはアップロード時に以下の正規形へ変換され、そのままDBへ保存される。
@@ -206,4 +234,6 @@ Year,Entity,metric,value
 
 - Entity / Metric の増加によって schema migration が発生しない設計とする
 
-- 可視化UIでは entity をセレクトボックス、metric を系列選択として扱う
+- 可視化UIでは entity をセレクトボックスで切替可能とする
+
+- metric は同一 entity 内の複数系列として扱う
