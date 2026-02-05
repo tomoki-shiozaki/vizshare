@@ -78,13 +78,14 @@ def parse_dataset_csv(dataset: Dataset) -> int:
         buffer: list[DataPoint] = []
         total = 0
 
+        # CSV を1行ずつ読み込む。
+        # idx は 0 から始まる行番号で、DataPoint の row_index に使用
         for row_idx, row in enumerate(reader):
             raw_time = row.get(time_col, "")
             parsed_time = parse_row_time(raw_time)
 
-            entity = row.get(entity_col, "default") if entity_col else "default"
-            if not entity:
-                entity = "default"
+            entity = row.get(entity_col) if entity_col else None
+            entity = entity or "default"
 
             for metric in metric_cols:
                 value_str = row.get(metric, "")
