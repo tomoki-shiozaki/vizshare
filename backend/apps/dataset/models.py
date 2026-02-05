@@ -60,24 +60,27 @@ class DataPoint(models.Model):
         related_name="data_points",
     )
 
-    raw_time = models.CharField(
-        max_length=50, blank=True, default=""  # CSV に書かれている文字列をそのまま保存
-    )
-    time = models.DateTimeField(
-        blank=True,
-        null=True,  # 正確な日時がない場合は None
-    )
-    value = models.FloatField()
-    series = models.CharField(max_length=255, blank=True, default="")
-    row_index = models.IntegerField()
+    # CSVに書かれていた元の time 文字列（Year 等）
+    raw_time = models.CharField(max_length=50)
+
+    # パース後の datetime（Year だけなら Jan 1 に正規化など）
+    time = models.DateTimeField(blank=True, null=True)
+
+    # entity（Japan など）
+    entity = models.CharField(max_length=255, blank=True, default="default")
+
+    # metric（anomaly / lower / upper）
+    metric = models.CharField(max_length=255)
+
+    value = models.FloatField(blank=True, null=True)
 
     class Meta:
         indexes = [
-            models.Index(fields=["dataset", "time"]),
+            models.Index(fields=["dataset", "entity", "metric", "time"]),
         ]
         constraints = [
             models.UniqueConstraint(
-                fields=["dataset", "row_index"],
-                name="uniq_dataset_row",
+                fields=["dataset", "entity", "metric", "raw_time"],
+                name="uniq_dataset_entity_metric_time",
             )
         ]
