@@ -1,7 +1,16 @@
-# Vizshare Development Documentation
+# Vizshare Documentation
 
-This directory contains design notes and development-related documentation
-for the Vizshare project.
+## Overview
+
+This directory contains design notes, specifications, and development documentation for Vizshare.
+
+## Documentation Index
+
+- **Specification & design:** this document
+- **Development setup:** `development.md`
+- **Infrastructure & Terraform:** `infrastructure.md`
+
+---
 
 ## 1. Project Overview
 
