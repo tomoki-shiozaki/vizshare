@@ -5,8 +5,7 @@
 [![Terraform Plan](https://github.com/tomoki-shiozaki/vizshare/actions/workflows/terraform-plan.yml/badge.svg)](https://github.com/tomoki-shiozaki/vizshare/actions/workflows/terraform-plan.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Django REST Framework と Next.js を使った、気候変動データの可視化アプリです。  
-[v1（React 版）](https://github.com/tomoki-shiozaki/climate-change-app) からフロントエンドを Next.js に移行したため、新規プロジェクトとして v2 を作成しました。
+VizShare app enables you to upload, visualize, and share data with others.
 
 ---
 
