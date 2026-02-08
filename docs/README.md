@@ -11,6 +11,16 @@
   - Uploading, parsing, and visualizing data.
   - Sharing data with others.
 
+## 2. Requirements
+
+| ID  | Requirement    | Description                                                     | Priority | Notes                     |
+| --- | -------------- | --------------------------------------------------------------- | -------- | ------------------------- |
+| R1  | Upload CSV     | Users can upload CSV files containing their own data            | High     | Support time-series data  |
+| R2  | Parse Data     | System parses CSV and extracts time, entity, and metric columns | High     | MVP: only numeric metrics |
+| R3  | Visualize Data | Display data in graphs (line, bar, etc.)                        | High     | MVP: basic line chart     |
+| R4  | Share Data     | Users can share visualizations with others                      | Medium   | Add comment feature later |
+| R5  | Comment        | Users can comment on shared visualizations                      | Medium   | Optional for MVP          |
+
 ---
 
 ## 2. システム構成図（アーキテクチャ）
