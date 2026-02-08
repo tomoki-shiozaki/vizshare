@@ -3,12 +3,10 @@ skinparam defaultFontName "Noto Sans CJK JP"
 left to right direction
 
 actor GeneralUser as generalUser
-actor Developer as developer
 
 rectangle "Vizshare App" {
   package "Data Handling" {
     (Upload CSV)
-    (Parse Data)
     (Visualize Data)
   }
   
@@ -19,19 +17,16 @@ rectangle "Vizshare App" {
   }
 }
 
-rectangle "External Storage/API" {
+rectangle "External Storage" {
   (Store CSV)
 }
 
 ' Actors interactions
 generalUser --> (Upload CSV)
+(Upload CSV) ..> (Store CSV) : <<include>>
 generalUser --> (Visualize Data)
 generalUser --> (Share Data)
 generalUser --> (Comment)
 generalUser --> (View Shared Visualizations)
-
-developer --> (Parse Data)
-
-(Upload CSV) ..> (Store CSV) : <<include>>
 
 @enduml
