@@ -1,5 +1,8 @@
 # Vizshare Development Documentation
 
+This directory contains design notes and development-related documentation
+for the Vizshare project.
+
 ## 1. Project Overview
 
 - **Project name:** Vizshare
