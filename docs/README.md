@@ -21,6 +21,12 @@
 | R4  | Share Data     | Users can share visualizations with others                      | Medium   | Add comment feature later |
 | R5  | Comment        | Users can comment on shared visualizations                      | Medium   | Optional for MVP          |
 
+## 2.1 Use Case Diagram
+
+The following diagram illustrates the main user interactions in the Vizshare MVP.
+
+- ![Use Case Diagram](./usecase/usecase/vizshare_use.svg)
+
 ---
 
 ## 2. システム構成図（アーキテクチャ）
