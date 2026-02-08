@@ -1,25 +1,16 @@
-# 気候変動データ可視化アプリ開発プロジェクト
+# Vizshare app development document
 
-## 1. プロジェクト概要
+## 1. Project Overview
 
-- **プロジェクト名：** 気候変動データ可視化アプリ開発プロジェクト
-- **前提：**
-  - 気候変動関連のオープンデータ（気温、CO₂ 排出量など）は [Our World in Data (OWID) ](https://ourworldindata.org/)の API や CSV として整備されている。
-  - GitHub Actions を用いて OWID のデータを定期的に取得し、Neon PostgreSQL に蓄積する構成を採用。
-  - バックエンドは Cloud Run（Django REST Framework + PostgreSQL）、フロントエンドは Render（React）で運用。
-- **データ例：**
-  - 世界平均気温の変化（年次）
-  - 国別・年別 CO₂ 排出量
-- **開発目的：**
-  - フロントエンド（React）とバックエンド（DRF）をクラウド環境で運用するフルスタック開発の実践。
-  - CI/CD、インフラ（Google Cloud / Cloud Run、Render）、バッチ処理（GitHub Actions）など、実務レベルの構成を経験する。
-  - バッチ処理や API 連携を通して、データ処理・API 設計の経験を積む
-  - ユーザーが直感的に気候データを理解できるインタラクティブな可視化体験を提供する。
-- **現在の実装状況（MVP 実装内容）**
-  - GitHub Actions による定期バッチで OWID データを取得し Neon DB に保存
-  - DRF による API（気温・CO₂ 排出データ）を Cloud Run 上で提供
-  - React（Render）で気温変化のグラフ表示・CO₂ 排出量マップなどの UI を提供
-  - エラーハンドリング・ローディング UI、簡易的な説明文・出典表示を実装
+- **Project's name** Vizshare development project
+- **Background:** The app developer created [climate change app](https://github.com/tomoki-shiozaki/climate-change-app-v2), which visualizes temperature anomally and CO2 emissions by graph and map. The temperature data used in the climate change app is prepared by the app developer. One of the motivations of developing this Vizshare app is offering users for uploading their own datas, then visualizing their datas by gragh, and sharing these datas with other users.
+- **Purpose:**
+  This app's purposes are the following:
+  1. Users can share their datas by visualized forms.
+  2. Users can communicate with comment features.
+- **MVP Implementation**
+  - Uploading, parseing, visualizing datas.
+  - Shareing datas
 
 ---
 
