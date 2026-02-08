@@ -1,5 +1,6 @@
 import csv
 import io
+import re
 from datetime import datetime
 
 from django.db import transaction
@@ -11,106 +12,138 @@ from apps.dataset.models import DataPoint, Dataset
 BATCH_SIZE = 1000
 
 
-# -----------------------------
-# 1️⃣ 時刻パース関数
-# -----------------------------
-def parse_row_time(raw_time: str, row_idx: int):
+def parse_row_time(raw_time: str):
+    """
+    CSV の time 列文字列を datetime に変換（MVP対応）。
+    - 対応: 年のみ, 年-月, 年/月, 完全日付(YYYY-MM-DD, YYYY/MM/DD, DD/MM/YYYY)
+    - 非対応形式は None
+    """
     if not raw_time:
-        raise ValueError(f"time が空です (row={row_idx})")
+        return None
 
+    # まず ISO 形式の日時や YYYY-MM-DD は parse_datetime で対応
     dt = parse_datetime(raw_time)
+    if dt:
+        if is_naive(dt):
+            dt = make_aware(dt)
+        return dt
 
-    if dt is None:
-        # 年だけなら補完して datetime 作成
-        if raw_time.isdigit() and len(raw_time) == 4:
-            dt = datetime(int(raw_time), 1, 1)
-        # 年月なら補完
-        elif len(raw_time) == 7 and raw_time[4] == "-":  # YYYY-MM
-            year, month = map(int, raw_time.split("-"))
-            dt = datetime(year, month, 1)
-        else:
-            # 正確な日時に変換できなければ None を返す
-            return None
+    # 年のみ: YYYY または YYYY.0
+    match_year = re.fullmatch(r"(\d{4})(?:\.0)?", raw_time)
+    if match_year:
+        year = int(match_year.group(1))
+        dt = datetime(year, 1, 1)
+        return make_aware(dt)
 
-    if is_naive(dt):
-        dt = make_aware(dt)
+    # 年-月: YYYY-MM または YYYY/MM
+    match_ym = re.fullmatch(r"(\d{4})[-/](\d{1,2})", raw_time)
+    if match_ym:
+        year, month = map(int, match_ym.groups())
+        dt = datetime(year, month, 1)
+        return make_aware(dt)
 
-    return dt
+    # 完全日付: YYYY-MM-DD, YYYY/MM/DD
+    match_ymd = re.fullmatch(r"(\d{4})[-/](\d{1,2})[-/](\d{1,2})", raw_time)
+    if match_ymd:
+        year, month, day = map(int, match_ymd.groups())
+        dt = datetime(year, month, day)
+        return make_aware(dt)
+
+    # 完全日付: DD/MM/YYYY
+    match_dmy = re.fullmatch(r"(\d{1,2})/(\d{1,2})/(\d{4})", raw_time)
+    if match_dmy:
+        day, month, year = map(int, match_dmy.groups())
+        dt = datetime(year, month, day)
+        return make_aware(dt)
+
+    # それ以外（期間ラベルや任意ステップなど）は None
+    return None
 
 
-# -----------------------------
-# 2️⃣ 値パース関数
-# -----------------------------
-def parse_row_value(value_str: str, row_idx: int):
-    try:
-        return float(value_str)
-    except (TypeError, ValueError):
-        raise ValueError(f"Invalid value: {value_str} (row={row_idx})")
+def validate_schema(schema, headers):
+    time_col = schema.get("time")
+    metrics = schema.get("metrics")
+
+    if not time_col:
+        raise ValueError("time 必須")
+
+    if not metrics:
+        raise ValueError("metrics は最低1つ必要")
+
+    for col in [time_col, schema.get("entity")]:
+        if col and col not in headers:
+            raise ValueError(f"{col} が存在しません")
+
+    for m in metrics:
+        if m not in headers:
+            raise ValueError(f"metric {m} が存在しません")
 
 
-# -----------------------------
-# 3️⃣ メイン CSV パース関数
-# -----------------------------
 def parse_dataset_csv(dataset: Dataset) -> int:
     """
-    Dataset.source_file の CSV を parse して DataPoint を作成する
+    wide CSV を long DataPoint へ変換
     """
-    # CSV 解析だけに集中 → 状態変更はタスク側で行う
-
-    # 解析に使う列名
-    schema_columns = dataset.schema or {}
-    time_col = schema_columns.get("time")
-    value_col = schema_columns.get("value")
-    series_col = schema_columns.get("series", "")
-
-    if not time_col or not value_col:
-        raise ValueError("schema に time 列と value 列の情報がありません")
-
     with dataset.source_file.open("rb") as f:
         # バイナリファイルをテキストとして読み込み、CSVを辞書形式で扱えるようにする
         text_file = io.TextIOWrapper(f, encoding="utf-8")
         reader = csv.DictReader(text_file)
 
-        # CSV に指定列が存在するかチェック
-        csv_columns = set(reader.fieldnames or [])
-        required_columns = {time_col, value_col}
-        if not required_columns.issubset(csv_columns):
-            raise ValueError(
-                f"CSV に指定された列が存在しません: required={required_columns}, csv={csv_columns}"
-            )
+        headers = reader.fieldnames or []
+        if not headers:
+            raise ValueError("CSV にヘッダーがありません")
+
+        # schema から列名取得
+        schema = dataset.schema or {}
+
+        validate_schema(schema, headers)
+
+        time_col = schema.get("time")
+        entity_col = schema.get("entity")
+        metric_cols = schema["metrics"]
 
         buffer: list[DataPoint] = []
-        total_rows = 0
+        total = 0
 
         # CSV を1行ずつ読み込む。
         # idx は 0 から始まる行番号で、DataPoint の row_index に使用
-        for idx, row in enumerate(reader):
-            # 指定された列名で値を取得
-            dt_str = row.get(time_col, "")
-            val_str = row.get(value_col, "")
-            series_val = row.get(series_col, "") if series_col else ""
+        for row_idx, row in enumerate(reader):
+            raw_time = row.get(time_col, "")
+            parsed_time = parse_row_time(raw_time)
 
-            dp = DataPoint(
-                dataset=dataset,
-                raw_time=dt_str,
-                time=parse_row_time(dt_str, idx),
-                value=parse_row_value(val_str, idx),
-                series=series_val,
-                row_index=idx,
-            )
-            buffer.append(dp)
+            entity = row.get(entity_col) if entity_col else None
+            entity = entity or "default"
 
-            # chunk insert
+            for metric in metric_cols:
+                value_str = row.get(metric, "")
+
+                try:
+                    value = float(value_str) if value_str != "" else None
+                except ValueError:
+                    raise ValueError(
+                        f"Invalid value: {value_str} (row={row_idx}, metric={metric})"
+                    )
+
+                buffer.append(
+                    DataPoint(
+                        dataset=dataset,
+                        raw_time=raw_time,
+                        time=parsed_time,
+                        entity=entity,
+                        metric=metric,
+                        value=value,
+                        order_index=row_idx,
+                    )
+                )
+
             if len(buffer) >= BATCH_SIZE:
                 with transaction.atomic():
                     DataPoint.objects.bulk_create(buffer)
-                total_rows += len(buffer)
+                total += len(buffer)
                 buffer.clear()
 
         if buffer:
             with transaction.atomic():
                 DataPoint.objects.bulk_create(buffer)
-            total_rows += len(buffer)
+            total += len(buffer)
 
-    # CSV 解析自体は成功 → タスク側で mark_parsed を呼ぶ
-    return total_rows
+    return total
