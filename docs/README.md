@@ -25,7 +25,7 @@
 
 The following diagram illustrates the main user interactions in the Vizshare MVP.
 
-- ![Use Case Diagram](./usecase/usecase/vizshare_use.svg)
+![Use Case Diagram](./usecase/usecase/vizshare_use.svg)
 
 ---
 
