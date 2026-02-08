@@ -2,15 +2,14 @@
 
 ## 1. Project Overview
 
-- **Project's name** Vizshare development project
-- **Background:** The app developer created [climate change app](https://github.com/tomoki-shiozaki/climate-change-app-v2), which visualizes temperature anomally and CO2 emissions by graph and map. The temperature data used in the climate change app is prepared by the app developer. One of the motivations of developing this Vizshare app is offering users for uploading their own datas, then visualizing their datas by gragh, and sharing these datas with other users.
-- **Purpose:**
-  This app's purposes are the following:
-  1. Users can share their datas by visualized forms.
-  2. Users can communicate with comment features.
-- **MVP Implementation**
-  - Uploading, parseing, visualizing datas.
-  - Shareing datas
+- **Project name:** Vizshare
+- **Background:** The developer previously created [Climate Change App](https://github.com/tomoki-shiozaki/climate-change-app-v2), which visualizes temperature anomalies and CO2 emissions using graphs and maps. The temperature data used in the Climate Change App was prepared by the developer. One of the motivations for developing Vizshare is to allow users to upload their own data, visualize it in graphs, and share it with others.
+- **Purpose:** The purposes of this app are:
+  1. To allow users to share their data in visualized forms.
+  2. To enable users to communicate through comments.
+- **MVP Implementation:**
+  - Uploading, parsing, and visualizing data.
+  - Sharing data.
 
 ---
 
