@@ -1,4 +1,4 @@
-# Vizshare app development document
+# Vizshare Development Documentation
 
 ## 1. Project Overview
 
@@ -9,7 +9,7 @@
   2. To enable users to communicate through comments.
 - **MVP Implementation:**
   - Uploading, parsing, and visualizing data.
-  - Sharing data.
+  - Sharing data with others.
 
 ---
 
