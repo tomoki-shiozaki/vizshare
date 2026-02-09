@@ -113,8 +113,10 @@ terraform import google_project_iam_member.terraform_sa_viewer \
 terraform import google_service_account_iam_member.terraform_wif_binding \
  "projects/$PROJECT_ID/serviceAccounts/$TERRAFORM_SA roles/iam.workloadIdentityUser:principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository_owner/tomoki-shiozaki"
 
-echo "✅ Import complete!" 2. Prepare Environment Variables
+echo "✅ Import complete!"
 ```
+
+### 2. Prepare Environment Variables
 
 Create `infra/.env.terraform` and define the following variables:
 
