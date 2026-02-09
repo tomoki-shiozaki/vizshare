@@ -6,9 +6,13 @@ This directory contains design notes, specifications, and development documentat
 
 ## Documentation Index
 
-- **Specification & design:** this document
-- **Development setup:** `development.md`
-- **Infrastructure & Terraform:** `infrastructure.md`
+- **Specifications & design**
+  - This document (overall project design)
+  - [Time Series CSV Specification (v1)](./csv-timeseries-spec.md)
+- **Development setup**
+  - [Local development setup](./development.md)
+- **Infrastructure & Terraform**
+  - (internal / personal notes)
 
 ---
 
