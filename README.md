@@ -5,8 +5,44 @@
 [![Terraform Plan](https://github.com/tomoki-shiozaki/vizshare/actions/workflows/terraform-plan.yml/badge.svg)](https://github.com/tomoki-shiozaki/vizshare/actions/workflows/terraform-plan.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Django REST Framework と Next.js を使った、気候変動データの可視化アプリです。  
-[v1（React 版）](https://github.com/tomoki-shiozaki/climate-change-app) からフロントエンドを Next.js に移行したため、新規プロジェクトとして v2 を作成しました。
+VizShare is a web application that allows you to upload CSV data,
+visualize it as interactive charts, and share it with others.
+
+The project focuses on time-series data and aims to make data sharing
+and visualization simple and reproducible.
+
+## Features
+
+- Upload CSV files (time-series data)
+- Automatic parsing and visualization
+- Share visualizations via URL
+
+## Project Status
+
+VizShare is currently in early development (MVP stage).
+APIs, data models, and features may change.
+
+## Tech Stack
+
+- Backend: Django
+- Frontend: React / Next.js
+- Infrastructure: Terraform
+- CI/CD: GitHub Actions
+
+## Repository Structure
+
+- `backend/` – Django backend application
+- `frontend/` – Frontend application
+- `infra/` – Infrastructure as code (Terraform)
+
+## License
+
+This project is licensed under the MIT License.
+See [LICENSE](LICENSE) for details.
+
+## Development Documentation
+
+- [Development Documentation](docs/)
 
 ---
 
