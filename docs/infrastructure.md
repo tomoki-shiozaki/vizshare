@@ -11,7 +11,8 @@ This project uses Terraform to manage Google Cloud infrastructure.
 Existing service accounts must be **imported into Terraform state**
 before they can be safely managed.
 
-Specifically, the following service accounts are expected to already exist:
+Specifically, the following service accounts are expected to already exist
+(resource names shown below):
 
 - `cloudbuild_runner`
 - `terraform_sa`
@@ -23,7 +24,7 @@ terraform import google_service_account.cloudbuild_runner \
 cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com
 ```
 
-### 2. Import terraform_sa Service Account
+### 2. Import `terraform_sa` Service Account
 
 ```bash
 terraform import google_service_account.terraform_sa \
@@ -33,7 +34,7 @@ terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com
 ### 3. Import IAM Members (Optional but Recommended)
 
 If you want Terraform to manage IAM bindings as well,
-import the following IAM members **in order**.
+import the following IAM members.
 
 The examples below use **placeholder values**.
 Replace them with values from your own Google Cloud project.
