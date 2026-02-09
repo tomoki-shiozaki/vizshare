@@ -76,7 +76,7 @@ you can use a helper script to import all required resources at once.
 This script is intended for the author's personal Google Cloud environment
 and is **not required for most contributors**.
 
-### Script location
+### Script Location
 
 - `infra/import_iam.sh`
 
@@ -89,7 +89,7 @@ PROJECT_ID=<your-google-cloud-project-id>
 PROJECT_NUMBER=<your-google-cloud-project-number>
 ```
 
-2. Make the Script Executable
+2. Make the script executable:
 
 ```bash
 chmod +x infra/import_iam.sh
@@ -102,5 +102,7 @@ cd infra
 ./import_iam.sh
 ```
 
-All existing service accounts and IAM bindings will now be imported
+All existing service accounts and IAM bindings will be imported
 and managed by Terraform.
+
+---
