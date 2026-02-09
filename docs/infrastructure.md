@@ -17,18 +17,21 @@ Specifically, the following service accounts are expected to already exist
 - `cloudbuild_runner`
 - `terraform_sa`
 
+The examples below use placeholder values.
+Replace `<PROJECT_ID>` with your own Google Cloud project ID.
+
 ### 1. Import `cloudbuild_runner` Service Account
 
 ```bash
 terraform import google_service_account.cloudbuild_runner \
-cloud-build-runner-tf@apps-portfolio-469805.iam.gserviceaccount.com
+cloud-build-runner-tf@<PROJECT_ID>.iam.gserviceaccount.com
 ```
 
 ### 2. Import `terraform_sa` Service Account
 
 ```bash
 terraform import google_service_account.terraform_sa \
-terraform-sa@apps-portfolio-469805.iam.gserviceaccount.com
+terraform-sa@<PROJECT_ID>.iam.gserviceaccount.com
 ```
 
 ### 3. Import IAM Members (Optional but Recommended)
