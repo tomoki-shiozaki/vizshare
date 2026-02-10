@@ -60,6 +60,15 @@ def parse_row_time(raw_time: str):
     return None
 
 
+def parse_value(value_str: str, *, row: int, metric: str) -> float | None:
+    if value_str == "":
+        return None
+    try:
+        return float(value_str)
+    except ValueError:
+        raise ValueError(f"Invalid value: {value_str} (row={row}, metric={metric})")
+
+
 def validate_schema(schema, headers):
     time_col = schema.get("time")
     metrics = schema.get("metrics")
@@ -116,12 +125,7 @@ def parse_dataset_csv(dataset: Dataset) -> int:
             for metric in metric_cols:
                 value_str = row.get(metric, "")
 
-                try:
-                    value = float(value_str) if value_str != "" else None
-                except ValueError:
-                    raise ValueError(
-                        f"Invalid value: {value_str} (row={row_idx}, metric={metric})"
-                    )
+                value = parse_value(value_str, row=row_idx, metric=metric)
 
                 buffer.append(
                     DataPoint(
