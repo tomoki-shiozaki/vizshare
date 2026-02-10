@@ -76,15 +76,3 @@ class DatasetDetailAPIView(generics.RetrieveAPIView):
         ログインユーザーのデータのみに制限
         """
         return self.queryset.filter(owner=self.request.user)
-
-
-class DatasetDataPointViewSet(ReadOnlyModelViewSet):
-    serializer_class = DataPointSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        dataset_id = self.kwargs["dataset_id"]
-
-        return DataPoint.objects.filter(dataset_id=dataset_id).order_by(
-            "time", "row_index"
-        )
