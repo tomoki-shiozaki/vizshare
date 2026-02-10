@@ -70,19 +70,37 @@ def parse_value(value_str: str, *, row: int, metric: str) -> float | None:
 
 
 def validate_schema(schema, headers):
+    """
+    schema で指定された列構成が、
+    実際の CSV ヘッダーと整合しているかを検証する。
+
+    - time 列は必須
+    - metric 列は最低1つ必須
+    - 指定された列名はすべて CSV ヘッダーに存在する必要がある
+    """
+
+    # 時系列軸として使う列名（必須）
     time_col = schema.get("time")
+
+    # 可視化対象となる数値列の一覧（必須・1列以上）
     metrics = schema.get("metrics")
 
+    # time が指定されていない場合はエラー
     if not time_col:
         raise ValueError("time 必須")
 
+    # metric が1つも指定されていない場合はエラー
     if not metrics:
         raise ValueError("metrics は最低1つ必要")
 
+    # time 列および entity 列（任意）が、
+    # CSV のヘッダーに存在するかを確認
     for col in [time_col, schema.get("entity")]:
         if col and col not in headers:
             raise ValueError(f"{col} が存在しません")
 
+    # 指定されたすべての metric 列が
+    # CSV のヘッダーに存在するかを確認
     for m in metrics:
         if m not in headers:
             raise ValueError(f"metric {m} が存在しません")
