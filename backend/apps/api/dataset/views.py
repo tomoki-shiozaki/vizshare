@@ -9,27 +9,27 @@ from apps.api.dataset.serializers import (
     DatasetSerializer,
 )
 from apps.dataset.models import DataPoint, Dataset
+from apps.dataset.services.csv_validation import validate_csv_against_schema
 from apps.dataset.services.enqueue import enqueue_parse_dataset
 
 
 class DatasetUploadAPIView(generics.CreateAPIView):
     """
     Dataset のアップロード専用 API
-    Next.js からファイルをアップロード可能
     """
 
     queryset = Dataset.objects.all()
     serializer_class = DatasetSerializer
-    permission_classes = [IsAuthenticated]  # ログイン必須
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        # Dataset を保存
         dataset = serializer.save(owner=self.request.user)
 
-        # アップロード完了次第、解析タスクをキューに投げる
-        enqueue_parse_dataset(dataset.id)
+        # CSV × schema の整合性チェック（即時）
+        validate_csv_against_schema(dataset.source_file, dataset.schema)
 
-    # DRFはデフォルトで multipart/form-data をサポートするので特別な設定は不要
+        # 問題なければ非同期解析へ
+        enqueue_parse_dataset(dataset.id)
 
 
 class DatasetListAPIView(generics.ListAPIView):

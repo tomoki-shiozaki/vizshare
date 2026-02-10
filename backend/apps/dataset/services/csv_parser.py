@@ -120,7 +120,7 @@ def parse_dataset_csv(dataset: Dataset) -> int:
             raise ValueError("CSV にヘッダーがありません")
 
         # schema から列名取得
-        schema = dataset.schema or {}
+        schema = dataset.schema
 
         validate_schema(schema, headers)
 

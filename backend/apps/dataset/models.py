@@ -22,7 +22,7 @@ class Dataset(models.Model):
     )
 
     # ユーザーが指定した列情報
-    schema = models.JSONField(blank=True, null=True)
+    schema = models.JSONField()
 
     # 解析結果やエラー情報
     parse_result = models.JSONField(blank=True, null=True)
