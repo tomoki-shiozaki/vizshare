@@ -21,7 +21,12 @@ class Dataset(models.Model):
         max_length=20, choices=Status.choices, default=Status.UPLOADED
     )
 
-    # ユーザーが指定した列情報
+    # ユーザーが指定した列情報（JSON）
+    # {
+    #     "time": "<time列名>",         # 必須
+    #     "entity": "<entity列名>",     # 任意（未指定の場合は "default" が使用される）
+    #     "metrics": ["<metric名>"]     # 1つ以上必須
+    # }
     schema = models.JSONField()
 
     # 解析結果やエラー情報
