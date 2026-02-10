@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -23,12 +24,29 @@ class DatasetUploadAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
+        """
+        保存前に軽量バリデーションを行い、
+        保存後に非同期で CSV パース処理を開始する
+        """
+
+        # 保存前に CSV × schema の整合性チェック
+        source_file = self.request.FILES.get("source_file")
+        schema = self.request.data.get("schema")  # type: ignore
+
+        if not source_file or not schema:
+            raise ValidationError("source_file と schema は必須です")
+
+        try:
+            # 軽量チェック（ヘッダーのみ）
+            validate_csv_against_schema(source_file, schema)
+        except ValidationError as e:
+            # バリデーション失敗なら保存せず即座に返す
+            raise e
+
+        # バリデーション OK → データベースに保存
         dataset = serializer.save(owner=self.request.user)
 
-        # CSV × schema の整合性チェック（即時）
-        validate_csv_against_schema(dataset.source_file, dataset.schema)
-
-        # 問題なければ非同期解析へ
+        # 保存後に非同期ジョブで CSV を解析
         enqueue_parse_dataset(dataset.id)
 
 
