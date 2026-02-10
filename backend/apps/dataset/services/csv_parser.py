@@ -115,7 +115,7 @@ def parse_dataset_csv(dataset: Dataset) -> int:
         text_file = io.TextIOWrapper(f, encoding="utf-8")
         reader = csv.DictReader(text_file)
 
-        headers = reader.fieldnames or []
+        headers = [h.strip() for h in reader.fieldnames or []]
         if not headers:
             raise ValueError("CSV にヘッダーがありません")
 
