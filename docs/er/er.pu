@@ -11,50 +11,47 @@ package "Authentication" {
   }
 }
 
-package "Climate Domain" {
-
-  entity "地域マスター" as Region {
+package "Dataset Domain" {
+  
+  entity "データセット" as Dataset {
     +id <<PK>>
+    owner <<FK>>
     name
-    code <<UNIQUE>>
+    source_file
+    status
+    schema
+    parse_result
+    created_at
   }
 
-  entity "指標グループ" as IndicatorGroup {
+  entity "データポイント" as DataPoint {
     +id <<PK>>
-    name <<UNIQUE>>
-    description
-  }
-
-  entity "指標マスター" as Indicator {
-    +id <<PK>>
-    group <<FK>>
-    name
-    unit
-    description
-    data_source_name
-    data_source_url
-    metadata_url
-    <<UNIQUE(group, name)>>
-  }
-
-  entity "気候データ" as ClimateData {
-    +id <<PK>>
-    region <<FK>>
-    indicator <<FK>>
-    year
+    dataset <<FK>>
+    raw_time
+    time
+    entity
+    metric
     value
-    updated_at
-    <<UNIQUE(region, indicator, year)>>
+    order_index
+    <<UNIQUE(dataset, entity, metric, raw_time)>>
   }
 
-  IndicatorGroup ||--o{ Indicator : group
-
-  Region ||--o{ ClimateData : region
-  Indicator ||--o{ ClimateData : indicator
+  User ||--o{ Dataset : owner
+  Dataset ||--o{ DataPoint : dataset
 }
 
 note bottom of User
-現在は認証専用エンティティ。
+CustomUser を使用。name フィールド追加。
+end note
+
+note bottom of Dataset
+解析状態管理: UPLOADED / PROCESSING / PARSED / FAILED
+schema や parse_result は JSONField
+end note
+
+note bottom of DataPoint
+CSV 元データと正規化後 datetime を管理
+メトリクス単位での値を保持
 end note
 
 @enduml
