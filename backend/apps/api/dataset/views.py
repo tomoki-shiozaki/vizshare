@@ -31,7 +31,7 @@ class DatasetUploadAPIView(generics.CreateAPIView):
 
         # 保存前に CSV × schema の整合性チェック
         source_file = self.request.FILES.get("source_file")
-        schema = self.request.data.get("schema")  # type: ignore
+        schema = serializer.validated_data.get("schema")  # ← validated_data を使う
 
         if not source_file or not schema:
             raise ValidationError("source_file と schema は必須です")

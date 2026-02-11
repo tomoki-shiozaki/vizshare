@@ -9,7 +9,6 @@ class DatasetSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True)
     status = serializers.CharField(read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
-    schema = serializers.JSONField()
 
     class Meta:
         model = Dataset
