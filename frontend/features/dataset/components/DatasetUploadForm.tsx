@@ -83,11 +83,12 @@ export function DatasetUploadForm() {
 
   const handleUpload = () => {
     if (!validate()) return;
+    if (!file) return; // 念のためのガード
 
     setMessage(null);
 
     uploadMutation.mutate({
-      file: file!,
+      file,
       schema: {
         time: timeColumn,
         entity: entityColumn || undefined,
