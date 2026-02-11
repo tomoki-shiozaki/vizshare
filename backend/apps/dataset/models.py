@@ -83,7 +83,7 @@ class DataPoint(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=["dataset", "entity", "metric", "time", "order_index"]),
+            models.Index(fields=["dataset", "entity", "time", "order_index"]),
         ]
         constraints = [
             models.UniqueConstraint(
