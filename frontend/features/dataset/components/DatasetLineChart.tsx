@@ -28,11 +28,13 @@ export const DatasetChart = ({ datasetId }: DatasetChartProps) => {
 
   // データ取得後に初期 entity をセット
   useEffect(() => {
-    if (data && !selectedEntity) {
-      const firstEntity = Object.keys(data)[0] || "";
-      setSelectedEntity(firstEntity);
+    if (data) {
+      const id = setTimeout(() => {
+        setSelectedEntity((prev) => prev || Object.keys(data)[0] || "");
+      }, 0);
+      return () => clearTimeout(id); // クリーンアップ
     }
-  }, [data, selectedEntity]);
+  }, [data]);
 
   if (isLoading) return <Loading />;
   if (isError) return <p>データ取得に失敗しました</p>;
