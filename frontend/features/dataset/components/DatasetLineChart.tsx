@@ -19,7 +19,7 @@ type DatasetChartProps = {
   datasetId: string | number;
 };
 
-export const DatasetChart = ({ datasetId }: DatasetChartProps) => {
+export const DatasetLineChart = ({ datasetId }: DatasetChartProps) => {
   // データ取得（カスタムフック）
   const { data, isLoading, isError } = useDatasetDataPoints(String(datasetId));
 
