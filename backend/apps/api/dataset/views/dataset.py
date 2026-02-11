@@ -1,15 +1,13 @@
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from apps.api.dataset.serializers import (
-    DataPointSerializer,
     DatasetDetailSerializer,
     DatasetListSerializer,
     DatasetSerializer,
 )
-from apps.dataset.models import DataPoint, Dataset
+from apps.dataset.models import Dataset
 from apps.dataset.services.csv_validation import validate_csv_against_schema
 from apps.dataset.services.enqueue import enqueue_parse_dataset
 
