@@ -74,10 +74,21 @@ def parse_dataset_csv(dataset: Dataset) -> int:
     wide CSV を long DataPoint へ変換
     """
     with dataset.source_file.open("rb") as f:
-        # バイナリファイルをテキストとして読み込み、CSVを辞書形式で扱えるようにする
-        text_file = io.TextIOWrapper(f, encoding="utf-8")
-        reader = csv.DictReader(text_file)
+        raw_bytes = f.read()
 
+        # UTF-8-SIG と Shift-JIS の順でデコードを試す
+        for encoding in ("utf-8-sig", "cp932"):
+            try:
+                text_file = io.StringIO(raw_bytes.decode(encoding))
+                break
+            except UnicodeDecodeError:
+                continue
+        else:
+            raise ValueError(
+                "CSVの文字コードを判定できません。UTF-8 または Shift-JIS で保存してください"
+            )
+
+        reader = csv.DictReader(text_file)
         headers = [h.strip() for h in reader.fieldnames or []]
         if not headers:
             raise ValueError("CSV にヘッダーがありません")
