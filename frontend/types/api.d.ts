@@ -44,38 +44,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/datasets/{dataset_id}/data-points/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["datasets_data_points_list"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/datasets/{dataset_id}/data-points/{id}/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["datasets_data_points_retrieve"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/datasets/{id}/": {
         parameters: {
             query?: never;
@@ -119,10 +87,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * @description Dataset のアップロード専用 API
-         *     Next.js からファイルをアップロード可能
-         */
+        /** @description Dataset のアップロード専用 API */
         post: operations["datasets_upload_create"];
         delete?: never;
         options?: never;
@@ -435,14 +400,6 @@ export interface components {
                 };
             };
         };
-        DataPoint: {
-            /** Format: date-time */
-            time?: string | null;
-            raw_time?: string;
-            /** Format: double */
-            value: number;
-            series?: string;
-        };
         Dataset: {
             readonly id: number;
             name: string;
@@ -450,7 +407,7 @@ export interface components {
             source_file: string;
             readonly owner: number;
             readonly status: string;
-            schema?: unknown;
+            schema: unknown;
             /** Format: date-time */
             readonly created_at: string;
         };
@@ -485,21 +442,6 @@ export interface components {
             /** Format: email */
             email?: string;
             password: string;
-        };
-        PaginatedDataPointList: {
-            /** @example 123 */
-            count: number;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?offset=400&limit=100
-             */
-            next?: string | null;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?offset=200&limit=100
-             */
-            previous?: string | null;
-            results: components["schemas"]["DataPoint"][];
         };
         PaginatedDatasetListList: {
             /** @example 123 */
@@ -658,54 +600,6 @@ export interface operations {
                             global_average?: number | null;
                         }[];
                     };
-                };
-            };
-        };
-    };
-    datasets_data_points_list: {
-        parameters: {
-            query?: {
-                /** @description Number of results to return per page. */
-                limit?: number;
-                /** @description The initial index from which to return the results. */
-                offset?: number;
-            };
-            header?: never;
-            path: {
-                dataset_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedDataPointList"];
-                };
-            };
-        };
-    };
-    datasets_data_points_retrieve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                dataset_id: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DataPoint"];
                 };
             };
         };

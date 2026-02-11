@@ -1,77 +1,109 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import { uploadDataset } from "@/features/dataset/api/uploadDataset";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+type Message = { type: "success" | "error"; text: string } | null;
+
 export function DatasetUploadForm() {
   const [file, setFile] = useState<File | null>(null);
-  const [timeColumn, setTimeColumn] = useState("");
-  const [valueColumn, setValueColumn] = useState("");
-  const [seriesColumn, setSeriesColumn] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
-    }
-  };
+  const [timeColumn, setTimeColumn] = useState("");
+  const [entityColumn, setEntityColumn] = useState("");
+  const [metricsInput, setMetricsInput] = useState("");
+
+  const [message, setMessage] = useState<Message>(null);
 
   const queryClient = useQueryClient();
 
   const uploadMutation = useMutation({
     mutationFn: uploadDataset,
-
     onSuccess: (data) => {
-      setMessage(`アップロード成功: ID ${data.id}, 名前 ${data.name}`);
+      setMessage({
+        type: "success",
+        text: `アップロード成功: ID ${data.id}, 名前 ${data.name}`,
+      });
 
-      // フォームリセット
+      // reset
       setFile(null);
       setTimeColumn("");
-      setValueColumn("");
-      setSeriesColumn("");
+      setEntityColumn("");
+      setMetricsInput("");
 
       // ⭐ CSV一覧を即更新
       queryClient.invalidateQueries({ queryKey: ["datasets"] });
     },
-
     onError: (error) => {
-      if (error instanceof Error) {
-        setMessage(`アップロード失敗: ${error.message}`);
-      } else {
-        setMessage("アップロード失敗: 不明なエラー");
-      }
+      setMessage({
+        type: "error",
+        text:
+          error instanceof Error
+            ? `アップロード失敗: ${error.message}`
+            : "アップロード失敗: 不明なエラー",
+      });
     },
   });
 
-  const handleUpload = () => {
-    if (!file) {
-      setMessage("ファイルを選択してください");
-      return;
-    }
-    if (!timeColumn || !valueColumn) {
-      setMessage("Time列とValue列を入力してください");
-      return;
-    }
+  const uploading = uploadMutation.isPending;
 
-    setMessage(null);
-    uploadMutation.mutate({
-      file,
-      timeColumn,
-      valueColumn,
-      seriesColumn: seriesColumn || undefined,
-    });
+  const parseMetrics = (): string[] =>
+    metricsInput
+      .split(",")
+      .map((m) => m.trim())
+      .filter(Boolean);
+
+  const isValid =
+    !!file && timeColumn.trim() !== "" && parseMetrics().length > 0;
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) setFile(selected);
   };
 
-  const uploading = uploadMutation.isPending;
+  const validate = (): boolean => {
+    if (!file) {
+      setMessage({ type: "error", text: "ファイルを選択してください" });
+      return false;
+    }
+    if (!timeColumn.trim()) {
+      setMessage({ type: "error", text: "Time列は必須です" });
+      return false;
+    }
+    const metrics = parseMetrics();
+    if (metrics.length === 0) {
+      setMessage({
+        type: "error",
+        text: "Metric列は1つ以上指定してください",
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleUpload = () => {
+    if (!validate()) return;
+    if (!file) return; // 念のためのガード
+
+    setMessage(null);
+
+    uploadMutation.mutate({
+      file,
+      schema: {
+        time: timeColumn,
+        entity: entityColumn || undefined,
+        metrics: parseMetrics(),
+      },
+    });
+  };
 
   return (
     <Card className="max-w-xl">
       <CardContent className="space-y-6 pt-6">
-        {/* CSV形式の説明 */}
+        {/* CSV説明 */}
         <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
           <p className="font-medium mb-1">CSVファイルの形式について</p>
           <ul className="list-disc pl-5 space-y-1">
@@ -79,23 +111,21 @@ export function DatasetUploadForm() {
               CSVファイルの<strong>1行目はヘッダ行</strong>
               である必要があります。
             </li>
-            <li>
-              <strong>Time列</strong>・<strong>Value列</strong>には、
-              ヘッダ行に記載されている列名を入力してください。
-            </li>
-            <li>
-              指定した列名がCSVに存在しない場合、アップロードは失敗します。
-            </li>
+            <li>列名はヘッダに記載された名前を入力してください</li>
+            <li>Metric列は複数指定できます</li>
           </ul>
           <p className="mt-2">
-            例: <code className="rounded bg-white px-1">time,value,series</code>
+            例:{" "}
+            <code className="rounded bg-white px-1">
+              time,entity,sales,profit
+            </code>
           </p>
         </div>
+
         {/* ファイル選択 */}
         <div className="space-y-2">
           <Label htmlFor="dataset-file">CSVファイル</Label>
           <input
-            key={file?.name ?? "empty"}
             id="dataset-file"
             type="file"
             accept=".csv"
@@ -117,56 +147,63 @@ export function DatasetUploadForm() {
           )}
         </div>
 
-        {/* schema入力フォーム */}
+        {/* schema */}
         <div className="space-y-2">
-          <Label htmlFor="time-column">Time列</Label>
+          <Label htmlFor="time-column">Time列（必須）</Label>
           <input
             id="time-column"
             type="text"
             value={timeColumn}
             onChange={(e) => setTimeColumn(e.target.value)}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            placeholder="例: timestamp"
+            placeholder="例: date"
             disabled={uploading}
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
 
-          <Label htmlFor="value-column">Value列</Label>
-          <input
-            id="value-column"
-            type="text"
-            value={valueColumn}
-            onChange={(e) => setValueColumn(e.target.value)}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            placeholder="例: value"
-            disabled={uploading}
-          />
-
-          <Label htmlFor="series-column">
-            Series列 <span className="text-muted-foreground">(任意)</span>
+          <Label htmlFor="entity-column">
+            Entity列 <span className="text-muted-foreground">(任意)</span>
           </Label>
           <input
-            id="series-column"
+            id="entity-column"
             type="text"
-            value={seriesColumn}
-            onChange={(e) => setSeriesColumn(e.target.value)}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            placeholder="例: Country.Code"
+            value={entityColumn}
+            onChange={(e) => setEntityColumn(e.target.value)}
+            placeholder="例: country"
             disabled={uploading}
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          />
+
+          <Label htmlFor="metrics-column">
+            Metric列（複数可・カンマ区切り）
+          </Label>
+          <input
+            id="metrics-column"
+            type="text"
+            value={metricsInput}
+            onChange={(e) => setMetricsInput(e.target.value)}
+            placeholder="例: sales, profit, cost"
+            disabled={uploading}
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
         </div>
 
-        {/* アップロードボタン */}
+        {/* ボタン */}
         <div className="flex justify-end">
-          <Button
-            onClick={handleUpload}
-            disabled={uploading || !file || !timeColumn || !valueColumn}
-          >
+          <Button onClick={handleUpload} disabled={uploading || !isValid}>
             {uploading ? "アップロード中..." : "アップロード"}
           </Button>
         </div>
 
         {/* メッセージ */}
-        {message && <p className="text-sm text-muted-foreground">{message}</p>}
+        {message && (
+          <p
+            className={`text-sm ${
+              message.type === "success" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {message.text}
+          </p>
+        )}
       </CardContent>
     </Card>
   );

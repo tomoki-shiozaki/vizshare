@@ -60,23 +60,13 @@ def parse_row_time(raw_time: str):
     return None
 
 
-def validate_schema(schema, headers):
-    time_col = schema.get("time")
-    metrics = schema.get("metrics")
-
-    if not time_col:
-        raise ValueError("time 必須")
-
-    if not metrics:
-        raise ValueError("metrics は最低1つ必要")
-
-    for col in [time_col, schema.get("entity")]:
-        if col and col not in headers:
-            raise ValueError(f"{col} が存在しません")
-
-    for m in metrics:
-        if m not in headers:
-            raise ValueError(f"metric {m} が存在しません")
+def parse_value(value_str: str, *, row: int, metric: str) -> float | None:
+    if value_str == "":
+        return None
+    try:
+        return float(value_str)
+    except ValueError:
+        raise ValueError(f"Invalid value: {value_str} (row={row}, metric={metric})")
 
 
 def parse_dataset_csv(dataset: Dataset) -> int:
@@ -88,15 +78,12 @@ def parse_dataset_csv(dataset: Dataset) -> int:
         text_file = io.TextIOWrapper(f, encoding="utf-8")
         reader = csv.DictReader(text_file)
 
-        headers = reader.fieldnames or []
+        headers = [h.strip() for h in reader.fieldnames or []]
         if not headers:
             raise ValueError("CSV にヘッダーがありません")
 
         # schema から列名取得
-        schema = dataset.schema or {}
-
-        validate_schema(schema, headers)
-
+        schema = dataset.schema
         time_col = schema.get("time")
         entity_col = schema.get("entity")
         metric_cols = schema["metrics"]
@@ -116,12 +103,7 @@ def parse_dataset_csv(dataset: Dataset) -> int:
             for metric in metric_cols:
                 value_str = row.get(metric, "")
 
-                try:
-                    value = float(value_str) if value_str != "" else None
-                except ValueError:
-                    raise ValueError(
-                        f"Invalid value: {value_str} (row={row_idx}, metric={metric})"
-                    )
+                value = parse_value(value_str, row=row_idx, metric=metric)
 
                 buffer.append(
                     DataPoint(
