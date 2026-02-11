@@ -11,41 +11,19 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Loading, SelectBox } from "@/components/common";
-
-// 型定義（DatasetData API から返るデータ）
-export type TimeSeriesPoint = {
-  time: string;
-  [metric: string]: number | string | undefined;
-};
-export type TimeSeriesDataByEntity = Record<string, TimeSeriesPoint[]>;
-
-// Fetch 関数（Dataset ID を受け取る）
-const fetchDatasetData = async (datasetId: number) => {
-  const res = await fetch(`/api/dataset/${datasetId}/data/`);
-  if (!res.ok) throw new Error("データ取得失敗");
-  return (await res.json()) as TimeSeriesDataByEntity;
-};
-
-// Entity のラベル（必要なら日本語に変換）
-const entityLabels: Record<string, string> = {
-  default: "デフォルト",
-  Japan: "日本",
-  World: "世界",
-};
+import { useDatasetDataPoints } from "@/features/dataset/hooks/useDatasetDataPoints";
+import type { TimeSeriesPoint } from "@/features/dataset/types/dataset";
 
 type DatasetChartProps = {
-  datasetId: number;
+  datasetId: string | number;
 };
 
 export const DatasetChart = ({ datasetId }: DatasetChartProps) => {
-  const { data, isLoading, isError } = useQuery<TimeSeriesDataByEntity>({
-    queryKey: ["datasetData", datasetId],
-    queryFn: () => fetchDatasetData(datasetId),
-    staleTime: 1000 * 60 * 60, // 1時間
-  });
+  // データ取得（カスタムフック）
+  const { data, isLoading, isError } = useDatasetDataPoints(String(datasetId));
 
+  // 選択中の entity
   const [selectedEntity, setSelectedEntity] = useState<string>("");
 
   // データ取得後に初期 entity をセット
@@ -62,20 +40,24 @@ export const DatasetChart = ({ datasetId }: DatasetChartProps) => {
 
   const entities = Object.keys(data);
 
-  const chartData = selectedEntity ? (data[selectedEntity] ?? []) : [];
+  // 選択中の entity のデータ
+  const chartData: TimeSeriesPoint[] = selectedEntity
+    ? (data[selectedEntity] ?? [])
+    : [];
 
   // SelectBox 用オプション
   const options = entities.map((e) => ({
     value: e,
-    label: entityLabels[e] || e,
+    label: e,
   }));
 
-  // metric を自動検出（最初のデータポイントから）
+  // metric を自動検出（time 以外を抽出）
   const metrics =
     chartData.length > 0
       ? Object.keys(chartData[0]).filter((k) => k !== "time")
       : [];
 
+  // グラフの色パレット
   const colors = ["#1890ff", "#faad14", "#ff4d4f", "#52c41a", "#722ed1"];
 
   return (
