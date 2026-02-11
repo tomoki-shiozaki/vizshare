@@ -146,13 +146,15 @@ export function DatasetUploadForm() {
 
         {/* schema */}
         <div className="space-y-2">
-          <Label>Time列（必須）</Label>
+          <Label htmlFor="time-column">Time列（必須）</Label>
           <input
+            id="time-column"
+            type="text"
             value={timeColumn}
             onChange={(e) => setTimeColumn(e.target.value)}
             placeholder="例: date"
             disabled={uploading}
-            className="block w-full rounded-md border px-3 py-2 text-sm"
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
 
           <Label>
