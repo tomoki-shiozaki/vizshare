@@ -104,7 +104,10 @@ export function DatasetUploadForm() {
         <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
           <p className="font-medium mb-1">CSVファイルの形式について</p>
           <ul className="list-disc pl-5 space-y-1">
-            <li>1行目はヘッダ行である必要があります</li>
+            <li>
+              CSVファイルの<strong>1行目はヘッダ行</strong>
+              である必要があります。
+            </li>
             <li>列名はヘッダに記載された名前を入力してください</li>
             <li>Metric列は複数指定できます</li>
           </ul>
@@ -116,16 +119,24 @@ export function DatasetUploadForm() {
           </p>
         </div>
 
-        {/* ファイル */}
+        {/* ファイル選択 */}
         <div className="space-y-2">
-          <Label>CSVファイル</Label>
+          <Label htmlFor="dataset-file">CSVファイル</Label>
           <input
             key={file?.name ?? "empty"}
+            id="dataset-file"
             type="file"
             accept=".csv"
             onChange={handleFileChange}
+            className="
+                block w-full text-sm text-muted-foreground
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100
+                disabled:cursor-not-allowed disabled:opacity-60
+              "
             disabled={uploading}
-            className="block w-full text-sm"
           />
           {file && (
             <p className="text-sm text-muted-foreground">
