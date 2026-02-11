@@ -157,24 +157,30 @@ export function DatasetUploadForm() {
             className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
 
-          <Label>
+          <Label htmlFor="entity-column">
             Entity列 <span className="text-muted-foreground">(任意)</span>
           </Label>
           <input
+            id="entity-column"
+            type="text"
             value={entityColumn}
             onChange={(e) => setEntityColumn(e.target.value)}
             placeholder="例: country"
             disabled={uploading}
-            className="block w-full rounded-md border px-3 py-2 text-sm"
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
 
-          <Label>Metric列（複数可・カンマ区切り）</Label>
+          <Label htmlFor="metrics-column">
+            Metric列（複数可・カンマ区切り）
+          </Label>
           <input
+            id="metrics-column"
+            type="text"
             value={metricsInput}
             onChange={(e) => setMetricsInput(e.target.value)}
             placeholder="例: sales, profit, cost"
             disabled={uploading}
-            className="block w-full rounded-md border px-3 py-2 text-sm"
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
         </div>
 
