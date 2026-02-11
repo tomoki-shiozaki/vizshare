@@ -19,3 +19,9 @@ export type DatasetDetailResponse =
   paths["/api/v1/datasets/{id}/"]["get"]["responses"][200]["content"]["application/json"];
 
 export type DatasetStatus = components["schemas"]["StatusEnum"];
+
+export type TimeSeriesPoint = {
+  time: string;
+  [metric: string]: number | string; // time 以外は任意の metric
+};
+export type DatasetDataPointsResponse = Record<string, TimeSeriesPoint[]>;
