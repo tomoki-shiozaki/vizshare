@@ -60,7 +60,9 @@ export const DatasetLineChart = ({ datasetId }: DatasetChartProps) => {
       : [];
 
   // グラフの色パレット
-  const colors = ["#1890ff", "#faad14", "#ff4d4f", "#52c41a", "#722ed1"];
+  const colors = metrics.map(
+    (_, idx) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`,
+  );
 
   return (
     <div>
@@ -86,7 +88,7 @@ export const DatasetLineChart = ({ datasetId }: DatasetChartProps) => {
             <Line
               key={metric}
               dataKey={metric}
-              stroke={colors[idx % colors.length]}
+              stroke={colors[idx]}
               type="monotone"
             />
           ))}
