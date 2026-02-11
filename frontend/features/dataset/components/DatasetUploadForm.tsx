@@ -50,23 +50,26 @@ export function DatasetUploadForm() {
 
   const uploading = uploadMutation.isPending;
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (selected) setFile(selected);
-  };
-
   const parseMetrics = (): string[] =>
     metricsInput
       .split(",")
       .map((m) => m.trim())
       .filter(Boolean);
 
+  const isValid =
+    !!file && timeColumn.trim() !== "" && parseMetrics().length > 0;
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) setFile(selected);
+  };
+
   const validate = (): boolean => {
     if (!file) {
       setMessage({ type: "error", text: "ファイルを選択してください" });
       return false;
     }
-    if (!timeColumn) {
+    if (!timeColumn.trim()) {
       setMessage({ type: "error", text: "Time列は必須です" });
       return false;
     }
@@ -186,7 +189,7 @@ export function DatasetUploadForm() {
 
         {/* ボタン */}
         <div className="flex justify-end">
-          <Button onClick={handleUpload} disabled={uploading}>
+          <Button onClick={handleUpload} disabled={uploading || !isValid}>
             {uploading ? "アップロード中..." : "アップロード"}
           </Button>
         </div>
