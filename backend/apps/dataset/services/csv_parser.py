@@ -76,8 +76,12 @@ def parse_dataset_csv(dataset: Dataset) -> int:
     with dataset.source_file.open("rb") as f:
         raw_bytes = f.read()
 
-        # UTF-8-SIG と Shift-JIS の順でデコードを試す
-        for encoding in ("utf-8-sig", "cp932"):
+        # CSVの文字コードを自動判定
+        # 優先順:
+        # 1. UTF-8 with BOM (ExcelのUTF-8保存対策)
+        # 2. UTF-8 (標準的なCSV)
+        # 3. CP932 / Shift-JIS (日本のExcel保存対策)
+        for encoding in ("utf-8-sig", "utf-8", "cp932"):
             try:
                 text_file = io.StringIO(raw_bytes.decode(encoding))
                 break
@@ -85,7 +89,7 @@ def parse_dataset_csv(dataset: Dataset) -> int:
                 continue
         else:
             raise ValueError(
-                "CSVの文字コードを判定できません。UTF-8 または Shift-JIS で保存してください"
+                "CSVの文字コードを判定できません。UTF-8（BOM付き含む）または Shift-JIS 形式で保存してください。"
             )
 
         reader = csv.DictReader(text_file)
