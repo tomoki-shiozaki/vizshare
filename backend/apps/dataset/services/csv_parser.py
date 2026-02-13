@@ -60,9 +60,14 @@ def parse_row_time(raw_time: str):
     return None
 
 
-def parse_value(value_str: str, *, row: int, metric: str) -> float | None:
-    if value_str == "":
+def parse_value(value_str: str | None, *, row: int, metric: str) -> float | None:
+    if value_str is None:
         return None
+
+    value_str = value_str.strip()
+    if not value_str:
+        return None
+
     try:
         return float(value_str)
     except ValueError:
@@ -93,7 +98,7 @@ def parse_dataset_csv(dataset: Dataset) -> int:
             )
 
         reader = csv.DictReader(text_file)
-        headers = [h.strip() for h in reader.fieldnames or []]
+        headers = [h.strip() for h in reader.fieldnames or [] if h]
         if not headers:
             raise ValueError("CSV にヘッダーがありません")
 
