@@ -57,7 +57,7 @@ export const TemperatureChart = () => {
   const regions = Object.keys(data);
   if (regions.length === 0) return <p>地域データがありません</p>;
 
-  const chartData = selectedRegion ? data[selectedRegion] ?? [] : [];
+  const chartData = selectedRegion ? (data[selectedRegion] ?? []) : [];
 
   // SelectBox 用のオプション配列を作成
 

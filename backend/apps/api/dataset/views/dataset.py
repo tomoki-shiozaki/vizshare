@@ -1,15 +1,13 @@
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from apps.api.dataset.serializers import (
-    DataPointSerializer,
     DatasetDetailSerializer,
     DatasetListSerializer,
     DatasetSerializer,
 )
-from apps.dataset.models import DataPoint, Dataset
+from apps.dataset.models import Dataset
 from apps.dataset.services.csv_validation import validate_csv_against_schema
 from apps.dataset.services.enqueue import enqueue_parse_dataset
 
@@ -30,18 +28,13 @@ class DatasetUploadAPIView(generics.CreateAPIView):
         """
 
         # 保存前に CSV × schema の整合性チェック
-        source_file = self.request.FILES.get("source_file")
+        source_file = serializer.validated_data.get("source_file")
         schema = serializer.validated_data.get("schema")  # ← validated_data を使う
 
         if not source_file or not schema:
             raise ValidationError("source_file と schema は必須です")
 
-        try:
-            # 軽量チェック（ヘッダーのみ）
-            validate_csv_against_schema(source_file, schema)
-        except ValidationError as e:
-            # バリデーション失敗なら保存せず即座に返す
-            raise e
+        validate_csv_against_schema(source_file, schema)
 
         # バリデーション OK → データベースに保存
         dataset = serializer.save(owner=self.request.user)

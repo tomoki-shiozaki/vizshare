@@ -54,7 +54,10 @@ class Dataset(models.Model):
 
     def mark_failed(self, error: Exception):
         self.status = self.Status.FAILED
-        self.parse_result = {"error": str(error)}
+        self.parse_result = {
+            "error_type": error.__class__.__name__,
+            "message": str(error),
+        }
         self.save(update_fields=["status", "parse_result"])
 
 
@@ -66,7 +69,7 @@ class DataPoint(models.Model):
     )
 
     # CSVに書かれていた元の time 文字列（Year 等）
-    raw_time = models.CharField(max_length=50)
+    raw_time = models.CharField(max_length=255)
 
     # パース後の datetime（Year だけなら Jan 1 に正規化など）
     time = models.DateTimeField(blank=True, null=True)
@@ -83,7 +86,7 @@ class DataPoint(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=["dataset", "entity", "metric", "time", "order_index"]),
+            models.Index(fields=["dataset", "entity", "time", "order_index"]),
         ]
         constraints = [
             models.UniqueConstraint(

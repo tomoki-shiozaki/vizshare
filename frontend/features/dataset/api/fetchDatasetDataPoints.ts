@@ -1,10 +1,9 @@
 import { apiClient } from "@/features/auth/api/apiClient";
-import type { DataPointsResponse } from "@/features/dataset/types/dataset";
+import type { DatasetDataPointsResponse } from "@/features/dataset/types/dataset";
 
 export const fetchDatasetDataPoints = async (
   datasetId: string,
-): Promise<DataPointsResponse> => {
-  const { data } = await apiClient.get(`/datasets/${datasetId}/data-points/`);
-
+): Promise<DatasetDataPointsResponse> => {
+  const { data } = await apiClient.get(`/datasets/${datasetId}/data/`);
   return data;
 };

@@ -60,9 +60,14 @@ def parse_row_time(raw_time: str):
     return None
 
 
-def parse_value(value_str: str, *, row: int, metric: str) -> float | None:
-    if value_str == "":
+def parse_value(value_str: str | None, *, row: int, metric: str) -> float | None:
+    if value_str is None:
         return None
+
+    value_str = value_str.strip()
+    if not value_str:
+        return None
+
     try:
         return float(value_str)
     except ValueError:
@@ -74,11 +79,26 @@ def parse_dataset_csv(dataset: Dataset) -> int:
     wide CSV を long DataPoint へ変換
     """
     with dataset.source_file.open("rb") as f:
-        # バイナリファイルをテキストとして読み込み、CSVを辞書形式で扱えるようにする
-        text_file = io.TextIOWrapper(f, encoding="utf-8")
-        reader = csv.DictReader(text_file)
+        raw_bytes = f.read()
 
-        headers = [h.strip() for h in reader.fieldnames or []]
+        # CSVの文字コードを自動判定
+        # 優先順:
+        # 1. UTF-8 with BOM (ExcelのUTF-8保存対策)
+        # 2. UTF-8 (標準的なCSV)
+        # 3. CP932 / Shift-JIS (日本のExcel保存対策)
+        for encoding in ("utf-8-sig", "utf-8", "cp932"):
+            try:
+                text_file = io.StringIO(raw_bytes.decode(encoding))
+                break
+            except UnicodeDecodeError:
+                continue
+        else:
+            raise ValueError(
+                "CSVの文字コードを判定できません。UTF-8（BOM付き含む）または Shift-JIS 形式で保存してください。"
+            )
+
+        reader = csv.DictReader(text_file)
+        headers = [h.strip() for h in reader.fieldnames or [] if h]
         if not headers:
             raise ValueError("CSV にヘッダーがありません")
 

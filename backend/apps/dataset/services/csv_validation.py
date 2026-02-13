@@ -1,4 +1,5 @@
 import csv
+import io
 
 from rest_framework.exceptions import ValidationError
 
@@ -6,16 +7,25 @@ from rest_framework.exceptions import ValidationError
 def read_csv_header(source_file) -> list[str]:
     """
     CSV全文を読まず、ヘッダ行のみを安全に取得する
+    UTF-8-SIG と Shift-JIS に対応
     """
-    try:
-        source_file.seek(0)
-        raw_line = source_file.readline()
-        header_line = raw_line.decode("utf-8-sig")
-    except UnicodeDecodeError:
-        raise ValidationError("CSVの文字コードはUTF-8である必要があります")
-    finally:
-        # 後続処理のため、必ず先頭に戻す
-        source_file.seek(0)
+    source_file.seek(0)
+    raw_line = source_file.readline()
+
+    # 文字コードを順に試す（本体CSVパースと同じ順序）
+    for encoding in ("utf-8-sig", "utf-8", "cp932"):
+        try:
+            header_line = raw_line.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        raise ValidationError(
+            "CSVの文字コードを自動判定できません。UTF-8（BOM付き含む）または Shift-JIS で保存してください"
+        )
+
+    # 後続処理のため、必ず先頭に戻す
+    source_file.seek(0)
 
     if not header_line.strip():
         raise ValidationError("CSVにヘッダ行が存在しません")
@@ -26,7 +36,7 @@ def read_csv_header(source_file) -> list[str]:
     except Exception:
         raise ValidationError("CSVのヘッダ行を正しく解析できません")
 
-    # 前後の空白を除去（人間の入力ゆらぎ対策）
+    # 前後の空白を除去
     return [h.strip() for h in header]
 
 

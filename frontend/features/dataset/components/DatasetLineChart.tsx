@@ -7,50 +7,89 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useMemo } from "react";
-import { useDatasetDataPoints } from "../hooks/useDatasetDataPoints";
+import { useEffect, useState } from "react";
+import { Loading, SelectBox } from "@/components/common";
+import { useDatasetDataPoints } from "@/features/dataset/hooks/useDatasetDataPoints";
+import type { TimeSeriesPoint } from "@/features/dataset/types/dataset";
 
-type Props = {
-  datasetId: string;
+type DatasetChartProps = {
+  datasetId: string | number;
 };
 
-export const DatasetLineChart = ({ datasetId }: Props) => {
-  const { data: points, isLoading, error } = useDatasetDataPoints(datasetId);
+export const DatasetLineChart = ({ datasetId }: DatasetChartProps) => {
+  // データ取得（カスタムフック）
+  const { data, isLoading, isError } = useDatasetDataPoints(String(datasetId));
 
-  const seriesList = useMemo(() => {
-    if (!points) return [];
-    return Array.from(new Set(points.map((p) => p.series ?? "value")));
-  }, [points]);
+  // 選択中の entity
+  const [selectedEntity, setSelectedEntity] = useState<string>("");
 
-  if (isLoading) return <p>Loading chart...</p>;
-  if (error) return <p>Failed to load chart</p>;
-  if (!points?.length) return <p>No data</p>;
+  // データ取得後に初期 entity をセット
+  useEffect(() => {
+    if (data) {
+      const id = setTimeout(() => {
+        setSelectedEntity((prev) => prev || Object.keys(data)[0] || "");
+      }, 0);
+      return () => clearTimeout(id); // クリーンアップ
+    }
+  }, [data]);
+
+  if (isLoading) return <Loading />;
+  if (isError) return <p>データ取得に失敗しました</p>;
+  if (!data || Object.keys(data).length === 0) return <p>データがありません</p>;
+
+  const entities = Object.keys(data);
+
+  // 選択中の entity のデータ
+  const chartData: TimeSeriesPoint[] = selectedEntity
+    ? (data[selectedEntity] ?? [])
+    : [];
+
+  // SelectBox 用オプション
+  const options = entities.map((e) => ({
+    value: e,
+    label: e,
+  }));
+
+  // metric を自動検出（time 以外を抽出）
+  const metrics =
+    chartData.length > 0
+      ? Object.keys(chartData[0]).filter((k) => k !== "time")
+      : [];
+
+  // グラフの色パレット
+  const colors = metrics.map(
+    (_, idx) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`,
+  );
 
   return (
-    <div className="w-full h-[400px]">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart>
+    <div>
+      <SelectBox
+        id="entity-select"
+        label="Entity 選択"
+        options={options}
+        value={selectedEntity}
+        onChange={setSelectedEntity}
+      />
+
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 10, bottom: 0 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
-
-          <XAxis
-            dataKey="time"
-            tickFormatter={(v) => new Date(v).toLocaleDateString()}
-          />
-
+          <XAxis dataKey="time" />
           <YAxis />
-
-          <Tooltip labelFormatter={(v) => new Date(v).toLocaleString()} />
-
-          {seriesList.map((s) => (
+          <Tooltip />
+          <Legend />
+          {metrics.map((metric, idx) => (
             <Line
-              key={s}
+              key={metric}
+              dataKey={metric}
+              stroke={colors[idx]}
               type="monotone"
-              data={points.filter((p) => (p.series ?? "value") === s)}
-              dataKey="value"
-              dot={false}
-              name={s}
             />
           ))}
         </LineChart>
