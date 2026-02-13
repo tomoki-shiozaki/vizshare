@@ -66,7 +66,7 @@ class DataPoint(models.Model):
     )
 
     # CSVに書かれていた元の time 文字列（Year 等）
-    raw_time = models.CharField(max_length=50)
+    raw_time = models.CharField(max_length=255)
 
     # パース後の datetime（Year だけなら Jan 1 に正規化など）
     time = models.DateTimeField(blank=True, null=True)
