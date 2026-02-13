@@ -12,8 +12,8 @@ def read_csv_header(source_file) -> list[str]:
     source_file.seek(0)
     raw_line = source_file.readline()
 
-    # 文字コードを順に試す（UTF-8-SIG → Shift-JIS）
-    for encoding in ("utf-8-sig", "cp932"):
+    # 文字コードを順に試す（本体CSVパースと同じ順序）
+    for encoding in ("utf-8-sig", "utf-8", "cp932"):
         try:
             header_line = raw_line.decode(encoding)
             break
@@ -21,7 +21,7 @@ def read_csv_header(source_file) -> list[str]:
             continue
     else:
         raise ValidationError(
-            "CSVの文字コードを自動判定できません。UTF-8 または Shift-JIS で保存してください"
+            "CSVの文字コードを自動判定できません。UTF-8（BOM付き含む）または Shift-JIS で保存してください"
         )
 
     # 後続処理のため、必ず先頭に戻す
