@@ -54,7 +54,10 @@ class Dataset(models.Model):
 
     def mark_failed(self, error: Exception):
         self.status = self.Status.FAILED
-        self.parse_result = {"error": str(error)}
+        self.parse_result = {
+            "error_type": error.__class__.__name__,
+            "message": str(error),
+        }
         self.save(update_fields=["status", "parse_result"])
 
 

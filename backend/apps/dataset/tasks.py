@@ -1,4 +1,4 @@
-from celery import shared_task  # type: ignore
+from celery import shared_task
 
 from apps.dataset.models import Dataset
 from apps.dataset.services.csv_parser import parse_dataset_csv
