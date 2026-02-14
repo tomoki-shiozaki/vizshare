@@ -86,6 +86,8 @@ INSTALLED_APPS = [
     "apps.accounts.apps.AccountsConfig",
     "apps.api.apps.ApiConfig",
     "apps.climate_data.apps.ClimateDataConfig",
+    "apps.dataset.apps.DatasetConfig",
+    "apps.core.apps.CoreConfig",
 ]
 
 # ================================
@@ -105,6 +107,7 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
+    "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.StandardPagination",
 }
 
 # 開発環境のみ Browsable API と SessionAuth を追加
@@ -269,18 +272,23 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# ================================
+# Media files (uploads)
+# ================================
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# ================================
+# Celery (development only)
+# ================================
+if IS_DEVELOPMENT:
+    CELERY_TIMEZONE = TIME_ZONE
+    CELERY_ENABLE_UTC = True
+
+    # 開発環境では worker なしで即時実行
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
 
 # ================================
 # App-specific settings
 # ================================
-
-# ================================
-# 警告無視設定（古い allauth 設定による UserWarning を無視）
-# ================================
-import warnings
-
-warnings.filterwarnings(
-    "ignore",
-    category=UserWarning,
-    message="app_settings.*is deprecated.*",
-)

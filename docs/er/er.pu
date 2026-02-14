@@ -1,52 +1,57 @@
 @startuml er
 skinparam defaultFontName "Noto Sans CJK JP"
 
-entity "ユーザーマスター" as User {
-  +ユーザーID <<PK>>
-  +ログイン名 <<UNIQUE>>
-  +メールアドレス <<UNIQUE>>
-  +パスワード
-  +登録日
+package "Authentication" {
+  entity "ユーザー" as User {
+    +id <<PK>>
+    username <<UNIQUE>>
+    email
+    password
+    name
+  }
 }
 
-entity "地域マスター" as Region {
-  +地域ID <<PK>>
-  +地域名
-  +ISOコード <<UNIQUE>>
+package "Dataset Domain" {
+  
+  entity "データセット" as Dataset {
+    +id <<PK>>
+    owner <<FK>>
+    name
+    source_file
+    status
+    schema
+    parse_result
+    created_at
+  }
+
+  entity "データポイント" as DataPoint {
+    +id <<PK>>
+    dataset <<FK>>
+    raw_time
+    time
+    entity
+    metric
+    value
+    order_index
+    <<UNIQUE(dataset, entity, metric, raw_time)>>
+  }
+
+  User ||--o{ Dataset : owner
+  Dataset ||--o{ DataPoint : dataset
 }
 
-entity "指標マスター" as Indicator {
-  +指標ID <<PK>>
-  +指標名
-  +単位
-  +説明
-  +データソース名
-  +データソースURL
-  +取得日
-}
+note bottom of User
+CustomUser を使用。name フィールド追加。
+end note
 
-entity "気候データ" as ClimateData {
-  +データID <<PK>>
-  +地域ID <<FK>>
-  +指標ID <<FK>>
-  + 年
-  + 値
-  +取得日
-}
+note bottom of Dataset
+解析状態管理: UPLOADED / PROCESSING / PARSED / FAILED
+schema や parse_result は JSONField
+end note
 
-entity "ユーザーお気に入り" as Favorite {
-  +お気に入りID <<PK>>
-  +ユーザーID <<FK>>
-  +地域ID <<FK>>
-  +指標ID <<FK>>
-  +登録日
-}
-
-Region ||--o{ ClimateData : 地域ID
-Indicator ||--o{ ClimateData : 指標ID
-
-User ||--o{ Favorite : ユーザーID
-Region ||--o{ Favorite : 地域ID
-Indicator ||--o{ Favorite : 指標ID
+note bottom of DataPoint
+CSV 元データと正規化後 datetime を管理
+メトリクス単位での値を保持
+end note
 
 @enduml

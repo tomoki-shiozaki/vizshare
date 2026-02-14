@@ -1,0 +1,32 @@
+@startuml vizshare_use
+skinparam defaultFontName "Noto Sans CJK JP"
+left to right direction
+
+actor GeneralUser as generalUser
+
+rectangle "Vizshare App" {
+  package "Data Handling" {
+    (Upload CSV)
+    (Visualize Data)
+  }
+  
+  package "Sharing & Interaction" {
+    (Share Data)
+    (Comment)
+    (View Shared Visualizations)
+  }
+}
+
+rectangle "External Storage" {
+  (Store CSV)
+}
+
+' Actors interactions
+generalUser --> (Upload CSV)
+(Upload CSV) ..> (Store CSV) : <<include>>
+generalUser --> (Visualize Data)
+generalUser --> (Share Data)
+generalUser --> (Comment)
+generalUser --> (View Shared Visualizations)
+
+@enduml

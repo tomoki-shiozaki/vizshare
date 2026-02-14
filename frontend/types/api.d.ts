@@ -44,6 +44,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/datasets/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Dataset の詳細情報を返す API */
+        get: operations["datasets_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/list/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description ログインユーザーの Dataset 一覧を返す API */
+        get: operations["datasets_list_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/upload/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Dataset のアップロード専用 API */
+        post: operations["datasets_upload_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/dj-rest-auth/login/": {
         parameters: {
             query?: never;
@@ -349,6 +400,37 @@ export interface components {
                 };
             };
         };
+        Dataset: {
+            readonly id: number;
+            name: string;
+            /** Format: uri */
+            source_file: string;
+            readonly owner: number;
+            readonly status: string;
+            schema: unknown;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        DatasetDetail: {
+            readonly id: number;
+            readonly name: string;
+            readonly status: components["schemas"]["StatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly schema: unknown;
+            readonly parse_result: unknown;
+            /** Format: uri */
+            readonly source_file: string;
+        };
+        DatasetList: {
+            readonly id: number;
+            readonly name: string;
+            readonly status: components["schemas"]["StatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly schema: unknown;
+            readonly parse_result: unknown;
+        };
         /** @description Serializer for JWT authentication. */
         JWT: {
             access: string;
@@ -360,6 +442,21 @@ export interface components {
             /** Format: email */
             email?: string;
             password: string;
+        };
+        PaginatedDatasetListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=400&limit=100
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=200&limit=100
+             */
+            previous?: string | null;
+            results: components["schemas"]["DatasetList"][];
         };
         PasswordChange: {
             new_password1: string;
@@ -413,6 +510,14 @@ export interface components {
         RestAuthDetail: {
             readonly detail: string;
         };
+        /**
+         * @description * `uploaded` - アップロード済み
+         *     * `processing` - 処理中
+         *     * `parsed` - 解析完了
+         *     * `failed` - 失敗
+         * @enum {string}
+         */
+        StatusEnum: "uploaded" | "processing" | "parsed" | "failed";
         TokenRefresh: {
             readonly access: string;
             refresh: string;
@@ -495,6 +600,76 @@ export interface operations {
                             global_average?: number | null;
                         }[];
                     };
+                };
+            };
+        };
+    };
+    datasets_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetDetail"];
+                };
+            };
+        };
+    };
+    datasets_list_list: {
+        parameters: {
+            query?: {
+                /** @description Number of results to return per page. */
+                limit?: number;
+                /** @description The initial index from which to return the results. */
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedDatasetListList"];
+                };
+            };
+        };
+    };
+    datasets_upload_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Dataset"];
+                "application/x-www-form-urlencoded": components["schemas"]["Dataset"];
+                "multipart/form-data": components["schemas"]["Dataset"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Dataset"];
                 };
             };
         };
