@@ -5,3 +5,8 @@ variable "project_id" {
 variable "project_number" {
   type = string
 }
+
+variable "media_bucket_name" {
+  description = "Django が使用する GCS バケット名"
+  type        = string
+}
