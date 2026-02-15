@@ -37,6 +37,8 @@ steps:
         "--platform",
         "managed",
         "--allow-unauthenticated",
+        "--service-account",
+        "django-app-sa@$PROJECT_ID.iam.gserviceaccount.com",
       ]
 
 # オプション: ロギング設定
