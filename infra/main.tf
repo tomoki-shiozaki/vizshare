@@ -6,4 +6,6 @@ module "cloudbuild" {
   region       = var.region
   github_repo  = var.github_repo
   github_owner = var.github_owner
+
+  cloudbuild_service_account = google_service_account.cloudbuild_runner.id
 }
