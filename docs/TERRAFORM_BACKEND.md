@@ -25,17 +25,41 @@ terraform {
 
 - チーム全員で同じ設定を使用すること
 
-2. 認証情報（Credentials）
-   TerraformからGCSにアクセスするためには、Google Cloudのサービスアカウント認証が必要です。
+## 2. 認証情報（Credentials）
 
-サービスアカウントに必要な権限：
+TerraformがGCSに状態ファイルを保存・読み書きするには、Google Cloudの認証情報が必要です。  
+認証方法はいくつかあります。
 
-Storage Object Admin（状態ファイルの読み書き・削除可能）
+### 方法1: ターミナルログイン（個人環境向け）
 
-環境変数でJSONキーを指定：
+- ターミナルで以下を実行してGoogleアカウントにログインしている場合：
 
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json" 3. 状態ファイルの操作
-状態ファイルは 直接編集禁止。Terraformコマンド経由で操作すること
+```bash
+gcloud auth login
+```
+
+- Terraformはこのログイン情報を自動的に使用してGCSにアクセスできます
+
+- 個人環境やローカル開発であれば、これだけで十分です
+
+### 方法2: サービスアカウントのJSONキー（チーム・自動化向け）
+
+- CI/CDやチーム環境で安定してTerraformを使いたい場合は、サービスアカウントを作成してJSONキーを使うのが推奨です
+
+- サービスアカウントには以下の権限が必要：
+  - Storage Object Admin（状態ファイルの読み書き・削除が可能）
+
+- JSONキーを環境変数で指定します：
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
+```
+
+ポイント：
+
+- 個人環境ならターミナルログインだけでもOK
+
+- チームや自動化環境ではサービスアカウントの方が安全・安定
 
 例：
 
@@ -48,16 +72,17 @@ terraform state rm <リソース名>
 
 誤操作防止のため、バージョニングを有効にしておくと復元可能
 
-4. バックエンド変更時
-   - バックエンド設定を変更した場合は、必ず以下を実行：
+## 4. バックエンド変更時
 
-   ```bash
-   terraform init -migrate-state
-   ```
+- バックエンド設定を変更した場合は、必ず以下を実行：
 
-   - 既存ローカル状態をGCSに移行するか確認画面が表示されるので、通常は yes を選択
+```bash
+terraform init -migrate-state
+```
 
-5. チーム作業時の注意点
+- 既存ローカル状態をGCSに移行するか確認画面が表示されるので、通常は yes を選択
+
+## 5. チーム作業時の注意点
 
 - TerraformはGCS上で自動的に state lock を行う
 
@@ -65,7 +90,7 @@ terraform state rm <リソース名>
 
 - バックエンド設定と認証情報を統一することで競合や誤操作を防ぐ
 
-6. バックアップと履歴管理
+## 6. バックアップと履歴管理
 
 - GCSバケットの **バージョニング**を有効 にしておく
 
@@ -73,15 +98,16 @@ terraform state rm <リソース名>
 
 - バージョニングの有無や復元手順をチームで共有すること
 
-7. 推奨運用フロー（例）
-   1. 初回セットアップ
+## 7. 推奨運用フロー（例）
 
-   ```bash
-   terraform init -migrate-state
-   ```
+1.  初回セットアップ
 
-   2. 設定変更前に terraform plan で差分を確認
+```bash
+terraform init -migrate-state
+```
 
-   3. 安全なタイミングで terraform apply
+2.  設定変更前に terraform plan で差分を確認
 
-   4. 状態ファイルは常にGCSを参照
+3.  安全なタイミングで terraform apply
+
+4.  状態ファイルは常にGCSを参照
