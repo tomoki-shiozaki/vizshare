@@ -7,7 +7,7 @@ module "cloudbuild" {
   github_repo  = var.github_repo
   github_owner = var.github_owner
 
-  cloudbuild_service_account = google_service_account.cloudbuild_runner.id
+  cloudbuild_service_account = module.iam.cloudbuild_runner_sa_id
 }
 
 module "iam" {
