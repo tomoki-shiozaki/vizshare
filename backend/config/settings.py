@@ -276,15 +276,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Media files (uploads)
 # ================================
 if IS_PRODUCTION:
-    # 本番は GCS にアップロード
-    DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "bucket_name": env.str("GS_BUCKET_NAME"),
+                "file_overwrite": False,
+            },
+        },
+    }
 
-    GS_CREDENTIALS_FILE_PATH = env.str(
-        "GS_CREDENTIALS_FILE_PATH"
-    )  # サービスアカウントJSONのパス
-    GS_BUCKET_NAME = env.str("GS_BUCKET_NAME")  # バケット名
+    MEDIA_URL = f"https://storage.googleapis.com/{env.str('GS_BUCKET_NAME')}/"
 
-    MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
 else:
     # 開発はローカル
     MEDIA_URL = "/media/"
