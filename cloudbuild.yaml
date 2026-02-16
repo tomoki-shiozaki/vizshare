@@ -8,7 +8,7 @@ steps:
       [
         "build",
         "-t",
-        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/climate-change-app-v2/climate-change-app-image:$COMMIT_SHA",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/vizshare/vizshare-image:$COMMIT_SHA",
         "-f",
         "backend/docker/Dockerfile.prod",
         "backend",
@@ -19,7 +19,7 @@ steps:
     args:
       [
         "push",
-        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/climate-change-app-v2/climate-change-app-image:$COMMIT_SHA",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/vizshare/vizshare-image:$COMMIT_SHA",
       ]
 
   # ステップ 3: Cloud Runにデプロイ
@@ -29,9 +29,9 @@ steps:
         "gcloud",
         "run",
         "deploy",
-        "climate-change-app-v2",
+        "vizshare",
         "--image",
-        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/climate-change-app-v2/climate-change-app-image:$COMMIT_SHA",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/vizshare/vizshare-image:$COMMIT_SHA",
         "--region",
         "asia-northeast1",
         "--platform",
