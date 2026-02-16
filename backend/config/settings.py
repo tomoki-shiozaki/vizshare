@@ -275,8 +275,21 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ================================
 # Media files (uploads)
 # ================================
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+if IS_PRODUCTION:
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            "OPTIONS": {
+                "bucket_name": env.str("GS_BUCKET_NAME"),
+                "file_overwrite": False,
+            },
+        },
+    }
+
+else:
+    # 開発はローカル
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
 
 # ================================
 # Celery (development only)

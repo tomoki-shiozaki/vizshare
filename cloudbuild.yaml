@@ -1,14 +1,14 @@
-# このビルドを実行する Service Account を明示
+# Cloud Build を実行する Service Account
 serviceAccount: cloud-build-runner-tf@${PROJECT_ID}.iam.gserviceaccount.com
 
 steps:
-  # ステップ 1: Dockerイメージのビルド
+  # ステップ 1: Docker イメージのビルド
   - name: "gcr.io/cloud-builders/docker"
     args:
       [
         "build",
         "-t",
-        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/climate-change-app-v2/climate-change-app-image:$COMMIT_SHA",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}/${_APP_NAME}-image:$COMMIT_SHA",
         "-f",
         "backend/docker/Dockerfile.prod",
         "backend",
@@ -19,24 +19,25 @@ steps:
     args:
       [
         "push",
-        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/climate-change-app-v2/climate-change-app-image:$COMMIT_SHA",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}/${_APP_NAME}-image:$COMMIT_SHA",
       ]
 
-  # ステップ 3: Cloud Runにデプロイ
+  # ステップ 3: Cloud Run にデプロイ
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    args:
-      [
+    args: [
         "gcloud",
         "run",
         "deploy",
-        "climate-change-app-v2",
+        "${_APP_NAME}", # サービス名も _APP_NAME で管理
         "--image",
-        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/climate-change-app-v2/climate-change-app-image:$COMMIT_SHA",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}/${_APP_NAME}-image:$COMMIT_SHA",
         "--region",
         "asia-northeast1",
         "--platform",
         "managed",
         "--allow-unauthenticated",
+        "--service-account",
+        "django-app-sa@$PROJECT_ID.iam.gserviceaccount.com",
       ]
 
 # オプション: ロギング設定
