@@ -286,8 +286,6 @@ if IS_PRODUCTION:
         },
     }
 
-    MEDIA_URL = f"https://storage.googleapis.com/{env.str('GS_BUCKET_NAME')}/"
-
 else:
     # 開発はローカル
     MEDIA_URL = "/media/"
