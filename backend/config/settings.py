@@ -276,7 +276,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Storage (Django 4.2+)
 # ================================
 
-MEDIA_URL = "/media/"
+MEDIA_URL = env.str("MEDIA_URL", default="/media/")
 
 if IS_PRODUCTION:
     # 本番：media → GCS
