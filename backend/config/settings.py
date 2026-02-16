@@ -292,16 +292,5 @@ else:
     MEDIA_ROOT = BASE_DIR / "media"
 
 # ================================
-# Celery (development only)
-# ================================
-if IS_DEVELOPMENT:
-    CELERY_TIMEZONE = TIME_ZONE
-    CELERY_ENABLE_UTC = True
-
-    # 開発環境では worker なしで即時実行
-    CELERY_TASK_ALWAYS_EAGER = True
-    CELERY_TASK_EAGER_PROPAGATES = True
-
-# ================================
 # App-specific settings
 # ================================

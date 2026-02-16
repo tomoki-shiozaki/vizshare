@@ -5,7 +5,6 @@ from apps.dataset.services.csv_parser import parse_dataset_csv
 def parse_dataset_sync(dataset_id: int):
     """
     同期で CSV パースを実行する関数
-    Celery タスクからも直接呼べる
     """
     dataset = Dataset.objects.get(pk=dataset_id)
 
