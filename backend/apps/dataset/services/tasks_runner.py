@@ -1,11 +1,12 @@
-from celery import shared_task
-
 from apps.dataset.models import Dataset
 from apps.dataset.services.csv_parser import parse_dataset_csv
 
 
-@shared_task
-def parse_dataset_task(dataset_id: int):
+def parse_dataset_sync(dataset_id: int):
+    """
+    同期で CSV パースを実行する関数
+    Celery タスクからも直接呼べる
+    """
     dataset = Dataset.objects.get(pk=dataset_id)
 
     # mark_processing() は冪等性チェックも兼ねている
