@@ -292,6 +292,7 @@ else:
     DEFAULT_FILE_STORAGE_OPTIONS = {
         "location": BASE_DIR / "media",
     }
+    MEDIA_ROOT = BASE_DIR / "media"
 
 
 STORAGES = {
