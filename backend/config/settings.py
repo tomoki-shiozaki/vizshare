@@ -276,6 +276,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Storage (Django 4.2+)
 # ================================
 
+MEDIA_URL = "/media/"
+
 if IS_PRODUCTION:
     # 本番：media → GCS
     DEFAULT_FILE_STORAGE_BACKEND = "storages.backends.gcloud.GoogleCloudStorage"
@@ -289,29 +291,18 @@ else:
     DEFAULT_FILE_STORAGE_BACKEND = "django.core.files.storage.FileSystemStorage"
     DEFAULT_FILE_STORAGE_OPTIONS = {
         "location": BASE_DIR / "media",
-        "base_url": "/media/",
     }
 
 
 STORAGES = {
-    # media
     "default": {
         "BACKEND": DEFAULT_FILE_STORAGE_BACKEND,
         "OPTIONS": DEFAULT_FILE_STORAGE_OPTIONS,
     },
-    # static（全環境同じ）
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-
-# ================================
-# Media files (uploads)
-# ================================
-if IS_DEVELOPMENT:
-    # 開発はローカル
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media"
 
 
 # ================================
