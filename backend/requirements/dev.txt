@@ -71,8 +71,6 @@ drf-spectacular==0.29.0
     # via -r requirements/dev.in
 environs[django]==14.5.0
     # via -r requirements/base.in
-gunicorn==24.1.1
-    # via -r requirements/base.in
 idna==3.11
     # via requests
 inflection==0.5.1
@@ -89,7 +87,6 @@ marshmallow==4.2.1
     # via environs
 packaging==26.0
     # via
-    #   gunicorn
     #   kombu
     #   pytest
 pluggy==1.6.0

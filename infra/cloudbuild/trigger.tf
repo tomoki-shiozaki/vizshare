@@ -11,7 +11,11 @@ resource "google_cloudbuild_trigger" "app_trigger" {
   }
 
   filename        = "cloudbuild.yaml"
-  service_account = google_service_account.cloudbuild_runner.id
+  service_account = var.cloudbuild_service_account
+
+  substitutions = {
+    _APP_NAME = var.service_name
+  }
 
   depends_on = [
     google_cloudbuildv2_repository.repo

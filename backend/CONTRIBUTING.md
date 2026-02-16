@@ -56,7 +56,6 @@
 新しいライブラリを追加したい場合:
 
 1. `requirements/base.in` または `requirements/dev.in` に追記します。
-
    - 本番にも必要 → `requirements/base.in`
    - 開発専用 → `requirements/dev.in`
 
