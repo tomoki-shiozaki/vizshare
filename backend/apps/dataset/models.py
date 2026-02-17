@@ -45,13 +45,17 @@ class Dataset(models.Model):
         return True
 
     def mark_parsed(self, result: dict | None = None):
-        if self.status != self.Status.PROCESSING:
-            raise ValueError("Invalid state transition")
+        with transaction.atomic():
+            locked = Dataset.objects.select_for_update().only("status").get(pk=self.pk)
 
-        self.status = self.Status.PARSED
-        if result is not None:
-            self.parse_result = result
-        self.save(update_fields=["status", "parse_result"])
+            if locked.status != self.Status.PROCESSING:
+                raise ValueError("Invalid state transition")
+
+            locked.status = self.Status.PARSED
+            if result is not None:
+                locked.parse_result = result
+
+            locked.save(update_fields=["status", "parse_result"])
 
     def mark_failed(self, error: Exception):
         self.status = self.Status.FAILED
