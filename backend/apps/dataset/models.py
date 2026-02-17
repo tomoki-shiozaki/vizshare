@@ -37,9 +37,7 @@ class Dataset(models.Model):
     # --- 状態管理メソッド ---
     def mark_processing(self) -> bool:
         with transaction.atomic():
-            locked = (
-                Dataset.objects.select_for_update().only("id", "status").get(pk=self.pk)
-            )
+            locked = Dataset.objects.select_for_update().only("status").get(pk=self.pk)
             if locked.status != self.Status.UPLOADED:
                 return False
             locked.status = self.Status.PROCESSING
