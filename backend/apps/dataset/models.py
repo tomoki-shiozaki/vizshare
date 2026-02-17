@@ -45,6 +45,9 @@ class Dataset(models.Model):
         return True
 
     def mark_parsed(self, result: dict | None = None):
+        if self.status != self.Status.PROCESSING:
+            raise ValueError("Invalid state transition")
+
         self.status = self.Status.PARSED
         if result is not None:
             self.parse_result = result
