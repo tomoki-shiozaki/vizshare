@@ -62,6 +62,9 @@ class TestDatasetModel:
         """解析完了状態に変更され結果が保存される"""
         result_data = {"rows": 10}
 
+        dataset.status = Dataset.Status.PROCESSING
+        dataset.save()
+
         dataset.mark_parsed(result_data)
         dataset.refresh_from_db()
 
@@ -70,6 +73,9 @@ class TestDatasetModel:
 
     def test_mark_parsed_without_result(self, dataset):
         """result=None の場合でも状態だけ更新される"""
+        dataset.status = Dataset.Status.PROCESSING
+        dataset.save()
+
         dataset.mark_parsed()
         dataset.refresh_from_db()
 
