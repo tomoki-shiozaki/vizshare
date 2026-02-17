@@ -113,6 +113,19 @@ class TestDatasetModel:
         # 状態は変わらない
         assert dataset.status == Dataset.Status.UPLOADED
 
+    def test_mark_failed_from_parsed_not_allowed(self, dataset):
+        """PARSEDからFAILEDには遷移できない"""
+        dataset.status = Dataset.Status.PARSED
+        dataset.save()
+
+        error = ValueError("bad csv")
+
+        with pytest.raises(ValueError):
+            dataset.mark_failed(error)
+
+        dataset.refresh_from_db()
+        assert dataset.status == Dataset.Status.PARSED
+
     def test_dataset_delete_cascades_datapoints(self, dataset):
         """Dataset削除でDataPointも削除される"""
         DataPoint.objects.create(
