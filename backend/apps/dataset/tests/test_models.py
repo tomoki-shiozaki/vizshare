@@ -88,7 +88,10 @@ class TestDatasetModel:
             dataset.mark_parsed()
 
     def test_mark_failed_records_error(self, dataset):
-        """エラー情報が保存される"""
+        """PROCESSING → FAILED に遷移しエラー情報が保存される"""
+        dataset.status = Dataset.Status.PROCESSING
+        dataset.save()
+
         error = ValueError("bad csv")
 
         dataset.mark_failed(error)
@@ -97,6 +100,18 @@ class TestDatasetModel:
         assert dataset.status == Dataset.Status.FAILED
         assert dataset.parse_result["error_type"] == "ValueError"
         assert dataset.parse_result["message"] == "bad csv"
+
+    def test_mark_failed_invalid_state(self, dataset):
+        """PROCESSING以外からFAILEDに遷移できない"""
+        error = ValueError("bad csv")
+
+        with pytest.raises(ValueError):
+            dataset.mark_failed(error)
+
+        dataset.refresh_from_db()
+
+        # 状態は変わらない
+        assert dataset.status == Dataset.Status.UPLOADED
 
     def test_dataset_delete_cascades_datapoints(self, dataset):
         """Dataset削除でDataPointも削除される"""
