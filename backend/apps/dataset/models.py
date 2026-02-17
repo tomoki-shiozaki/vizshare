@@ -58,12 +58,19 @@ class Dataset(models.Model):
             locked.save(update_fields=["status", "parse_result"])
 
     def mark_failed(self, error: Exception):
-        self.status = self.Status.FAILED
-        self.parse_result = {
-            "error_type": error.__class__.__name__,
-            "message": str(error),
-        }
-        self.save(update_fields=["status", "parse_result"])
+        with transaction.atomic():
+            locked = Dataset.objects.select_for_update().only("status").get(pk=self.pk)
+
+            if locked.status != self.Status.PROCESSING:
+                raise ValueError("Invalid state transition")
+
+            locked.status = self.Status.FAILED
+            locked.parse_result = {
+                "error_type": error.__class__.__name__,
+                "message": str(error),
+            }
+
+            locked.save(update_fields=["status", "parse_result"])
 
 
 class DataPoint(models.Model):
