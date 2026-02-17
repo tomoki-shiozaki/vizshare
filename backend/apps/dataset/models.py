@@ -37,9 +37,7 @@ class Dataset(models.Model):
     # --- 状態管理メソッド ---
     def mark_processing(self) -> bool:
         with transaction.atomic():
-            locked = (
-                Dataset.objects.select_for_update().only("id", "status").get(pk=self.pk)
-            )
+            locked = Dataset.objects.select_for_update().only("status").get(pk=self.pk)
             if locked.status != self.Status.UPLOADED:
                 return False
             locked.status = self.Status.PROCESSING
@@ -47,18 +45,32 @@ class Dataset(models.Model):
         return True
 
     def mark_parsed(self, result: dict | None = None):
-        self.status = self.Status.PARSED
-        if result is not None:
-            self.parse_result = result
-        self.save(update_fields=["status", "parse_result"])
+        with transaction.atomic():
+            locked = Dataset.objects.select_for_update().only("status").get(pk=self.pk)
+
+            if locked.status != self.Status.PROCESSING:
+                raise ValueError("Invalid state transition")
+
+            locked.status = self.Status.PARSED
+            if result is not None:
+                locked.parse_result = result
+
+            locked.save(update_fields=["status", "parse_result"])
 
     def mark_failed(self, error: Exception):
-        self.status = self.Status.FAILED
-        self.parse_result = {
-            "error_type": error.__class__.__name__,
-            "message": str(error),
-        }
-        self.save(update_fields=["status", "parse_result"])
+        with transaction.atomic():
+            locked = Dataset.objects.select_for_update().only("status").get(pk=self.pk)
+
+            if locked.status != self.Status.PROCESSING:
+                raise ValueError("Invalid state transition")
+
+            locked.status = self.Status.FAILED
+            locked.parse_result = {
+                "error_type": error.__class__.__name__,
+                "message": str(error),
+            }
+
+            locked.save(update_fields=["status", "parse_result"])
 
 
 class DataPoint(models.Model):
