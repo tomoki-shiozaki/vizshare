@@ -82,6 +82,11 @@ class TestDatasetModel:
         assert dataset.status == Dataset.Status.PARSED
         assert dataset.parse_result is None
 
+    def test_mark_parsed_invalid_state(self, dataset):
+        """PROCESSING以外からはPARSEDに遷移できない"""
+        with pytest.raises(ValueError):
+            dataset.mark_parsed()
+
     def test_mark_failed_records_error(self, dataset):
         """エラー情報が保存される"""
         error = ValueError("bad csv")
