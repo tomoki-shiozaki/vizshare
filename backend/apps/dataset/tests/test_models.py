@@ -126,6 +126,16 @@ class TestDatasetModel:
         dataset.refresh_from_db()
         assert dataset.status == Dataset.Status.PARSED
 
+    def test_mark_failed_does_not_update_on_invalid_state(self, dataset):
+        dataset.parse_result = {"rows": 10}
+        dataset.save()
+
+        with pytest.raises(ValueError):
+            dataset.mark_failed(ValueError("bad csv"))
+
+        dataset.refresh_from_db()
+        assert dataset.parse_result == {"rows": 10}
+
     def test_dataset_delete_cascades_datapoints(self, dataset):
         """Dataset削除でDataPointも削除される"""
         DataPoint.objects.create(
