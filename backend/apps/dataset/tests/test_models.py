@@ -188,6 +188,22 @@ class TestDataPointModel:
                 order_index=2,
             )
 
+    def test_unique_constraint_with_default_entity(self, dataset):
+        DataPoint.objects.create(
+            dataset=dataset,
+            raw_time="2020",
+            metric="temp",
+            order_index=1,
+        )
+
+        with pytest.raises(IntegrityError):
+            DataPoint.objects.create(
+                dataset=dataset,
+                raw_time="2020",
+                metric="temp",
+                order_index=2,
+            )
+
     def test_time_can_be_null(self, dataset):
         """time フィールドは null OK"""
         dp = DataPoint.objects.create(
