@@ -66,10 +66,11 @@ class TestCsvParser:
         assert dp.time is not None
         assert is_aware(dp.time)
 
-    def test_parse_dataset_csv_default_entity(self, db):
+    def test_parse_dataset_csv_default_entity(self, user):
         """entity列がない場合は 'default' を使う"""
         csv_content = "date,metric1\n2023-01-01,1.0\n"
         dataset = Dataset.objects.create(
+            owner=user,
             name="no_entity",
             source_file=ContentFile(csv_content, name="no_entity.csv"),
             schema={"time": "date", "entity": None, "metrics": ["metric1"]},
