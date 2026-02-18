@@ -45,6 +45,18 @@ The following diagram illustrates the main user interactions in the Vizshare MVP
 
 ---
 
+## 3. ER Diagram
+
+The following diagram shows the main data models and their relationships in Vizshare. It illustrates the user, dataset, and data point models, along with key fields and constraints.
+
+![ER Diagram](./er/er/er.svg)
+
+- **User:** Custom user model with an additional `name` field.
+- **Dataset:** Stores uploaded CSV datasets, parsing status, schema, and parse results.
+- **DataPoint:** Stores individual metric values for each dataset, along with time and entity information. Each combination of dataset, entity, metric, and raw_time is unique.
+- **Dataset Status:** UPLOADED / PROCESSING / PARSED / FAILED
+- **JSON Fields:** `schema` and `parse_result` are stored as JSONFields.
+
 ## 2. システム構成図（アーキテクチャ）
 
 本プロジェクトの全体構成は以下の通りです。  
