@@ -159,7 +159,7 @@ class TestDatasetModel:
 class TestDataPointModel:
 
     def test_default_entity_value(self, dataset):
-        """entity の default が 'default'"""
+        """entity の default が DEFAULT_ENTITY"""
         dp = DataPoint.objects.create(
             dataset=dataset,
             raw_time="2020",
@@ -167,7 +167,7 @@ class TestDataPointModel:
             order_index=1,
         )
 
-        assert dp.entity == "default"
+        assert dp.entity == DataPoint.DEFAULT_ENTITY
 
     def test_unique_constraint_dataset_entity_metric_time(self, dataset):
         """unique制約が効く"""
@@ -185,6 +185,22 @@ class TestDataPointModel:
                 raw_time="2020",
                 metric="temp",
                 entity="Japan",
+                order_index=2,
+            )
+
+    def test_unique_constraint_with_default_entity(self, dataset):
+        DataPoint.objects.create(
+            dataset=dataset,
+            raw_time="2020",
+            metric="temp",
+            order_index=1,
+        )
+
+        with pytest.raises(IntegrityError):
+            DataPoint.objects.create(
+                dataset=dataset,
+                raw_time="2020",
+                metric="temp",
                 order_index=2,
             )
 
