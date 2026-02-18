@@ -1,3 +1,5 @@
+import io
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
@@ -5,6 +7,7 @@ from django.utils.timezone import is_aware
 
 from apps.dataset.models import DataPoint, Dataset
 from apps.dataset.services.csv_parser import (
+    _open_csv_text_stream,
     parse_dataset_csv,
     parse_row_time,
     parse_value,
@@ -152,3 +155,22 @@ class TestCsvParser:
     def test_parse_value_invalid(self):
         with pytest.raises(ValueError):
             parse_value("abc", row=0, metric="m")
+
+    # ----------------------------
+    # _open_csv_text_stream tests
+    # ----------------------------
+    def test_open_csv_text_stream_utf8(self):
+        data = "a,b\n1,2".encode("utf-8")
+        f = io.BytesIO(data)
+
+        text = _open_csv_text_stream(f)
+
+        assert text.read() == "a,b\n1,2"
+
+    def test_open_csv_text_stream_cp932(self):
+        data = "列1,列2\n1,2".encode("cp932")
+        f = io.BytesIO(data)
+
+        text = _open_csv_text_stream(f)
+
+        assert "列1" in text.read()
