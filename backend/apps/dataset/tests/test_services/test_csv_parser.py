@@ -63,8 +63,8 @@ class TestCsvParser:
         dp = DataPoint.objects.get(dataset=dataset, entity="A", metric="metric1")
         assert dp.value == 1.5
         assert dp.raw_time == "2023-01-01"
-        assert dp.time is not None  # Noneでないことを確認
-        assert is_aware(dp.time)  # ここは安全に呼べる
+        assert dp.time is not None
+        assert is_aware(dp.time)
 
     def test_parse_dataset_csv_default_entity(self, db):
         """entity列がない場合は 'default' を使う"""
