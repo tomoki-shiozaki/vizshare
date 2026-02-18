@@ -67,18 +67,18 @@ class TestCsvParser:
         assert is_aware(dp.time)
 
     def test_parse_dataset_csv_default_entity(self, user):
-        """entity列がない場合は 'default' を使う"""
+        """entity列がない場合は '__default__' を使う"""
         csv_content = "date,metric1\n2023-01-01,1.0\n"
         dataset = Dataset.objects.create(
             owner=user,
             name="no_entity",
             source_file=ContentFile(csv_content, name="no_entity.csv"),
-            schema={"time": "date", "entity": None, "metrics": ["metric1"]},
+            schema={"time": "date", "metrics": ["metric1"]},
         )
         total = parse_dataset_csv(dataset)
         dp = DataPoint.objects.first()
         assert dp is not None
-        assert dp.entity == "default"
+        assert dp.entity == DataPoint.DEFAULT_ENTITY
         assert total == 1
 
     def test_parse_dataset_csv_batching(self, user, monkeypatch):
