@@ -68,7 +68,9 @@ class TestCsvParser:
 
     def test_parse_dataset_csv_default_entity(self, user):
         """entity列がない場合は '__default__' を使う"""
-        csv_content = "date,metric1\n2023-01-01,1.0\n"
+        csv_content = """date,metric1
+2023-01-01,1.0
+"""
         dataset = Dataset.objects.create(
             owner=user,
             name="no_entity",
