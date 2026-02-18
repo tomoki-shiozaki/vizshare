@@ -3,7 +3,6 @@ import io
 import re
 from datetime import datetime
 
-from django.db import transaction
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import is_naive, make_aware
 
@@ -138,14 +137,12 @@ def parse_dataset_csv(dataset: Dataset) -> int:
                 )
 
             if len(buffer) >= BATCH_SIZE:
-                with transaction.atomic():
-                    DataPoint.objects.bulk_create(buffer)
+                DataPoint.objects.bulk_create(buffer, batch_size=BATCH_SIZE)
                 total += len(buffer)
                 buffer.clear()
 
         if buffer:
-            with transaction.atomic():
-                DataPoint.objects.bulk_create(buffer)
+            DataPoint.objects.bulk_create(buffer, batch_size=BATCH_SIZE)
             total += len(buffer)
 
     return total
