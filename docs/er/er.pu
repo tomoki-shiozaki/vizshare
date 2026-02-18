@@ -2,7 +2,7 @@
 skinparam defaultFontName "Noto Sans CJK JP"
 
 package "Authentication" {
-  entity "ユーザー" as User {
+  entity "User" as User {
     +id <<PK>>
     username <<UNIQUE>>
     email
@@ -13,7 +13,7 @@ package "Authentication" {
 
 package "Dataset Domain" {
   
-  entity "データセット" as Dataset {
+  entity "Dataset" as Dataset {
     +id <<PK>>
     owner <<FK>>
     name
@@ -24,7 +24,7 @@ package "Dataset Domain" {
     created_at
   }
 
-  entity "データポイント" as DataPoint {
+  entity "DataPoint" as DataPoint {
     +id <<PK>>
     dataset <<FK>>
     raw_time
@@ -42,7 +42,7 @@ package "Dataset Domain" {
 
 note bottom of Dataset
 status: UPLOADED / PROCESSING / PARSED / FAILED
-schema や parse_result は JSONField
+schema and parse_result are JSONFields
 end note
 
 @enduml
