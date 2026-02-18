@@ -90,10 +90,10 @@ class TestCsvParser:
         monkeypatch.setattr(csv_parser, "BATCH_SIZE", 2)
 
         csv_content = """date,entity,metric1
-                    2023-01-01,A,1
-                    2023-01-02,B,2
-                    2023-01-03,C,3
-                    """
+2023-01-01,A,1
+2023-01-02,B,2
+2023-01-03,C,3
+"""
         dataset = Dataset.objects.create(
             owner=user,
             name="batch",
