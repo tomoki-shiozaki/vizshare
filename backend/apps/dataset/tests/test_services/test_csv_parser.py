@@ -9,6 +9,25 @@ from apps.dataset.services.csv_parser import (
     parse_value,
 )
 
+
+@pytest.fixture
+def dataset(db):
+    """共通 Dataset fixture"""
+    csv_content = """date,entity,metric1,metric2
+2023-01-01,A,1.5,2.5
+2023-02-01,B,3.5,4.5
+"""
+    return Dataset.objects.create(
+        name="test dataset",
+        source_file=ContentFile(csv_content, name="test.csv"),
+        schema={
+            "time": "date",
+            "entity": "entity",
+            "metrics": ["metric1", "metric2"],
+        },
+    )
+
+
 # ============================
 # CSV Parser Tests
 # ============================
@@ -16,23 +35,6 @@ from apps.dataset.services.csv_parser import (
 
 @pytest.mark.django_db
 class TestCsvParser:
-
-    @pytest.fixture
-    def dataset(self, db):
-        """簡単な Dataset fixture"""
-        csv_content = """date,entity,metric1,metric2
-                    2023-01-01,A,1.5,2.5
-                    2023-02-01,B,3.5,4.5
-                    """
-        return Dataset.objects.create(
-            name="test dataset",
-            source_file=ContentFile(csv_content, name="test.csv"),
-            schema={
-                "time": "date",
-                "entity": "entity",
-                "metrics": ["metric1", "metric2"],
-            },
-        )
 
     # ----------------------------
     # parse_dataset_csv tests
