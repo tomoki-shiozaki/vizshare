@@ -74,6 +74,8 @@ class Dataset(models.Model):
 
 
 class DataPoint(models.Model):
+    DEFAULT_ENTITY = "default"
+
     dataset = models.ForeignKey(
         Dataset,
         on_delete=models.CASCADE,
@@ -87,9 +89,14 @@ class DataPoint(models.Model):
     time = models.DateTimeField(blank=True, null=True)
 
     # entity（Japan など）
-    entity = models.CharField(max_length=255, blank=True, default="default")
+    entity = models.CharField(
+        max_length=255,
+        default=DEFAULT_ENTITY,
+    )
 
-    # metric（anomaly / lower / upper）
+    # 指標の種類（CSVの値列名）
+    # 例: anomaly, lower, upper
+    # 1つの時刻・entityに対して複数のmetricが存在し得る
     metric = models.CharField(max_length=255)
 
     value = models.FloatField(blank=True, null=True)
