@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.utils.timezone import is_aware
 
@@ -9,15 +10,27 @@ from apps.dataset.services.csv_parser import (
     parse_value,
 )
 
+User = get_user_model()
+
 
 @pytest.fixture
-def dataset(db):
+def user(db):
+    return User.objects.create_user(
+        username="testuser",
+        email="test@example.com",
+        password="password",
+    )
+
+
+@pytest.fixture
+def dataset(db, user):
     """共通 Dataset fixture"""
     csv_content = """date,entity,metric1,metric2
 2023-01-01,A,1.5,2.5
 2023-02-01,B,3.5,4.5
 """
     return Dataset.objects.create(
+        owner=user,
         name="test dataset",
         source_file=ContentFile(csv_content, name="test.csv"),
         schema={
