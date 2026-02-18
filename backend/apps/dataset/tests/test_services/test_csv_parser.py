@@ -81,7 +81,7 @@ class TestCsvParser:
         assert dp.entity == "default"
         assert total == 1
 
-    def test_parse_dataset_csv_batching(self, db, monkeypatch):
+    def test_parse_dataset_csv_batching(self, user, monkeypatch):
         """BATCH_SIZE をまたぐ場合の動作"""
         from apps.dataset.services import csv_parser
 
@@ -93,6 +93,7 @@ class TestCsvParser:
                     2023-01-03,C,3
                     """
         dataset = Dataset.objects.create(
+            owner=user,
             name="batch",
             source_file=ContentFile(csv_content, name="batch.csv"),
             schema={"time": "date", "entity": "entity", "metrics": ["metric1"]},
