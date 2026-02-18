@@ -118,7 +118,7 @@ def parse_dataset_csv(dataset: Dataset) -> int:
             parsed_time = parse_row_time(raw_time)
 
             entity = row.get(entity_col) if entity_col else None
-            entity = entity or "default"
+            entity = entity or DataPoint.DEFAULT_ENTITY
 
             for metric in metric_cols:
                 value_str = row.get(metric, "")
