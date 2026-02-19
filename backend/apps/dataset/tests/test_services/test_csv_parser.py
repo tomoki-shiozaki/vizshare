@@ -147,14 +147,11 @@ class TestCsvParser:
             ("  45.6 ", 45.6),
             ("", None),
             (None, None),
+            ("abc", None),  # 無効な値も None
         ],
     )
-    def test_parse_value_valid(self, value_str, expected):
+    def test_parse_value(self, value_str, expected):
         assert parse_value(value_str, row=0, metric="m") == expected
-
-    def test_parse_value_invalid(self):
-        with pytest.raises(ValueError):
-            parse_value("abc", row=0, metric="m")
 
     # ----------------------------
     # _open_csv_text_stream tests

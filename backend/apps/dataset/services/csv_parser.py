@@ -101,7 +101,8 @@ def parse_value(value_str: str | None, *, row: int, metric: str) -> float | None
     try:
         return float(value_str)
     except ValueError:
-        raise ValueError(f"Invalid value: {value_str} (row={row}, metric={metric})")
+
+        return None
 
 
 def parse_dataset_csv(dataset: Dataset) -> int:
