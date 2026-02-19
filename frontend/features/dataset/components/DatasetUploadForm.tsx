@@ -234,20 +234,25 @@ export function DatasetUploadForm() {
 
             {/* Metrics */}
             <div>
-              <Label>Metric列（複数選択）</Label>
-              <div className="space-y-1 border rounded-md p-3">
-                {headers.map((h) => (
-                  <label key={h} className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={metrics.includes(h)}
-                      onChange={() => toggleMetric(h)}
-                      disabled={uploading}
-                    />
-                    {h}
-                  </label>
-                ))}
-              </div>
+              <fieldset className="space-y-2">
+                <legend className="text-sm font-medium">
+                  Metric列（複数選択）
+                </legend>
+
+                <div className="space-y-1 border rounded-md p-3">
+                  {headers.map((h) => (
+                    <label key={h} className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={metrics.includes(h)}
+                        onChange={() => toggleMetric(h)}
+                        disabled={uploading}
+                      />
+                      {h}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
             </div>
           </div>
         )}
