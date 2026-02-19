@@ -74,7 +74,7 @@ class Dataset(models.Model):
 
 
 class DataPoint(models.Model):
-    DEFAULT_ENTITY = "default"
+    DEFAULT_ENTITY = "__default__"
 
     dataset = models.ForeignKey(
         Dataset,

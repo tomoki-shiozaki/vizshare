@@ -94,7 +94,7 @@ export function DatasetUploadForm() {
       file,
       schema: {
         time: timeColumn,
-        entity: entityColumn || undefined,
+        ...(entityColumn.trim() && { entity: entityColumn }),
         metrics: parseMetrics(),
       },
     });
