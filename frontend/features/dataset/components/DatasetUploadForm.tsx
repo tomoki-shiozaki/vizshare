@@ -196,8 +196,9 @@ export function DatasetUploadForm() {
           <div className="space-y-4">
             {/* Time */}
             <div>
-              <Label>Time列（必須）</Label>
+              <Label htmlFor="time-column">Time列（必須）</Label>
               <select
+                id="time-column"
                 value={timeColumn}
                 onChange={(e) => setTimeColumn(e.target.value)}
                 className="block w-full rounded-md border px-3 py-2 text-sm"
@@ -214,8 +215,9 @@ export function DatasetUploadForm() {
 
             {/* Entity */}
             <div>
-              <Label>Entity列（任意）</Label>
+              <Label htmlFor="entity-column">Entity列（任意）</Label>
               <select
+                id="entity-column"
                 value={entityColumn}
                 onChange={(e) => setEntityColumn(e.target.value)}
                 className="block w-full rounded-md border px-3 py-2 text-sm"
