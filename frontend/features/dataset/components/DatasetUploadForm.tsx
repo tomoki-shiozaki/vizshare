@@ -12,13 +12,28 @@ type Message = { type: "success" | "error"; text: string } | null;
 export function DatasetUploadForm() {
   const [file, setFile] = useState<File | null>(null);
 
+  // ⭐ CSVヘッダ一覧
+  const [headers, setHeaders] = useState<string[]>([]);
+
   const [timeColumn, setTimeColumn] = useState("");
   const [entityColumn, setEntityColumn] = useState("");
-  const [metricsInput, setMetricsInput] = useState("");
+  const [metrics, setMetrics] = useState<string[]>([]);
 
   const [message, setMessage] = useState<Message>(null);
 
   const queryClient = useQueryClient();
+
+  // =========================
+  // CSVヘッダ取得
+  // =========================
+  const readCsvHeaders = async (file: File): Promise<string[]> => {
+    const text = await file.text();
+    const firstLine = text.split(/\r?\n/)[0];
+    return firstLine
+      .split(",")
+      .map((h) => h.trim())
+      .filter(Boolean);
+  };
 
   const uploadMutation = useMutation({
     mutationFn: uploadDataset,
@@ -30,9 +45,10 @@ export function DatasetUploadForm() {
 
       // reset
       setFile(null);
+      setHeaders([]);
       setTimeColumn("");
       setEntityColumn("");
-      setMetricsInput("");
+      setMetrics([]);
 
       // ⭐ CSV一覧を即更新
       queryClient.invalidateQueries({ queryKey: ["datasets"] });
@@ -50,20 +66,48 @@ export function DatasetUploadForm() {
 
   const uploading = uploadMutation.isPending;
 
-  const parseMetrics = (): string[] =>
-    metricsInput
-      .split(",")
-      .map((m) => m.trim())
-      .filter(Boolean);
+  const isValid = !!file && timeColumn.trim() !== "" && metrics.length > 0;
 
-  const isValid =
-    !!file && timeColumn.trim() !== "" && parseMetrics().length > 0;
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  // =========================
+  // CSV選択時
+  // =========================
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
-    if (selected) setFile(selected);
+    if (!selected) return;
+
+    setFile(selected);
+    setMessage(null);
+
+    try {
+      const h = await readCsvHeaders(selected);
+      setHeaders(h);
+
+      // 既存選択リセット
+      setTimeColumn("");
+      setEntityColumn("");
+      setMetrics([]);
+    } catch {
+      setMessage({
+        type: "error",
+        text: "CSVヘッダの読み込みに失敗しました",
+      });
+    }
   };
 
+  // =========================
+  // metric toggle
+  // =========================
+  const toggleMetric = (column: string) => {
+    setMetrics((prev) =>
+      prev.includes(column)
+        ? prev.filter((m) => m !== column)
+        : [...prev, column],
+    );
+  };
+
+  // =========================
+  // validation
+  // =========================
   const validate = (): boolean => {
     if (!file) {
       setMessage({ type: "error", text: "ファイルを選択してください" });
@@ -73,7 +117,6 @@ export function DatasetUploadForm() {
       setMessage({ type: "error", text: "Time列は必須です" });
       return false;
     }
-    const metrics = parseMetrics();
     if (metrics.length === 0) {
       setMessage({
         type: "error",
@@ -94,8 +137,8 @@ export function DatasetUploadForm() {
       file,
       schema: {
         time: timeColumn,
-        ...(entityColumn.trim() && { entity: entityColumn }),
-        metrics: parseMetrics(),
+        ...(entityColumn && { entity: entityColumn }),
+        metrics,
       },
     });
   };
@@ -111,8 +154,8 @@ export function DatasetUploadForm() {
               CSVファイルの<strong>1行目はヘッダ行</strong>
               である必要があります。
             </li>
-            <li>列名はヘッダに記載された名前を入力してください</li>
-            <li>Metric列は複数指定できます</li>
+            <li>CSV選択後、列をプルダウンから選択できます</li>
+            <li>Metric列は複数選択できます</li>
           </ul>
           <p className="mt-2">
             例:{" "}
@@ -140,6 +183,7 @@ export function DatasetUploadForm() {
               "
             disabled={uploading}
           />
+
           {file && (
             <p className="text-sm text-muted-foreground">
               選択中: <span className="font-medium">{file.name}</span>
@@ -147,45 +191,64 @@ export function DatasetUploadForm() {
           )}
         </div>
 
-        {/* schema */}
-        <div className="space-y-2">
-          <Label htmlFor="time-column">Time列（必須）</Label>
-          <input
-            id="time-column"
-            type="text"
-            value={timeColumn}
-            onChange={(e) => setTimeColumn(e.target.value)}
-            placeholder="例: date"
-            disabled={uploading}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          />
+        {/* schema（CSV選択後のみ表示） */}
+        {headers.length > 0 && (
+          <div className="space-y-4">
+            {/* Time */}
+            <div>
+              <Label>Time列（必須）</Label>
+              <select
+                value={timeColumn}
+                onChange={(e) => setTimeColumn(e.target.value)}
+                className="block w-full rounded-md border px-3 py-2 text-sm"
+                disabled={uploading}
+              >
+                <option value="">選択してください</option>
+                {headers.map((h) => (
+                  <option key={h} value={h}>
+                    {h}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <Label htmlFor="entity-column">
-            Entity列 <span className="text-muted-foreground">(任意)</span>
-          </Label>
-          <input
-            id="entity-column"
-            type="text"
-            value={entityColumn}
-            onChange={(e) => setEntityColumn(e.target.value)}
-            placeholder="例: country"
-            disabled={uploading}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          />
+            {/* Entity */}
+            <div>
+              <Label>Entity列（任意）</Label>
+              <select
+                value={entityColumn}
+                onChange={(e) => setEntityColumn(e.target.value)}
+                className="block w-full rounded-md border px-3 py-2 text-sm"
+                disabled={uploading}
+              >
+                <option value="">指定しない</option>
+                {headers.map((h) => (
+                  <option key={h} value={h}>
+                    {h}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <Label htmlFor="metrics-column">
-            Metric列（複数可・カンマ区切り）
-          </Label>
-          <input
-            id="metrics-column"
-            type="text"
-            value={metricsInput}
-            onChange={(e) => setMetricsInput(e.target.value)}
-            placeholder="例: sales, profit, cost"
-            disabled={uploading}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          />
-        </div>
+            {/* Metrics */}
+            <div>
+              <Label>Metric列（複数選択）</Label>
+              <div className="space-y-1 border rounded-md p-3">
+                {headers.map((h) => (
+                  <label key={h} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={metrics.includes(h)}
+                      onChange={() => toggleMetric(h)}
+                      disabled={uploading}
+                    />
+                    {h}
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ボタン */}
         <div className="flex justify-end">
