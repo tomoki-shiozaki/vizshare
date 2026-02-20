@@ -27,12 +27,35 @@ export function DatasetUploadForm() {
   // CSVヘッダ取得
   // =========================
   const readCsvHeaders = async (file: File): Promise<string[]> => {
-    const text = await file.text();
+    const buffer = await file.arrayBuffer();
+
+    // UTF-8 → Shift_JIS の順で試す
+    const tryDecode = (encoding: string, fatal = false) =>
+      new TextDecoder(encoding, { fatal }).decode(buffer);
+
+    let text: string;
+
+    try {
+      // ① UTF-8（壊れてたら例外）
+      text = tryDecode("utf-8", true);
+    } catch {
+      // ② 日本CSV想定 → Shift_JIS
+      text = tryDecode("shift_jis");
+    }
+
     const firstLine = text.split(/\r?\n/)[0];
-    return firstLine
+
+    const headers = firstLine
+      .replace(/^\uFEFF/, "") // BOM除去
       .split(",")
       .map((h) => h.trim())
       .filter(Boolean);
+
+    if (headers.length === 0) {
+      throw new Error("ヘッダが見つかりません");
+    }
+
+    return headers;
   };
 
   const uploadMutation = useMutation({
