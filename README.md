@@ -34,20 +34,22 @@ and APIs, data models, and features may change.
 
 ## Live Demo
 
-The MVP of VizShare is deployed at:
+You can try the MVP of VizShare at:
 
 https://vizshare.vercel.app/
 
-⚠️ Note: VizShare is currently in early development (MVP stage).
-Some UI elements and features are still under construction.
+⚠️ Note: VizShare is currently in early development (MVP stage).  
+Some features and UI elements are still under construction, so you may encounter minor inconsistencies.
 
 ### Demo Account
+
+Use the following account to log in and test CSV upload and visualization:
 
 | Username  | Password |
 | --------- | -------- |
 | demo_user | demo1234 |
 
-Use this account to log in and try uploading CSV files.
+Feel free to explore the app using this account.
 
 ## Tech Stack
 
