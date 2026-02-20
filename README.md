@@ -51,6 +51,10 @@ Use the following account to log in and test CSV upload and visualization:
 
 Feel free to explore the app using this account.
 
+## Screenshots
+
+_(Screenshots will be added once the UI is more polished)_
+
 ## Tech Stack
 
 - Backend: Django
