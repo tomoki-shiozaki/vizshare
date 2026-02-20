@@ -77,7 +77,7 @@ See [LICENSE](LICENSE) for details.
 
 ## Development Documentation
 
-- [Development Documentation](docs/)
+- [Development Documentation](docs/) — project specifications, design documents, and development setup
 
 ---
 
