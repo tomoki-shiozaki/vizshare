@@ -13,21 +13,30 @@ and visualization simple and reproducible.
 
 ## Features
 
+### ✅ Implemented (MVP Core)
+
 - Upload CSV files (time-series data)
-- Automatic parsing and visualization
-- Share visualizations via URL
+- Automatic parsing of uploaded data (schema detection, time handling)
+- Interactive visualization of time-series datasets
+
+### 🚧 In Progress / Planned
+
+- Share datasets and visualizations among users
+- Additional visualization features
 
 ## Project Status
 
 VizShare is currently in early development (MVP stage).
-APIs, data models, and features may change.
+
+The core functionality — CSV upload, parsing, and visualization — is implemented
+and working as a minimum viable product. The project is under active development,
+and APIs, data models, and features may change.
 
 ## Tech Stack
 
 - Backend: Django
 - Frontend: React / Next.js
 - Infrastructure: Terraform
-- CI/CD: GitHub Actions
 
 ## Repository Structure
 
