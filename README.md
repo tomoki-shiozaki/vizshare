@@ -32,6 +32,23 @@ The core functionality — CSV upload, parsing, and visualization — is impleme
 and working as a minimum viable product. The project is under active development,
 and APIs, data models, and features may change.
 
+## Live Demo
+
+The MVP of VizShare is deployed at:
+
+https://vizshare.vercel.app/
+
+⚠️ Note: VizShare is currently in early development (MVP stage).
+Some UI elements and features are still under construction.
+
+### Demo Account
+
+| Username  | Password |
+| --------- | -------- |
+| demo_user | demo1234 |
+
+Use this account to log in and try uploading CSV files.
+
 ## Tech Stack
 
 - Backend: Django
