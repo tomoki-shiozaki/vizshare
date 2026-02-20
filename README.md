@@ -38,6 +38,32 @@ and APIs, data models, and features may change.
 - Frontend: React / Next.js
 - Infrastructure: Terraform
 
+## Architecture
+
+### System Overview
+
+VizShare uses a frontend–backend architecture for data upload,
+processing, and visualization.
+
+```mermaid
+flowchart LR
+    User[User Browser]
+    Frontend[Frontend - Next.js]
+    Backend[Backend - Django API]
+    DB[(Database - Dataset Storage)]
+
+    User --> Frontend
+    Frontend -->|REST API| Backend
+    Backend --> DB
+```
+
+### Data Flow
+
+1. User uploads a time-series CSV file.
+2. Backend parses and validates the dataset.
+3. Processed data is stored as structured datasets.
+4. Frontend renders interactive charts from stored data.
+
 ## Repository Structure
 
 - `backend/` – Django backend application
