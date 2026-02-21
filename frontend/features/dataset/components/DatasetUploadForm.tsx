@@ -49,7 +49,7 @@ export function DatasetUploadForm() {
     if (lines.length === 0) throw new Error("CSVが空です");
 
     const headers = lines[0]
-      .replace(/^\uFEFF/, "")
+      .replace(/^\uFEFF/, "") // BOM除去
       .split(",")
       .map((h) => h.trim())
       .filter(Boolean);
@@ -71,12 +71,14 @@ export function DatasetUploadForm() {
         type: "success",
         text: `アップロード成功: ID ${data.id}, 名前 ${data.name}`,
       });
+      // reset
       setFile(null);
       setHeaders([]);
       setSampleRows([]);
       setTimeColumn("");
       setEntityColumn("");
       setMetrics([]);
+      // ⭐ CSV一覧を即更新
       queryClient.invalidateQueries({ queryKey: ["datasets"] });
     },
     onError: (error) => {
