@@ -15,7 +15,10 @@ import { Button } from "@/components/ui/button";
 /* ======================
    ナビ定義
 ====================== */
-const mainLinks = [{ to: "/", label: "ホーム" }];
+const mainLinks = [
+  { to: "/", label: "ホーム" },
+  { to: "/dataset", label: "データセット管理" },
+];
 const dropdownLinks = [{ to: "/about", label: "このサイトについて" }];
 
 /* ======================
