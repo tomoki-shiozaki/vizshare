@@ -60,6 +60,7 @@ _(Screenshots will be added once the UI is more polished)_
 - Backend: Django
 - Frontend: React / Next.js
 - Infrastructure: Terraform
+- Storage: Google Cloud Storage (CSV file storage)
 
 ## Architecture
 
@@ -74,10 +75,12 @@ flowchart LR
     Frontend[Frontend - Next.js]
     Backend[Backend - Django API]
     DB[(Database - Dataset Storage)]
+    GCS[(Google Cloud Storage)]
 
     User --> Frontend
     Frontend -->|REST API| Backend
     Backend --> DB
+    Backend --> GCS
 ```
 
 ### Data Flow
@@ -86,6 +89,8 @@ flowchart LR
 2. Backend parses and validates the dataset.
 3. Processed data is stored as structured datasets.
 4. Frontend renders interactive charts from stored data.
+
+> Note: Uploaded CSV files are stored in Google Cloud Storage to handle large datasets efficiently and enable easy sharing.
 
 ## Repository Structure
 
