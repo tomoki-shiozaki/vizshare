@@ -27,7 +27,10 @@ export function DatasetUploadForm() {
   const readCsvHeaders = async (
     file: File,
   ): Promise<{ headers: string[]; rows: string[][] }> => {
-    const buffer = await file.arrayBuffer();
+    const CHUNK_SIZE = 256 * 1024; // 256KB
+
+    const blob = file.slice(0, CHUNK_SIZE);
+    const buffer = await blob.arrayBuffer();
 
     // UTF-8 → Shift_JIS の順で試す
     const tryDecode = (encoding: string, fatal = false) =>
