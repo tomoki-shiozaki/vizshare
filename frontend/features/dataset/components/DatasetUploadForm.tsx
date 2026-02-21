@@ -11,22 +11,22 @@ type Message = { type: "success" | "error"; text: string } | null;
 
 export function DatasetUploadForm() {
   const [file, setFile] = useState<File | null>(null);
-
   // ⭐ CSVヘッダ一覧
   const [headers, setHeaders] = useState<string[]>([]);
-
+  const [sampleRows, setSampleRows] = useState<string[][]>([]); // サンプル行
   const [timeColumn, setTimeColumn] = useState("");
   const [entityColumn, setEntityColumn] = useState("");
   const [metrics, setMetrics] = useState<string[]>([]);
-
   const [message, setMessage] = useState<Message>(null);
 
   const queryClient = useQueryClient();
 
   // =========================
-  // CSVヘッダ取得
+  // CSVヘッダ＆サンプル取得
   // =========================
-  const readCsvHeaders = async (file: File): Promise<string[]> => {
+  const readCsvHeaders = async (
+    file: File,
+  ): Promise<{ headers: string[]; rows: string[][] }> => {
     const buffer = await file.arrayBuffer();
 
     // UTF-8 → Shift_JIS の順で試す
@@ -42,22 +42,25 @@ export function DatasetUploadForm() {
       // ② 日本CSV想定 → Shift_JIS
       text = tryDecode("shift_jis");
     }
+    const lines = text.split(/\r?\n/).filter(Boolean);
+    if (lines.length === 0) throw new Error("CSVが空です");
 
-    const firstLine = text.split(/\r?\n/)[0];
-
-    const headers = firstLine
-      .replace(/^\uFEFF/, "") // BOM除去
+    const headers = lines[0]
+      .replace(/^\uFEFF/, "")
       .split(",")
       .map((h) => h.trim())
       .filter(Boolean);
+    if (headers.length === 0) throw new Error("ヘッダが見つかりません");
 
-    if (headers.length === 0) {
-      throw new Error("ヘッダが見つかりません");
-    }
-
-    return headers;
+    const rows = lines
+      .slice(1, 4)
+      .map((line) => line.split(",").map((v) => v.trim())); // 先頭3行をサンプル
+    return { headers, rows };
   };
 
+  // =========================
+  // アップロードMutation
+  // =========================
   const uploadMutation = useMutation({
     mutationFn: uploadDataset,
     onSuccess: (data) => {
@@ -65,15 +68,12 @@ export function DatasetUploadForm() {
         type: "success",
         text: `アップロード成功: ID ${data.id}, 名前 ${data.name}`,
       });
-
-      // reset
       setFile(null);
       setHeaders([]);
+      setSampleRows([]);
       setTimeColumn("");
       setEntityColumn("");
       setMetrics([]);
-
-      // ⭐ CSV一覧を即更新
       queryClient.invalidateQueries({ queryKey: ["datasets"] });
     },
     onError: (error) => {
@@ -88,11 +88,10 @@ export function DatasetUploadForm() {
   });
 
   const uploading = uploadMutation.isPending;
-
   const isValid = !!file && timeColumn.trim() !== "" && metrics.length > 0;
 
   // =========================
-  // CSV選択時
+  // ファイル選択
   // =========================
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
@@ -102,24 +101,35 @@ export function DatasetUploadForm() {
     setMessage(null);
 
     try {
-      const h = await readCsvHeaders(selected);
+      const { headers: h, rows } = await readCsvHeaders(selected);
       setHeaders(h);
+      setSampleRows(rows);
 
-      // 既存選択リセット
-      setTimeColumn("");
+      // 自動予選択
+      const lowerHeaders = h.map((s) => s.toLowerCase());
+      const suggestedTime =
+        h[lowerHeaders.findIndex((s) => s.includes("time"))] || "";
+      const suggestedMetrics = h.filter((s) =>
+        ["value", "sales", "profit", "amount", "count"].some((kw) =>
+          s.toLowerCase().includes(kw),
+        ),
+      );
+
+      setTimeColumn(suggestedTime);
       setEntityColumn("");
-      setMetrics([]);
-    } catch {
+      setMetrics(suggestedMetrics);
+    } catch (err) {
+      console.error(err);
       setMessage({
         type: "error",
-        text: "CSVヘッダの読み込みに失敗しました",
+        text:
+          err instanceof Error
+            ? `CSV読み込み失敗: ${err.message}（例: 空ファイル、カンマ区切りなし、文字コード非対応）`
+            : "CSV読み込み失敗: 不明なエラー",
       });
     }
   };
 
-  // =========================
-  // metric toggle
-  // =========================
   const toggleMetric = (column: string) => {
     setMetrics((prev) =>
       prev.includes(column)
@@ -128,9 +138,6 @@ export function DatasetUploadForm() {
     );
   };
 
-  // =========================
-  // validation
-  // =========================
   const validate = (): boolean => {
     if (!file) {
       setMessage({ type: "error", text: "ファイルを選択してください" });
@@ -141,19 +148,14 @@ export function DatasetUploadForm() {
       return false;
     }
     if (metrics.length === 0) {
-      setMessage({
-        type: "error",
-        text: "Metric列は1つ以上指定してください",
-      });
+      setMessage({ type: "error", text: "Metric列は1つ以上指定してください" });
       return false;
     }
     return true;
   };
 
   const handleUpload = () => {
-    if (!validate()) return;
-    if (!file) return; // 念のためのガード
-
+    if (!validate() || !file) return;
     setMessage(null);
 
     uploadMutation.mutate({
@@ -173,12 +175,12 @@ export function DatasetUploadForm() {
         <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
           <p className="font-medium mb-1">CSVファイルの形式について</p>
           <ul className="list-disc pl-5 space-y-1">
+            <li>CSVの1行目はヘッダ行である必要があります</li>
+            <li>Time列は日時形式で、例: 2026-02-21 15:00</li>
             <li>
-              CSVファイルの<strong>1行目はヘッダ行</strong>
-              である必要があります。
+              Entity列を指定しない場合は全行が1つのグループとして扱われます
             </li>
-            <li>CSV選択後、列をプルダウンから選択できます</li>
-            <li>Metric列は複数選択できます</li>
+            <li>Metric列は数値列で、複数選択可能です</li>
           </ul>
           <p className="mt-2">
             例:{" "}
@@ -206,7 +208,6 @@ export function DatasetUploadForm() {
               "
             disabled={uploading}
           />
-
           {file && (
             <p className="text-sm text-muted-foreground">
               選択中: <span className="font-medium">{file.name}</span>
@@ -217,7 +218,7 @@ export function DatasetUploadForm() {
         {/* schema（CSV選択後のみ表示） */}
         {headers.length > 0 && (
           <div className="space-y-4">
-            {/* Time */}
+            {/* Time列 */}
             <div>
               <Label htmlFor="time-column">Time列（必須）</Label>
               <select
@@ -230,13 +231,16 @@ export function DatasetUploadForm() {
                 <option value="">選択してください</option>
                 {headers.map((h) => (
                   <option key={h} value={h}>
-                    {h}
+                    {h}{" "}
+                    {sampleRows.length > 0
+                      ? `(例: ${sampleRows[0][headers.indexOf(h)] || ""})`
+                      : ""}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Entity */}
+            {/* Entity列 */}
             <div>
               <Label htmlFor="entity-column">Entity列（任意）</Label>
               <select
@@ -249,19 +253,21 @@ export function DatasetUploadForm() {
                 <option value="">指定しない</option>
                 {headers.map((h) => (
                   <option key={h} value={h}>
-                    {h}
+                    {h}{" "}
+                    {sampleRows.length > 0
+                      ? `(例: ${sampleRows[0][headers.indexOf(h)] || ""})`
+                      : ""}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Metrics */}
+            {/* Metrics列 */}
             <div>
               <fieldset className="space-y-2">
                 <legend className="text-sm font-medium">
                   Metric列（複数選択）
                 </legend>
-
                 <div className="space-y-1 border rounded-md p-3">
                   {headers.map((h) => (
                     <label key={h} className="flex items-center gap-2 text-sm">
@@ -271,12 +277,44 @@ export function DatasetUploadForm() {
                         onChange={() => toggleMetric(h)}
                         disabled={uploading}
                       />
-                      {h}
+                      {h}{" "}
+                      {sampleRows.length > 0
+                        ? `(例: ${sampleRows[0][headers.indexOf(h)] || ""})`
+                        : ""}
                     </label>
                   ))}
                 </div>
               </fieldset>
             </div>
+
+            {/* サンプルプレビュー */}
+            {sampleRows.length > 0 && (
+              <div className="text-sm border p-2 rounded">
+                <p className="font-medium mb-1">CSVサンプル行</p>
+                <table className="text-xs w-full border-collapse">
+                  <thead>
+                    <tr>
+                      {headers.map((h) => (
+                        <th key={h} className="border px-1 py-0.5 bg-gray-100">
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sampleRows.map((row, idx) => (
+                      <tr key={idx}>
+                        {headers.map((h, i) => (
+                          <td key={i} className="border px-1 py-0.5">
+                            {row[i] || ""}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 
@@ -290,9 +328,7 @@ export function DatasetUploadForm() {
         {/* メッセージ */}
         {message && (
           <p
-            className={`text-sm ${
-              message.type === "success" ? "text-green-600" : "text-red-600"
-            }`}
+            className={`text-sm ${message.type === "success" ? "text-green-600" : "text-red-600"}`}
           >
             {message.text}
           </p>
