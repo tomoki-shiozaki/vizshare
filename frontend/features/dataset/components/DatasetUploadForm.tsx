@@ -124,7 +124,6 @@ export function DatasetUploadForm() {
       setEntityColumn("");
       setMetrics(suggestedMetrics);
     } catch (err) {
-      console.error(err);
       setMessage({
         type: "error",
         text:
@@ -135,6 +134,9 @@ export function DatasetUploadForm() {
     }
   };
 
+  // =========================
+  // metric toggle
+  // =========================
   const toggleMetric = (column: string) => {
     setMetrics((prev) =>
       prev.includes(column)
@@ -143,6 +145,9 @@ export function DatasetUploadForm() {
     );
   };
 
+  // =========================
+  // validation
+  // =========================
   const validate = (): boolean => {
     if (!file) {
       setMessage({ type: "error", text: "ファイルを選択してください" });
