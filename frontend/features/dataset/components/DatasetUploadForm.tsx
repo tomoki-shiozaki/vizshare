@@ -242,7 +242,8 @@ export function DatasetUploadForm() {
 
             <p className="mt-2 font-medium">例:</p>
             <pre className="bg-white p-2 rounded text-xs mt-1">
-              time,entity,sales,profit 2024-01-01,Japan,100,20
+              {`time,entity,sales,profit
+2024-01-01,Japan,100,20`}
             </pre>
 
             <p className="mt-3 text-xs">
@@ -257,16 +258,16 @@ export function DatasetUploadForm() {
               </a>
               を参照してください。
             </p>
+
+            <button
+              type="button"
+              onClick={downloadSampleCsv}
+              className="mt-2 text-xs underline text-blue-700 hover:text-blue-900"
+            >
+              サンプルCSVをダウンロード
+            </button>
           </div>
         </details>
-
-        <button
-          type="button"
-          onClick={downloadSampleCsv}
-          className="mt-3 text-sm underline text-blue-700 hover:text-blue-900"
-        >
-          サンプルCSVをダウンロード
-        </button>
 
         {/* ファイル選択 */}
         <div className="space-y-2">
