@@ -1,7 +1,7 @@
 const Footer = () => (
   <footer className="bg-gray-100 text-gray-600 mt-8 py-4 text-center rounded-t-lg shadow-inner">
     <small className="text-sm">
-      &copy; 2025{" "}
+      &copy; 2026–{" "}
       <a
         href="https://github.com/tomoki-shiozaki"
         target="_blank"

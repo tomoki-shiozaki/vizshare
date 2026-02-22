@@ -17,14 +17,9 @@ import { Button } from "@/components/ui/button";
 ====================== */
 const mainLinks = [
   { to: "/", label: "ホーム" },
-  { to: "/climate/temperature", label: "気温グラフ" },
-  { to: "/climate/co2", label: "CO₂排出量マップ" },
+  { to: "/dataset", label: "データセット管理" },
 ];
-
-const dropdownLinks = [
-  { to: "/about", label: "このサイトについて" },
-  { to: "/data", label: "データ" },
-];
+const dropdownLinks = [{ to: "/about", label: "このサイトについて" }];
 
 /* ======================
    共通 NavbarLink
@@ -104,7 +99,7 @@ export const AppNavbar = () => {
         {/* 上段：ロゴ + ハンバーガー */}
         <div className="flex items-center justify-between w-full md:w-auto md:mr-6">
           <Link href="/" className="text-lg font-bold whitespace-nowrap">
-            気候変動データアプリ
+            Vizshare
           </Link>
 
           <button
