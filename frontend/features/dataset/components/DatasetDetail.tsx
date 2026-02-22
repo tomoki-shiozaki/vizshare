@@ -2,6 +2,7 @@
 
 import { fetchDatasetDetail } from "@/features/dataset/api/fetchDatasetDetail";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 type Props = {
   id: string;
@@ -19,38 +20,32 @@ export function DatasetDetail({ id }: Props) {
   });
 
   if (isLoading) return <div>Loading...</div>;
-
-  if (error instanceof Error)
-    return <div style={{ color: "red" }}>Error: {error.message}</div>;
-
+  if (error instanceof Error) return <div>Error: {error.message}</div>;
   if (!dataset) return <div>No data found</div>;
 
   return (
-    <div style={{ padding: "16px" }}>
-      <h1>Dataset Detail (ID: {id})</h1>
+    <div className="p-4">
+      {/* 戻る */}
+      <Link href="/dataset">← Dataset一覧に戻る</Link>
 
-      <p>
-        <strong>Name:</strong> {dataset.name}
-      </p>
+      {/* ヘッダー */}
+      <h1>{dataset.name}</h1>
+      <p>Status: {dataset.status}</p>
+      <p>Created: {new Date(dataset.created_at).toLocaleString()}</p>
 
-      <p>
-        <strong>Status:</strong> {dataset.status}
-      </p>
+      {/* schema */}
+      <h2>Data Structure</h2>
+      <p>Time: {dataset.schema.time}</p>
+      <p>Entity: {dataset.schema.entity ?? "default"}</p>
+      <p>Metrics: {dataset.schema.metrics.join(", ")}</p>
 
-      <p>
-        <strong>Created at:</strong>{" "}
-        {new Date(dataset.created_at).toLocaleString()}
-      </p>
-
-      <h2>Schema</h2>
-      <pre style={{ background: "#f0f0f0", padding: "8px" }}>
-        {JSON.stringify(dataset.schema, null, 2)}
-      </pre>
-
+      {/* parse_result */}
       <h2>Parse Result</h2>
-      <pre style={{ background: "#f0f0f0", padding: "8px" }}>
-        {JSON.stringify(dataset.parse_result, null, 2)}
-      </pre>
+      {dataset.status === "failed" && (
+        <div style={{ color: "red" }}>{dataset.parse_result?.message}</div>
+      )}
+      {dataset.status === "processing" && <div>Processing...</div>}
+      {dataset.status === "parsed" && <div>Parsed successfully</div>}
     </div>
   );
 }
