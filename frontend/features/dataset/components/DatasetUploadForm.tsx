@@ -165,7 +165,8 @@ export function DatasetUploadForm() {
   };
 
   const handleUpload = () => {
-    if (!validate() || !file) return;
+    if (!validate()) return;
+    if (!file) return; // 念のためのガード
     setMessage(null);
 
     uploadMutation.mutate({
