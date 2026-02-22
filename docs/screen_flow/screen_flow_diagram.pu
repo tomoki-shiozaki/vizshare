@@ -2,35 +2,35 @@
 skinparam defaultFontName "Noto Sans CJK JP"
 hide empty description
 
-title Vizshare 画面遷移図（MVP）
+title Vizshare Screen Flow (MVP)
 
 legend left
-#LightBlue（青）: メイン画面
-#MistyRose（ピンク）: ユーザー操作画面
-#LightYellow（黄色）: 表示画面
+#LightBlue (Blue): Main screens
+#MistyRose (Pink): User interaction screens
+#LightYellow (Yellow): Display screens
 end legend
 
 [*] --> login
 
-state "ログイン画面" as login <<操作>>
-state "ホーム画面" as home #LightBlue
-state "データセット管理画面\n（アップロード・一覧）" as datasetManagement #LightBlue
-state "グラフ画面\n（グラフ表示・データセット詳細）" as graphView #LightBlue
+state "Login Screen" as login <<UserAction>>
+state "Home Screen" as home #LightBlue
+state "Dataset Management Screen\n(Upload & List)" as datasetManagement #LightBlue
+state "Graph Screen\n(Graph View & Dataset Details)" as graphView #LightBlue
 
-login --> home : ログイン成功
+login --> home : Login success
 
-' ホームからの遷移
-home --> datasetManagement : データセット管理へ
+' Navigation from home
+home --> datasetManagement : Go to dataset management
 
-' データセット管理から
-datasetManagement --> graphView : データセット選択
+' From dataset management
+datasetManagement --> graphView : Select dataset
 
-' 戻る導線（あるなら）
-graphView --> datasetManagement : 戻る
+' Back navigation (if implemented)
+graphView --> datasetManagement : Back
 
 skinparam state {
-  BackgroundColor<<操作>> MistyRose
-  BackgroundColor<<表示>> LightYellow
+  BackgroundColor<<UserAction>> MistyRose
+  BackgroundColor<<Display>> LightYellow
 }
 
 @enduml
