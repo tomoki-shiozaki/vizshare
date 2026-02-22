@@ -246,7 +246,7 @@ export function DatasetUploadForm() {
 2024-01-01,Japan,100,20`}
             </pre>
 
-            <p className="mt-3 text-xs">
+            <p className="mt-3 text-sm">
               詳細なCSV仕様は
               <a
                 href="/docs/csv-format"
@@ -262,7 +262,7 @@ export function DatasetUploadForm() {
             <button
               type="button"
               onClick={downloadSampleCsv}
-              className="mt-2 text-xs underline text-blue-700 hover:text-blue-900"
+              className="mt-2 text-sm underline text-blue-700 hover:text-blue-900"
             >
               サンプルCSVをダウンロード
             </button>
