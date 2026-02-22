@@ -58,6 +58,12 @@ The following diagram shows the main data models and their relationships in Vizs
 - **Dataset Status:** UPLOADED / PROCESSING / PARSED / FAILED
 - **JSON Fields:** `schema` and `parse_result` are stored as JSONFields.
 
+## 4. Screen Flow Diagram
+
+The following diagram shows the main screen transitions in the Vizshare MVP.
+
+![Screen Flow Diagram](./screen_flow/screen_flow_diagram/screen_flow_vizshare.svg)
+
 ## 2. システム構成図（アーキテクチャ）
 
 本プロジェクトの全体構成は以下の通りです。  
