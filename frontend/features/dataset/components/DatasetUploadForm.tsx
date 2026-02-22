@@ -186,12 +186,21 @@ export function DatasetUploadForm() {
         <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
           <p className="font-medium mb-1">CSVファイルの形式について</p>
           <ul className="list-disc pl-5 space-y-1">
-            <li>CSVの1行目はヘッダ行である必要があります</li>
-            <li>Time列は日時形式で、例: 2026-02-21 15:00</li>
             <li>
-              Entity列を指定しない場合は全行が1つのグループとして扱われます
+              CSVファイルの<strong>1行目はヘッダ行</strong>
+              である必要があります。
             </li>
-            <li>Metric列は数値列で、複数選択可能です</li>
+            <li>CSV選択後、列をプルダウンから選択できます。</li>
+            <li>
+              Time列は時間のデータ列を選択してください。グラフの横軸になります。
+            </li>
+            <li>
+              Entity列はデータの対象を表します。例：国、商品名など。
+              Entity列を指定しない場合は全行が1つのグループとして扱われます。
+            </li>
+            <li>
+              Metric列は数値列です。グラフの縦軸（系列）になります。複数選択可能です。
+            </li>
           </ul>
           <p className="mt-2">
             例:{" "}
