@@ -114,6 +114,8 @@ export function DatasetUploadForm() {
       const lowerHeaders = h.map((s) => s.toLowerCase());
       const suggestedTime =
         h[lowerHeaders.findIndex((s) => s.includes("time"))] || "";
+      const suggestedEntity =
+        h[lowerHeaders.findIndex((s) => s.includes("entity"))] || "";
       const suggestedMetrics = h.filter((s) =>
         ["value", "sales", "profit", "amount", "count"].some((kw) =>
           s.toLowerCase().includes(kw),
@@ -121,7 +123,7 @@ export function DatasetUploadForm() {
       );
 
       setTimeColumn(suggestedTime);
-      setEntityColumn("");
+      setEntityColumn(suggestedEntity);
       setMetrics(suggestedMetrics);
     } catch (err) {
       setMessage({
