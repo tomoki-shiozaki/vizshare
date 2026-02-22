@@ -31,15 +31,16 @@ This directory contains design notes, specifications, and development documentat
 
 | ID  | Requirement    | Description                                                     | Priority | Notes                     |
 | --- | -------------- | --------------------------------------------------------------- | -------- | ------------------------- |
-| R1  | Upload CSV     | Users can upload CSV files containing their own data            | High     | Support time-series data  |
+| R1  | Upload CSV     | Users can upload CSV files containing their own data            | High     | MVP                       |
 | R2  | Parse Data     | System parses CSV and extracts time, entity, and metric columns | High     | MVP: only numeric metrics |
 | R3  | Visualize Data | Display data in graphs (line, bar, etc.)                        | High     | MVP: basic line chart     |
-| R4  | Share Data     | Users can share visualizations with others                      | Medium   | Add comment feature later |
-| R5  | Comment        | Users can comment on shared visualizations                      | Medium   | Optional for MVP          |
+| R4  | Share Data     | Users can share visualizations with others                      | Medium   | Planned feature           |
+| R5  | Comment        | Users can comment on shared visualizations                      | Medium   | Future feature            |
 
 ## 2.1 Use Case Diagram
 
-The following diagram illustrates the main user interactions in the Vizshare MVP.
+The following diagram illustrates the main user interactions in Vizshare,
+including both MVP functionality and planned features.
 
 ![Use Case Diagram](./usecase/usecase/vizshare_use.svg)
 
@@ -56,6 +57,12 @@ The following diagram shows the main data models and their relationships in Vizs
 - **DataPoint:** Stores individual metric values for each dataset, along with time and entity information. Each combination of dataset, entity, metric, and raw_time is unique.
 - **Dataset Status:** UPLOADED / PROCESSING / PARSED / FAILED
 - **JSON Fields:** `schema` and `parse_result` are stored as JSONFields.
+
+## 4. Screen Flow Diagram
+
+The following diagram shows the main screen transitions in the Vizshare MVP.
+
+![Screen Flow Diagram](./screen_flow/screen_flow_diagram/screen_flow_vizshare.svg)
 
 ## 2. システム構成図（アーキテクチャ）
 

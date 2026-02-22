@@ -1,0 +1,36 @@
+@startuml screen_flow_vizshare
+skinparam defaultFontName "Noto Sans CJK JP"
+hide empty description
+
+title Vizshare Screen Flow (MVP)
+
+legend left
+#LightBlue (Blue): Main screens
+#MistyRose (Pink): User interaction screens
+#LightYellow (Yellow): Display screens
+end legend
+
+[*] --> login
+
+state "Login Screen" as login <<UserAction>>
+state "Home Screen" as home #LightBlue
+state "Dataset Management Screen\n(Upload & List)" as datasetManagement #LightBlue
+state "Graph Screen\n(Graph View & Dataset Details)" as graphView #LightBlue
+
+login --> home : Login success
+
+' Navigation from home
+home --> datasetManagement : Go to dataset management
+
+' From dataset management
+datasetManagement --> graphView : Select dataset
+
+' Back navigation (if implemented)
+graphView --> datasetManagement : Back
+
+skinparam state {
+  BackgroundColor<<UserAction>> MistyRose
+  BackgroundColor<<Display>> LightYellow
+}
+
+@enduml
