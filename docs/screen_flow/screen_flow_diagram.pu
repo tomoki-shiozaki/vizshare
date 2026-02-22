@@ -14,18 +14,19 @@ end legend
 
 state "ログイン画面" as login <<操作>>
 state "ホーム画面" as home #LightBlue
+state "データセット管理画面\n（アップロード・一覧）" as datasetManagement #LightBlue
+state "グラフ画面\n（グラフ表示・データセット詳細）" as graphView #LightBlue
 
 login --> home : ログイン成功
 
 ' ホームからの遷移
 home --> datasetManagement : データセット管理へ
 
-' データセット管理内部
-state "データセット管理" as dataset {
-    state "データセット管理画面\n （アップロード・一覧）" as datasetManagement #LightBlue
-    state "グラフ画面\n（グラフ表示・データセット詳細）" as graphView #LightBlue
-    datasetManagement --> graphView : データセット選択
-}
+' データセット管理から
+datasetManagement --> graphView : データセット選択
+
+' 戻る導線（あるなら）
+graphView --> datasetManagement : 戻る
 
 skinparam state {
   BackgroundColor<<操作>> MistyRose
