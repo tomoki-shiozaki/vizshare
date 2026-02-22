@@ -201,8 +201,24 @@ export function DatasetUploadForm() {
     const csvContent = `time,entity,sales,profit
 2024-01-01,Japan,100,20
 2024-01-02,Japan,120,25
+2024-01-03,Japan,115,23
+2024-01-04,Japan,130,30
+2024-01-05,Japan,140,35
+2024-01-06,Japan,135,32
+2024-01-07,Japan,150,40
+2024-01-08,Japan,160,42
+2024-01-09,Japan,155,38
+2024-01-10,Japan,170,45
 2024-01-01,USA,80,15
-2024-01-02,USA,95,18`;
+2024-01-02,USA,95,18
+2024-01-03,USA,90,16
+2024-01-04,USA,105,22
+2024-01-05,USA,110,24
+2024-01-06,USA,108,23
+2024-01-07,USA,120,28
+2024-01-08,USA,125,30
+2024-01-09,USA,118,27
+2024-01-10,USA,130,32`;
 
     const BOM = "\uFEFF";
     const blob = new Blob([BOM + csvContent], {
