@@ -244,6 +244,19 @@ export function DatasetUploadForm() {
             <pre className="bg-white p-2 rounded text-xs mt-1">
               time,entity,sales,profit 2024-01-01,Japan,100,20
             </pre>
+
+            <p className="mt-3 text-xs">
+              詳細なCSV仕様は
+              <a
+                href="/docs/csv-format"
+                className="underline ml-1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                こちら
+              </a>
+              を参照してください。
+            </p>
           </div>
         </details>
 
