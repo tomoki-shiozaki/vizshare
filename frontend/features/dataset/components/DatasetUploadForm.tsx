@@ -183,41 +183,47 @@ export function DatasetUploadForm() {
     <Card className="max-w-xl">
       <CardContent className="space-y-6 pt-6">
         {/* CSV説明 */}
-        <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
-          <p className="font-medium mb-1">CSVファイルの形式について</p>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>
-              CSVファイルの<strong>1行目はヘッダ行</strong>
-              である必要があります。
-            </li>
+        <details className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+          <summary className="cursor-pointer font-medium">
+            CSVファイルの形式について
+          </summary>
 
-            <li>
-              CSV選択後、各列の役割（Time / Entity / Metric）を選択します。
-            </li>
+          <div className="mt-2">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                CSVファイルの<strong>1行目はヘッダ行</strong>
+                である必要があります。
+              </li>
 
-            <li>
-              <strong>Time列（必須）</strong>： 時間・日付を表す列です（例:
-              2024-01-01, 2024/01/01 12:00）。 グラフの横軸になります。
-            </li>
+              <li>
+                CSV選択後、各列の役割（Time / Entity / Metric）を選択します。
+              </li>
 
-            <li>
-              <strong>Entity列（任意）</strong>：
-              データの分類・対象を表す列です（例：国、商品名など）。
-              指定しない場合はすべてのデータが1つの系列として扱われます。
-            </li>
+              <li>
+                <strong>Time列（必須）</strong>： 時間・日付を表す列です（例:
+                2024-01-01, 2024/01/01 12:00）。 グラフの横軸になります。
+              </li>
 
-            <li>
-              <strong>Metric列（必須・複数可）</strong>：
-              数値データの列です。グラフの縦軸（値）になります。
-            </li>
-          </ul>
-          <p className="mt-2">
-            例:{" "}
-            <code className="rounded bg-white px-1">
-              time,entity,sales,profit
-            </code>
-          </p>
-        </div>
+              <li>
+                <strong>Entity列（任意）</strong>：
+                データの分類・対象を表す列です（例：国、商品名など）。
+                指定しない場合はすべてのデータが1つの系列として扱われます。
+              </li>
+
+              <li>
+                <strong>Metric列（必須・複数可）</strong>：
+                数値データの列です。グラフの縦軸（値）になります。
+              </li>
+            </ul>
+
+            <p className="mt-2">
+              例:
+              <code className="rounded bg-white px-1 ml-2">
+                time,entity,sales,profit
+              </code>
+            </p>
+          </div>
+        </details>
 
         {/* ファイル選択 */}
         <div className="space-y-2">
