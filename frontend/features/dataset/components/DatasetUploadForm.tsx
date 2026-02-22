@@ -179,6 +179,24 @@ export function DatasetUploadForm() {
     });
   };
 
+  const downloadSampleCsv = () => {
+    const csvContent = `time,entity,sales,profit
+2024-01-01,Japan,100,20
+2024-01-02,Japan,120,25
+2024-01-01,USA,80,15
+2024-01-02,USA,95,18`;
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "sample_dataset.csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Card className="max-w-xl">
       <CardContent className="space-y-6 pt-6">
@@ -225,6 +243,14 @@ export function DatasetUploadForm() {
             </pre>
           </div>
         </details>
+
+        <button
+          type="button"
+          onClick={downloadSampleCsv}
+          className="mt-3 text-sm underline text-blue-700 hover:text-blue-900"
+        >
+          サンプルCSVをダウンロード
+        </button>
 
         {/* ファイル選択 */}
         <div className="space-y-2">
