@@ -113,13 +113,29 @@ export function DatasetUploadForm() {
       // 自動予選択
       const lowerHeaders = h.map((s) => s.toLowerCase());
       const suggestedTime =
-        h[lowerHeaders.findIndex((s) => s.includes("time"))] || "";
+        h[
+          lowerHeaders.findIndex(
+            (s) => s.includes("time") || s.includes("date"),
+          )
+        ] || "";
+
+      const entityKeywords = [
+        "entity",
+        "country",
+        "product",
+        "name",
+        "category",
+      ];
       const suggestedEntity =
-        h[lowerHeaders.findIndex((s) => s.includes("entity"))] || "";
+        h[
+          lowerHeaders.findIndex((s) =>
+            entityKeywords.some((kw) => s.includes(kw)),
+          )
+        ] || "";
+
+      const metricKeywords = ["value", "sales", "profit", "amount", "count"];
       const suggestedMetrics = h.filter((s) =>
-        ["value", "sales", "profit", "amount", "count"].some((kw) =>
-          s.toLowerCase().includes(kw),
-        ),
+        metricKeywords.some((kw) => s.toLowerCase().includes(kw)),
       );
 
       setTimeColumn(suggestedTime);
