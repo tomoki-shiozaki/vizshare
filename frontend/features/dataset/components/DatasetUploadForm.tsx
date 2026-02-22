@@ -184,8 +184,11 @@ export function DatasetUploadForm() {
       <CardContent className="space-y-6 pt-6">
         {/* CSV説明 */}
         <details className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
-          <summary className="cursor-pointer font-medium">
+          <summary className="cursor-pointer font-medium select-none">
             CSVファイルの形式について
+            <span className="ml-2 text-xs text-gray-500">
+              （クリックで詳細）
+            </span>
           </summary>
 
           <div className="mt-2">
@@ -216,12 +219,10 @@ export function DatasetUploadForm() {
               </li>
             </ul>
 
-            <p className="mt-2">
-              例:
-              <code className="rounded bg-white px-1 ml-2">
-                time,entity,sales,profit
-              </code>
-            </p>
+            <p className="mt-2 font-medium">例:</p>
+            <pre className="bg-white p-2 rounded text-xs mt-1">
+              time,entity,sales,profit 2024-01-01,Japan,100,20
+            </pre>
           </div>
         </details>
 
