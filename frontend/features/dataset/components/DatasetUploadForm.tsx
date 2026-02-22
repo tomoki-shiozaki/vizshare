@@ -186,7 +186,10 @@ export function DatasetUploadForm() {
 2024-01-01,USA,80,15
 2024-01-02,USA,95,18`;
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const BOM = "\uFEFF";
+    const blob = new Blob([BOM + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
