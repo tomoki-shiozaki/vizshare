@@ -3,6 +3,7 @@
 import { fetchDatasetDetail } from "@/features/dataset/api/fetchDatasetDetail";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { DatasetStatus } from "@/features/dataset/components/DatasetStatus";
 
 type Props = {
   id: string;
@@ -30,22 +31,24 @@ export function DatasetDetail({ id }: Props) {
 
       {/* ヘッダー */}
       <h1>{dataset.name}</h1>
-      <p>Status: {dataset.status}</p>
       <p>Created: {new Date(dataset.created_at).toLocaleString()}</p>
 
-      {/* schema */}
-      <h2>Data Structure</h2>
-      <p>Time: {dataset.schema.time}</p>
-      <p>Entity: {dataset.schema.entity ?? "default"}</p>
-      <p>Metrics: {dataset.schema.metrics.join(", ")}</p>
+      {/* 状態表示（ここに集約） */}
+      <h2>Status</h2>
+      <DatasetStatus
+        status={dataset.status}
+        message={dataset.parse_result?.message}
+      />
 
-      {/* parse_result */}
-      <h2>Parse Result</h2>
-      {dataset.status === "failed" && (
-        <div style={{ color: "red" }}>{dataset.parse_result?.message}</div>
+      {/* parsed のときだけ schema 表示 */}
+      {dataset.status === "parsed" && (
+        <>
+          <h2>Data Structure</h2>
+          <p>Time: {dataset.schema.time}</p>
+          <p>Entity: {dataset.schema.entity ?? "default"}</p>
+          <p>Metrics: {dataset.schema.metrics.join(", ")}</p>
+        </>
       )}
-      {dataset.status === "processing" && <div>Processing...</div>}
-      {dataset.status === "parsed" && <div>Parsed successfully</div>}
     </div>
   );
 }
