@@ -57,9 +57,19 @@ export function DatasetDetail({ id }: Props) {
       {dataset.status === "parsed" && (
         <>
           <h2>Data Structure</h2>
-          <p>Time: {dataset.schema.time}</p>
-          <p>Entity: {dataset.schema.entity ?? "default"}</p>
-          <p>Metrics: {dataset.schema.metrics.join(", ")}</p>
+
+          <div className="mt-2 border rounded">
+            <div className="grid grid-cols-2 gap-2 p-3 text-sm">
+              <div className="text-gray-500">Time column</div>
+              <div>{dataset.schema.time}</div>
+
+              <div className="text-gray-500">Entity column</div>
+              <div>{dataset.schema.entity ?? "default"}</div>
+
+              <div className="text-gray-500">Metrics</div>
+              <div>{dataset.schema.metrics.join(", ")}</div>
+            </div>
+          </div>
         </>
       )}
     </div>
