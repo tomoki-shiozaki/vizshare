@@ -83,7 +83,6 @@ class DatasetSchemaSerializer(serializers.Serializer):
 
 
 class ParseResultSerializer(serializers.Serializer):
-    status = serializers.CharField(required=False)
     row_count = serializers.IntegerField(required=False)
 
     error_type = serializers.CharField(required=False)
