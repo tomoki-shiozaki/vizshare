@@ -14,6 +14,7 @@ package "Google Cloud" {
   component "Artifact Registry" as ArtifactRegistry
   component "Cloud Run (DRF Backend)" as CloudRun
   component "Cloud Logging" as Logging
+  component "Cloud Storage (CSV Files)" as CloudStorage
 }
 
 package "Neon" {
@@ -24,20 +25,33 @@ package "GitHub" {
   component "GitHub Repository" as GitHubRepo
 }
 
+' =========================
 ' 開発からデプロイ（バックエンド）
+' =========================
 Developer --> GitHubRepo : Push Code
 GitHubRepo --> CloudBuild : Trigger CI/CD
 CloudBuild --> ArtifactRegistry : Push Container Image
 CloudBuild --> CloudRun : Deploy Image
 ArtifactRegistry --> CloudRun : Pull Image
 
+' =========================
 ' フロントエンド（Vercel）
+' =========================
 GitHubRepo --> Frontend : Deploy Next.js (Vercel)
 
+' =========================
 ' アプリ実行
+' =========================
 User --> Frontend : HTTP Request
 Frontend --> CloudRun : API Request
+
+' DBアクセス
 CloudRun --> NeonPostgreSQL : DB Access
+
+' CSVファイル保存・取得
+CloudRun --> CloudStorage : Store
+
+' ログ
 CloudRun ..> Logging : Send Logs
 
 @enduml
