@@ -278,7 +278,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = env.str("MEDIA_URL", default="/media/")
 
-if IS_PRODUCTION:
+if IS_PRODUCTION and not GENERATE_SCHEMA:
     # 本番：media → GCS
     DEFAULT_FILE_STORAGE_BACKEND = "storages.backends.gcloud.GoogleCloudStorage"
     DEFAULT_FILE_STORAGE_OPTIONS = {
