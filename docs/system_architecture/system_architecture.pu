@@ -20,13 +20,8 @@ package "Neon" {
   component "Neon PostgreSQL" as NeonPostgreSQL
 }
 
-package "External APIs" {
-  component "OWID Climate Data API" as OWIDAPI
-}
-
 package "GitHub" {
   component "GitHub Repository" as GitHubRepo
-  component "GitHub Actions (定期バッチ)" as GitHubActions
 }
 
 ' 開発からデプロイ（バックエンド）
@@ -38,10 +33,6 @@ ArtifactRegistry --> CloudRun : Pull Image
 
 ' フロントエンド（Vercel）
 GitHubRepo --> Frontend : Deploy Next.js (Vercel)
-
-' 定期バッチ（GitHub Actions）
-GitHubActions --> OWIDAPI : Fetch Climate Data
-GitHubActions --> NeonPostgreSQL : Save Data
 
 ' アプリ実行
 User --> Frontend : HTTP Request
