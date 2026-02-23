@@ -41,8 +41,8 @@ export function DatasetDetail({ id }: Props) {
   }
 
   return (
-    <div className="p-4">
-      {/* 戻る */}
+    <div className="p-4 space-y-4">
+      {/* 戻るボタン */}
       <Link href="/dataset" passHref>
         <Button variant="outline" size="sm">
           <ChevronLeft className="w-4 h-4 mr-2" />
@@ -51,22 +51,28 @@ export function DatasetDetail({ id }: Props) {
       </Link>
 
       {/* ヘッダー */}
-      <h1>{dataset.name}</h1>
-      <p>Created: {new Date(dataset.created_at).toLocaleString()}</p>
+      <div className="space-y-1">
+        <h1 className="text-2xl font-semibold">{dataset.name}</h1>
+        <p className="text-sm text-gray-500">
+          Created: {new Date(dataset.created_at).toLocaleString()}
+        </p>
+      </div>
 
-      {/* 状態表示（ここに集約） */}
-      <h2>Status</h2>
-      <DatasetStatus
-        status={dataset.status}
-        message={dataset.parse_result?.message}
-      />
+      {/* Status */}
+      <div>
+        <h2 className="text-lg font-medium">Status</h2>
+        <DatasetStatus
+          status={dataset.status}
+          message={dataset.parse_result?.message}
+        />
+      </div>
 
-      {/* parsed のときだけ schema 表示 */}
+      {/* Schema */}
       {dataset.status === "parsed" && (
-        <>
-          <h2>Data Structure</h2>
+        <div>
+          <h2 className="text-lg font-medium">Data Structure</h2>
           <DatasetSchemaView schema={dataset.schema} />
-        </>
+        </div>
       )}
     </div>
   );
