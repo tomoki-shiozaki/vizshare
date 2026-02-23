@@ -156,8 +156,12 @@ if GENERATE_SCHEMA:
     REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"  # type: ignore
 
     SPECTACULAR_SETTINGS = {
-        "TITLE": "Climate Change App (Django REST Framework + React)",
-        "DESCRIPTION": "A climate change app for learning about climate change with data visualization.",
+        "TITLE": "Vizshare API",
+        "DESCRIPTION": (
+            "Vizshare is a data visualization and sharing platform. "
+            "This API allows clients to access datasets, upload CSVs, "
+            "and retrieve visualizations programmatically."
+        ),
         "VERSION": "1.0.0",
     }
 
