@@ -7,6 +7,8 @@ import { DatasetStatus } from "@/features/dataset/components/DatasetStatus";
 import { Loading } from "@/components/common";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { DatasetSchemaView } from "@/features/dataset/components/DatasetSchema";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 type Props = {
   id: string;
@@ -41,7 +43,12 @@ export function DatasetDetail({ id }: Props) {
   return (
     <div className="p-4">
       {/* 戻る */}
-      <Link href="/dataset">← Dataset一覧に戻る</Link>
+      <Link href="/dataset" passHref>
+        <Button variant="outline" size="sm">
+          <ChevronLeft className="w-4 h-4 mr-2" />
+          Dataset一覧に戻る
+        </Button>
+      </Link>
 
       {/* ヘッダー */}
       <h1>{dataset.name}</h1>
