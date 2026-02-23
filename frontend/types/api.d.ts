@@ -61,6 +61,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/datasets/{id}/data/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Dataset に紐づく DataPoint を entity ごとに整理して返す
+         *     Recharts でそのまま使える形
+         */
+        get: operations["datasets_data_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/list/": {
         parameters: {
             query?: never;
@@ -417,8 +437,8 @@ export interface components {
             readonly status: components["schemas"]["StatusEnum"];
             /** Format: date-time */
             readonly created_at: string;
-            readonly schema: unknown;
-            readonly parse_result: unknown;
+            schema: components["schemas"]["DatasetSchema"];
+            parse_result?: components["schemas"]["ParseResult"] | null;
             /** Format: uri */
             readonly source_file: string;
         };
@@ -430,6 +450,11 @@ export interface components {
             readonly created_at: string;
             readonly schema: unknown;
             readonly parse_result: unknown;
+        };
+        DatasetSchema: {
+            time: string;
+            entity?: string;
+            metrics: string[];
         };
         /** @description Serializer for JWT authentication. */
         JWT: {
@@ -457,6 +482,12 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["DatasetList"][];
+        };
+        ParseResult: {
+            status?: string;
+            row_count?: number;
+            error_type?: string;
+            message?: string;
         };
         PasswordChange: {
             new_password1: string;
@@ -622,6 +653,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["DatasetDetail"];
                 };
+            };
+        };
+    };
+    datasets_data_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -140,6 +140,41 @@
                 }
             }
         },
+        "/api/v1/datasets/{id}/data/": {
+            "get": {
+                "operationId": "datasets_data_retrieve",
+                "description": "Dataset に紐づく DataPoint を entity ごとに整理して返す\nRecharts でそのまま使える形",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/list/": {
             "get": {
                 "operationId": "datasets_list_list",
@@ -980,10 +1015,14 @@
                         "readOnly": true
                     },
                     "schema": {
-                        "readOnly": true
+                        "$ref": "#/components/schemas/DatasetSchema"
                     },
                     "parse_result": {
-                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/ParseResult"
+                            }
+                        ],
                         "nullable": true
                     },
                     "source_file": {
@@ -996,7 +1035,6 @@
                     "created_at",
                     "id",
                     "name",
-                    "parse_result",
                     "schema",
                     "source_file",
                     "status"
@@ -1041,6 +1079,28 @@
                     "parse_result",
                     "schema",
                     "status"
+                ]
+            },
+            "DatasetSchema": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "type": "string"
+                    },
+                    "entity": {
+                        "type": "string"
+                    },
+                    "metrics": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    }
+                },
+                "required": [
+                    "metrics",
+                    "time"
                 ]
             },
             "JWT": {
@@ -1109,6 +1169,23 @@
                         "items": {
                             "$ref": "#/components/schemas/DatasetList"
                         }
+                    }
+                }
+            },
+            "ParseResult": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string"
+                    },
+                    "row_count": {
+                        "type": "integer"
+                    },
+                    "error_type": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
                     }
                 }
             },
