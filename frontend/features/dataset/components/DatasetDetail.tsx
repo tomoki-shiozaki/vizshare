@@ -4,6 +4,8 @@ import { fetchDatasetDetail } from "@/features/dataset/api/fetchDatasetDetail";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { DatasetStatus } from "@/features/dataset/components/DatasetStatus";
+import { Loading } from "@/components/common";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 type Props = {
   id: string;
@@ -20,9 +22,20 @@ export function DatasetDetail({ id }: Props) {
     enabled: !!id,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error instanceof Error) return <div>Error: {error.message}</div>;
-  if (!dataset) return <div>No data found</div>;
+  if (isLoading) {
+    return <Loading message="Datasetを読み込み中..." />;
+  }
+  if (error instanceof Error) {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Datasetの取得に失敗しました</AlertTitle>
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    );
+  }
+  if (!dataset) {
+    return <p className="text-sm text-gray-500">Datasetが見つかりません。</p>;
+  }
 
   return (
     <div className="p-4">
