@@ -41,7 +41,7 @@ export function DatasetDetail({ id }: Props) {
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="space-y-4">
       {/* 戻るボタン */}
       <Link href="/dataset" passHref>
         <Button variant="outline" size="sm">
@@ -58,7 +58,7 @@ export function DatasetDetail({ id }: Props) {
         </p>
       </div>
 
-      {/* Status */}
+      {/* ステータス */}
       <div>
         <h2 className="text-lg font-medium">ステータス</h2>
         <DatasetBadge
