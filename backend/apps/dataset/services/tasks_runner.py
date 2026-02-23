@@ -18,7 +18,7 @@ def parse_dataset_sync(dataset_id: int):
         total_rows = parse_dataset_csv(dataset)
 
         # 成功時の状態更新
-        dataset.mark_parsed(result={"row_count": total_rows, "status": "parsed"})
+        dataset.mark_parsed(result={"row_count": total_rows})
 
     except Exception as e:
         # 失敗時の状態更新
