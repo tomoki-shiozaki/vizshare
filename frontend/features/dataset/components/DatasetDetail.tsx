@@ -6,6 +6,7 @@ import Link from "next/link";
 import { DatasetStatus } from "@/features/dataset/components/DatasetStatus";
 import { Loading } from "@/components/common";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { DatasetSchema } from "@/features/dataset/components/DatasetSchema";
 
 type Props = {
   id: string;
@@ -57,19 +58,7 @@ export function DatasetDetail({ id }: Props) {
       {dataset.status === "parsed" && (
         <>
           <h2>Data Structure</h2>
-
-          <div className="mt-2 border rounded">
-            <div className="grid grid-cols-2 gap-2 p-3 text-sm">
-              <div className="text-gray-500">Time column</div>
-              <div>{dataset.schema.time}</div>
-
-              <div className="text-gray-500">Entity column</div>
-              <div>{dataset.schema.entity ?? "default"}</div>
-
-              <div className="text-gray-500">Metrics</div>
-              <div>{dataset.schema.metrics.join(", ")}</div>
-            </div>
-          </div>
+          <DatasetSchema schema={dataset.schema} />
         </>
       )}
     </div>
