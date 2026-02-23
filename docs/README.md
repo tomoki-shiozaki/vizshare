@@ -58,7 +58,31 @@ The following diagram shows the main data models and their relationships in Vizs
 - **Dataset Status:** UPLOADED / PROCESSING / PARSED / FAILED
 - **JSON Fields:** `schema` and `parse_result` are stored as JSONFields.
 
-## 4. Screen Flow Diagram
+## 4. System Architecture
+
+The following diagram shows the overall system architecture of Vizshare,
+including the frontend, backend, database, storage, and deployment flow.
+
+![System Architecture](./system_architecture/system_architecture/system_architecture.svg)
+
+### Overview
+
+- **Frontend:** Next.js app deployed on Vercel.
+- **Backend:** Django REST Framework API deployed on Google Cloud Run.
+- **Database:** Neon PostgreSQL for application data and parsed CSV data.
+- **Storage:** Google Cloud Storage for uploaded CSV file storage.
+- **CI/CD:** GitHub triggers Google Cloud Build for backend deployment.
+- **Logging:** Google Cloud Logging collects backend logs.
+
+### Data Flow
+
+1. Users interact with the frontend.
+2. The frontend sends API requests to the backend.
+3. The backend parses uploaded CSV files.
+4. Parsed data is stored in PostgreSQL.
+5. Uploaded CSV files are stored in Cloud Storage.
+
+## 5. Screen Flow Diagram
 
 The following diagram shows the main screen transitions in the Vizshare MVP.
 
