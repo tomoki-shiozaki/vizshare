@@ -41,7 +41,7 @@ export function DatasetDetail({ id }: Props) {
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="space-y-4">
       {/* 戻るボタン */}
       <Link href="/dataset" passHref>
         <Button variant="outline" size="sm">
@@ -54,13 +54,13 @@ export function DatasetDetail({ id }: Props) {
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold">{dataset.name}</h1>
         <p className="text-sm text-gray-500">
-          Created: {new Date(dataset.created_at).toLocaleString()}
+          作成日: {new Date(dataset.created_at).toLocaleString()}
         </p>
       </div>
 
-      {/* Status */}
+      {/* ステータス */}
       <div>
-        <h2 className="text-lg font-medium">Status</h2>
+        <h2 className="text-lg font-medium">ステータス</h2>
         <DatasetBadge
           status={dataset.status}
           message={dataset.parse_result?.message}
@@ -70,7 +70,7 @@ export function DatasetDetail({ id }: Props) {
       {/* Schema */}
       {dataset.status === "parsed" && (
         <div>
-          <h2 className="text-lg font-medium">Data Structure</h2>
+          <h2 className="text-lg font-medium">データ構造</h2>
           <DatasetSchemaView schema={dataset.schema} />
         </div>
       )}

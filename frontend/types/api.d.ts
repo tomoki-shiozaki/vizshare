@@ -484,7 +484,6 @@ export interface components {
             results: components["schemas"]["DatasetList"][];
         };
         ParseResult: {
-            status?: string;
             row_count?: number;
             error_type?: string;
             message?: string;

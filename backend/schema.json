@@ -1175,9 +1175,6 @@
             "ParseResult": {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "type": "string"
-                    },
                     "row_count": {
                         "type": "integer"
                     },
