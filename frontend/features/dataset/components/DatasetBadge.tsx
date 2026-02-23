@@ -34,7 +34,7 @@ export function DatasetBadge({ status, message }: Props) {
   return (
     <Badge
       variant={variant}
-      className="text-sm px-2 py-1 inline-flex items-center gap-1"
+      className="text-xs px-1.5 py-0.5 inline-flex items-center gap-1"
     >
       {icon}
       {label}
