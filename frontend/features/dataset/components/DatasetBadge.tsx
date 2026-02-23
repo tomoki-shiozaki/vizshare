@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import type { DatasetStatus } from "@/features/dataset/types/dataset";
 import { STATUS_LABEL, STATUS_VARIANT } from "@/features/dataset/constants";
+import { Check, Loader2, AlertCircle } from "lucide-react";
 
 type Props = {
   status: DatasetStatus;
@@ -9,11 +10,34 @@ type Props = {
 };
 
 export function DatasetBadge({ status, message }: Props) {
-  if (status === "failed") {
-    return (
-      <Badge variant="destructive">{message ?? STATUS_LABEL[status]}</Badge>
-    );
+  // アイコンをステータスごとに選択
+  let icon: React.ReactNode = null;
+  switch (status) {
+    case "parsed":
+      icon = <Check className="w-3 h-3 mr-1 inline-block" />;
+      break;
+    case "processing":
+      icon = <Loader2 className="w-3 h-3 mr-1 inline-block animate-spin" />;
+      break;
+    case "failed":
+      icon = <AlertCircle className="w-3 h-3 mr-1 inline-block" />;
+      break;
   }
 
-  return <Badge variant={STATUS_VARIANT[status]}>{STATUS_LABEL[status]}</Badge>;
+  // Badge の色とラベル
+  const variant = status === "failed" ? "destructive" : STATUS_VARIANT[status];
+  const label =
+    status === "failed"
+      ? (message ?? STATUS_LABEL[status])
+      : STATUS_LABEL[status];
+
+  return (
+    <Badge
+      variant={variant}
+      className="text-sm px-2 py-1 inline-flex items-center gap-1"
+    >
+      {icon}
+      {label}
+    </Badge>
+  );
 }
