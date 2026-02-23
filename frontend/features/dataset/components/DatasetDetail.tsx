@@ -3,12 +3,12 @@
 import { fetchDatasetDetail } from "@/features/dataset/api/fetchDatasetDetail";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { DatasetStatus } from "@/features/dataset/components/DatasetStatus";
 import { Loading } from "@/components/common";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { DatasetSchemaView } from "@/features/dataset/components/DatasetSchema";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { DatasetBadge } from "@/features/dataset/components/DatasetBadge";
 
 type Props = {
   id: string;
@@ -61,7 +61,7 @@ export function DatasetDetail({ id }: Props) {
       {/* Status */}
       <div>
         <h2 className="text-lg font-medium">Status</h2>
-        <DatasetStatus
+        <DatasetBadge
           status={dataset.status}
           message={dataset.parse_result?.message}
         />
