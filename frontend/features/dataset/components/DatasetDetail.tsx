@@ -6,7 +6,7 @@ import Link from "next/link";
 import { DatasetStatus } from "@/features/dataset/components/DatasetStatus";
 import { Loading } from "@/components/common";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { DatasetSchema } from "@/features/dataset/components/DatasetSchema";
+import { DatasetSchemaView } from "@/features/dataset/components/DatasetSchema";
 
 type Props = {
   id: string;
@@ -58,7 +58,7 @@ export function DatasetDetail({ id }: Props) {
       {dataset.status === "parsed" && (
         <>
           <h2>Data Structure</h2>
-          <DatasetSchema schema={dataset.schema} />
+          <DatasetSchemaView schema={dataset.schema} />
         </>
       )}
     </div>

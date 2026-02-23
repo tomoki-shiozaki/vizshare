@@ -1,14 +1,10 @@
-type Schema = {
-  time: string;
-  entity?: string | null;
-  metrics: string[];
-};
+import type { DatasetSchema } from "@/features/dataset/types/dataset";
 
 type Props = {
-  schema: Schema;
+  schema: DatasetSchema;
 };
 
-export function DatasetSchema({ schema }: Props) {
+export function DatasetSchemaView({ schema }: Props) {
   return (
     <div className="mt-2 border rounded">
       <table className="w-full text-sm">
