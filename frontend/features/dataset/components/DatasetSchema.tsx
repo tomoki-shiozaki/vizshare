@@ -10,8 +10,8 @@ export function DatasetSchemaView({ schema }: Props) {
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-gray-50">
-            <th className="p-2 text-left">Role</th>
-            <th className="p-2 text-left">CSV Column</th>
+            <th className="p-2 text-left">役割</th>
+            <th className="p-2 text-left">CSV列名</th>
           </tr>
         </thead>
 
