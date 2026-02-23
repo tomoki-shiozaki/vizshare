@@ -9,7 +9,6 @@ import { DatasetSchemaView } from "@/features/dataset/components/DatasetSchema";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { DatasetBadge } from "@/features/dataset/components/DatasetBadge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 type Props = {
   id: string;
@@ -29,7 +28,6 @@ export function DatasetDetail({ id }: Props) {
   if (isLoading) {
     return <Loading message="Datasetを読み込み中..." />;
   }
-
   if (error) {
     return (
       <Alert variant="destructive">
@@ -38,7 +36,6 @@ export function DatasetDetail({ id }: Props) {
       </Alert>
     );
   }
-
   if (!dataset) {
     return <p className="text-sm text-gray-500">Datasetが見つかりません。</p>;
   }
@@ -61,29 +58,21 @@ export function DatasetDetail({ id }: Props) {
         </p>
       </div>
 
-      {/* ステータスカード */}
-      <Card>
-        <CardHeader>
-          <CardTitle>ステータス</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <DatasetBadge
-            status={dataset.status}
-            message={dataset.parse_result?.message}
-          />
-        </CardContent>
-      </Card>
+      {/* Status */}
+      <div>
+        <h2 className="text-lg font-medium">ステータス</h2>
+        <DatasetBadge
+          status={dataset.status}
+          message={dataset.parse_result?.message}
+        />
+      </div>
 
-      {/* データ構造カード */}
+      {/* Schema */}
       {dataset.status === "parsed" && (
-        <Card>
-          <CardHeader>
-            <CardTitle>データ構造</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DatasetSchemaView schema={dataset.schema} />
-          </CardContent>
-        </Card>
+        <div>
+          <h2 className="text-lg font-medium">データ構造</h2>
+          <DatasetSchemaView schema={dataset.schema} />
+        </div>
       )}
     </div>
   );
