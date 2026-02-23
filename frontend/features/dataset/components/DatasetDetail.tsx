@@ -25,7 +25,7 @@ export function DatasetDetail({ id }: Props) {
   if (isLoading) {
     return <Loading message="Datasetを読み込み中..." />;
   }
-  if (error instanceof Error) {
+  if (error) {
     return (
       <Alert variant="destructive">
         <AlertTitle>Datasetの取得に失敗しました</AlertTitle>
