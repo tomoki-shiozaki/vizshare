@@ -4,46 +4,6 @@
  */
 
 export interface paths {
-    "/api/v1/climate/co2-data/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * @description フロント用 API
-         *     /climate/co2-data/
-         */
-        get: operations["climate_co2_data_retrieve"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/climate/temperature/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 気温データ取得
-         * @description 地域・年ごとの気温データを返します。upper, lower, global_average を含みます。
-         */
-        get: operations["climate_temperature_retrieve"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/datasets/{id}/": {
         parameters: {
             query?: never;
@@ -400,26 +360,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /**
-         * @description 年ごとの国別CO2排出量を返すSerializer。
-         *
-         *     co2_data の構造例:
-         *     {
-         *         "2000": { "JPN": 1000.0, "USA": 5000.0 },
-         *         "2001": { "JPN": 1100.0, "USA": 5200.0 }
-         *     }
-         *     - 外側のキー: 年（year）
-         *     - 内側のキー: 地域コード
-         *     - 内側の値: CO2排出量（tonnes）
-         */
-        CO2DataByYear: {
-            /** @description 年ごとの国別CO2排出量。例: { '2000': {'JPN': 1000.0, 'USA': 5000.0} } */
-            co2_data: {
-                [key: string]: {
-                    [key: string]: number;
-                };
-            };
-        };
         Dataset: {
             readonly id: number;
             name: string;
@@ -586,54 +526,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    climate_co2_data_retrieve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CO2DataByYear"];
-                };
-            };
-        };
-    };
-    climate_temperature_retrieve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: {
-                            year?: number;
-                            /** Format: double */
-                            upper?: number | null;
-                            /** Format: double */
-                            lower?: number | null;
-                            /** Format: double */
-                            global_average?: number | null;
-                        }[];
-                    };
-                };
-            };
-        };
-    };
     datasets_retrieve: {
         parameters: {
             query?: never;
