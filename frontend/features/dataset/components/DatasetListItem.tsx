@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import type { DatasetListResponse } from "@/features/dataset/types/dataset";
-import { STATUS_LABEL, STATUS_VARIANT } from "@/features/dataset/constants";
+import { DatasetBadge } from "@/features/dataset/components/DatasetBadge";
 
 type Dataset = DatasetListResponse["results"][number];
 
@@ -35,9 +34,7 @@ export function DatasetListItem({ dataset }: Props) {
         </p>
       </div>
 
-      <Badge variant={STATUS_VARIANT[dataset.status]}>
-        {STATUS_LABEL[dataset.status]}
-      </Badge>
+      <DatasetBadge status={dataset.status} />
     </li>
   );
 }

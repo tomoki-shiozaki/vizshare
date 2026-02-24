@@ -1,6 +1,8 @@
 from typing import Dict, List, TypedDict
 
+from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -37,13 +39,10 @@ class DatasetDataAPIView(APIView):
     Recharts でそのまま使える形
     """
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk: int):
-        try:
-            dataset = Dataset.objects.get(pk=pk)
-        except Dataset.DoesNotExist:
-            return Response(
-                {"detail": "Dataset not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+        dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
 
         # DataPoint を取得して entity -> time -> order_index 順にソート
         data_qs = dataset.data_points.all().order_by(  # type: ignore

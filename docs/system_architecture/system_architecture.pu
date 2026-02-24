@@ -5,8 +5,8 @@ left to right direction
 actor User
 actor Developer
 
-package "Render" {
-  component "React Frontend" as Frontend
+package "Vercel" {
+  component "Next.js Frontend" as Frontend
 }
 
 package "Google Cloud" {
@@ -14,38 +14,44 @@ package "Google Cloud" {
   component "Artifact Registry" as ArtifactRegistry
   component "Cloud Run (DRF Backend)" as CloudRun
   component "Cloud Logging" as Logging
+  component "Cloud Storage (CSV Files)" as CloudStorage
 }
 
 package "Neon" {
   component "Neon PostgreSQL" as NeonPostgreSQL
 }
 
-package "External APIs" {
-  component "OWID Climate Data API" as OWIDAPI
-}
-
 package "GitHub" {
   component "GitHub Repository" as GitHubRepo
-  component "GitHub Actions (定期バッチ)" as GitHubActions
 }
 
-' 開発からデプロイ
+' =========================
+' 開発からデプロイ（バックエンド）
+' =========================
 Developer --> GitHubRepo : Push Code
 GitHubRepo --> CloudBuild : Trigger CI/CD
 CloudBuild --> ArtifactRegistry : Push Container Image
 CloudBuild --> CloudRun : Deploy Image
 ArtifactRegistry --> CloudRun : Pull Image
 
-GitHubRepo --> Frontend : Deploy React (Render)
+' =========================
+' フロントエンド（Vercel）
+' =========================
+GitHubRepo --> Frontend : Deploy Next.js (Vercel)
 
-' 定期バッチ（GitHub Actions）
-GitHubActions --> OWIDAPI : Fetch Climate Data
-GitHubActions --> NeonPostgreSQL : Save Data
-
+' =========================
 ' アプリ実行
+' =========================
 User --> Frontend : HTTP Request
 Frontend --> CloudRun : API Request
+
+' DBアクセス
 CloudRun --> NeonPostgreSQL : DB Access
+
+' CSVファイル保存・取得
+CloudRun --> CloudStorage : Store
+
+' ログ
 CloudRun ..> Logging : Send Logs
 
 @enduml

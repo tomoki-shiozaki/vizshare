@@ -2,6 +2,13 @@
 
 import { fetchDatasetDetail } from "@/features/dataset/api/fetchDatasetDetail";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { Loading } from "@/components/common";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { DatasetSchemaView } from "@/features/dataset/components/DatasetSchema";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
+import { DatasetBadge } from "@/features/dataset/components/DatasetBadge";
 
 type Props = {
   id: string;
@@ -18,39 +25,55 @@ export function DatasetDetail({ id }: Props) {
     enabled: !!id,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-
-  if (error instanceof Error)
-    return <div style={{ color: "red" }}>Error: {error.message}</div>;
-
-  if (!dataset) return <div>No data found</div>;
+  if (isLoading) {
+    return <Loading message="Datasetを読み込み中..." />;
+  }
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Datasetの取得に失敗しました</AlertTitle>
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    );
+  }
+  if (!dataset) {
+    return <p className="text-sm text-gray-500">Datasetが見つかりません。</p>;
+  }
 
   return (
-    <div style={{ padding: "16px" }}>
-      <h1>Dataset Detail (ID: {id})</h1>
+    <div className="space-y-4">
+      {/* 戻るボタン */}
+      <Link href="/dataset" passHref>
+        <Button variant="outline" size="sm">
+          <ChevronLeft className="w-4 h-4 mr-2" />
+          Dataset一覧に戻る
+        </Button>
+      </Link>
 
-      <p>
-        <strong>Name:</strong> {dataset.name}
-      </p>
+      {/* ヘッダー */}
+      <div className="space-y-1">
+        <h1 className="text-2xl font-semibold">{dataset.name}</h1>
+        <p className="text-sm text-gray-500">
+          作成日: {new Date(dataset.created_at).toLocaleString()}
+        </p>
+      </div>
 
-      <p>
-        <strong>Status:</strong> {dataset.status}
-      </p>
+      {/* ステータス */}
+      <div>
+        <h2 className="text-lg font-medium">ステータス</h2>
+        <DatasetBadge
+          status={dataset.status}
+          message={dataset.parse_result?.message}
+        />
+      </div>
 
-      <p>
-        <strong>Created at:</strong>{" "}
-        {new Date(dataset.created_at).toLocaleString()}
-      </p>
-
-      <h2>Schema</h2>
-      <pre style={{ background: "#f0f0f0", padding: "8px" }}>
-        {JSON.stringify(dataset.schema, null, 2)}
-      </pre>
-
-      <h2>Parse Result</h2>
-      <pre style={{ background: "#f0f0f0", padding: "8px" }}>
-        {JSON.stringify(dataset.parse_result, null, 2)}
-      </pre>
+      {/* Schema */}
+      {dataset.status === "parsed" && (
+        <div>
+          <h2 className="text-lg font-medium">データ構造</h2>
+          <DatasetSchemaView schema={dataset.schema} />
+        </div>
+      )}
     </div>
   );
 }

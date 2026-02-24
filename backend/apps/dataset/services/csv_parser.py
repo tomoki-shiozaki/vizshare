@@ -3,13 +3,43 @@ import io
 import re
 from datetime import datetime
 
-from django.db import transaction
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import is_naive, make_aware
 
 from apps.dataset.models import DataPoint, Dataset
 
 BATCH_SIZE = 1000
+
+
+def _open_csv_text_stream(file_obj):
+    """
+    CSVのencodingを軽量判定して
+    streamingで読めるTextIOWrapperを返す
+    （巨大CSV対応）
+    """
+    # CSVの文字コードを自動判定
+    # 優先順:
+    # 1. UTF-8 with BOM (ExcelのUTF-8保存対策)
+    # 2. UTF-8 (標準的なCSV)
+    # 3. CP932 / Shift-JIS (日本のExcel保存対策)
+    # 先頭だけ読む（メモリ安全）
+    sample = file_obj.read(4096)
+
+    for encoding in ("utf-8-sig", "utf-8", "cp932"):
+        try:
+            sample.decode(encoding)
+            detected = encoding
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        raise ValueError(
+            "CSVの文字コードを判定できません。UTF-8（BOM付き含む）または Shift-JIS 形式で保存してください。"
+        )
+
+    file_obj.seek(0)
+
+    return io.TextIOWrapper(file_obj, encoding=detected, newline="")
 
 
 def parse_row_time(raw_time: str):
@@ -71,33 +101,20 @@ def parse_value(value_str: str | None, *, row: int, metric: str) -> float | None
     try:
         return float(value_str)
     except ValueError:
-        raise ValueError(f"Invalid value: {value_str} (row={row}, metric={metric})")
+
+        return None
 
 
 def parse_dataset_csv(dataset: Dataset) -> int:
     """
     wide CSV を long DataPoint へ変換
+    - 巨大CSV対応（streaming）
+    - UTF-8 / CP932対応
     """
     with dataset.source_file.open("rb") as f:
-        raw_bytes = f.read()
-
-        # CSVの文字コードを自動判定
-        # 優先順:
-        # 1. UTF-8 with BOM (ExcelのUTF-8保存対策)
-        # 2. UTF-8 (標準的なCSV)
-        # 3. CP932 / Shift-JIS (日本のExcel保存対策)
-        for encoding in ("utf-8-sig", "utf-8", "cp932"):
-            try:
-                text_file = io.StringIO(raw_bytes.decode(encoding))
-                break
-            except UnicodeDecodeError:
-                continue
-        else:
-            raise ValueError(
-                "CSVの文字コードを判定できません。UTF-8（BOM付き含む）または Shift-JIS 形式で保存してください。"
-            )
-
+        text_file = _open_csv_text_stream(f)
         reader = csv.DictReader(text_file)
+
         headers = [h.strip() for h in reader.fieldnames or [] if h]
         if not headers:
             raise ValueError("CSV にヘッダーがありません")
@@ -118,11 +135,10 @@ def parse_dataset_csv(dataset: Dataset) -> int:
             parsed_time = parse_row_time(raw_time)
 
             entity = row.get(entity_col) if entity_col else None
-            entity = entity or "default"
+            entity = entity or DataPoint.DEFAULT_ENTITY
 
             for metric in metric_cols:
                 value_str = row.get(metric, "")
-
                 value = parse_value(value_str, row=row_idx, metric=metric)
 
                 buffer.append(
@@ -138,14 +154,12 @@ def parse_dataset_csv(dataset: Dataset) -> int:
                 )
 
             if len(buffer) >= BATCH_SIZE:
-                with transaction.atomic():
-                    DataPoint.objects.bulk_create(buffer)
+                DataPoint.objects.bulk_create(buffer, batch_size=BATCH_SIZE)
                 total += len(buffer)
                 buffer.clear()
 
         if buffer:
-            with transaction.atomic():
-                DataPoint.objects.bulk_create(buffer)
+            DataPoint.objects.bulk_create(buffer, batch_size=BATCH_SIZE)
             total += len(buffer)
 
     return total

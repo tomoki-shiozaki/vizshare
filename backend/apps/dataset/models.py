@@ -37,9 +37,7 @@ class Dataset(models.Model):
     # --- 状態管理メソッド ---
     def mark_processing(self) -> bool:
         with transaction.atomic():
-            locked = (
-                Dataset.objects.select_for_update().only("id", "status").get(pk=self.pk)
-            )
+            locked = Dataset.objects.select_for_update().only("status").get(pk=self.pk)
             if locked.status != self.Status.UPLOADED:
                 return False
             locked.status = self.Status.PROCESSING
@@ -47,21 +45,37 @@ class Dataset(models.Model):
         return True
 
     def mark_parsed(self, result: dict | None = None):
-        self.status = self.Status.PARSED
-        if result is not None:
-            self.parse_result = result
-        self.save(update_fields=["status", "parse_result"])
+        with transaction.atomic():
+            locked = Dataset.objects.select_for_update().only("status").get(pk=self.pk)
+
+            if locked.status != self.Status.PROCESSING:
+                raise ValueError("Invalid state transition")
+
+            locked.status = self.Status.PARSED
+            if result is not None:
+                locked.parse_result = result
+
+            locked.save(update_fields=["status", "parse_result"])
 
     def mark_failed(self, error: Exception):
-        self.status = self.Status.FAILED
-        self.parse_result = {
-            "error_type": error.__class__.__name__,
-            "message": str(error),
-        }
-        self.save(update_fields=["status", "parse_result"])
+        with transaction.atomic():
+            locked = Dataset.objects.select_for_update().only("status").get(pk=self.pk)
+
+            if locked.status != self.Status.PROCESSING:
+                raise ValueError("Invalid state transition")
+
+            locked.status = self.Status.FAILED
+            locked.parse_result = {
+                "error_type": error.__class__.__name__,
+                "message": str(error),
+            }
+
+            locked.save(update_fields=["status", "parse_result"])
 
 
 class DataPoint(models.Model):
+    DEFAULT_ENTITY = "__default__"
+
     dataset = models.ForeignKey(
         Dataset,
         on_delete=models.CASCADE,
@@ -75,9 +89,14 @@ class DataPoint(models.Model):
     time = models.DateTimeField(blank=True, null=True)
 
     # entity（Japan など）
-    entity = models.CharField(max_length=255, blank=True, default="default")
+    entity = models.CharField(
+        max_length=255,
+        default=DEFAULT_ENTITY,
+    )
 
-    # metric（anomaly / lower / upper）
+    # 指標の種類（CSVの値列名）
+    # 例: anomaly, lower, upper
+    # 1つの時刻・entityに対して複数のmetricが存在し得る
     metric = models.CharField(max_length=255)
 
     value = models.FloatField(blank=True, null=True)

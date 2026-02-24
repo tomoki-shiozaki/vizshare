@@ -1,103 +1,11 @@
 {
     "openapi": "3.0.3",
     "info": {
-        "title": "Climate Change App (Django REST Framework + React)",
+        "title": "Vizshare API",
         "version": "1.0.0",
-        "description": "A climate change app for learning about climate change with data visualization."
+        "description": "Vizshare is a data visualization and sharing platform. This API allows clients to access datasets, upload CSVs, and retrieve visualizations programmatically."
     },
     "paths": {
-        "/api/v1/climate/co2-data/": {
-            "get": {
-                "operationId": "climate_co2_data_retrieve",
-                "description": "フロント用 API\n/climate/co2-data/",
-                "tags": [
-                    "climate"
-                ],
-                "security": [
-                    {
-                        "jwtAuth": []
-                    },
-                    {
-                        "jwtHeaderAuth": []
-                    },
-                    {
-                        "jwtCookieAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CO2DataByYear"
-                                }
-                            }
-                        },
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/api/v1/climate/temperature/": {
-            "get": {
-                "operationId": "climate_temperature_retrieve",
-                "description": "地域・年ごとの気温データを返します。upper, lower, global_average を含みます。",
-                "summary": "気温データ取得",
-                "tags": [
-                    "Temperature"
-                ],
-                "security": [
-                    {
-                        "jwtAuth": []
-                    },
-                    {
-                        "jwtHeaderAuth": []
-                    },
-                    {
-                        "jwtCookieAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "description": "1年分の気温データ構造",
-                                            "properties": {
-                                                "year": {
-                                                    "type": "integer"
-                                                },
-                                                "upper": {
-                                                    "type": "number",
-                                                    "format": "double",
-                                                    "nullable": true
-                                                },
-                                                "lower": {
-                                                    "type": "number",
-                                                    "format": "double",
-                                                    "nullable": true
-                                                },
-                                                "global_average": {
-                                                    "type": "number",
-                                                    "format": "double",
-                                                    "nullable": true
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "description": ""
-                    }
-                }
-            }
-        },
         "/api/v1/datasets/{id}/": {
             "get": {
                 "operationId": "datasets_retrieve",
@@ -136,6 +44,41 @@
                             }
                         },
                         "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/datasets/{id}/data/": {
+            "get": {
+                "operationId": "datasets_data_retrieve",
+                "description": "Dataset に紐づく DataPoint を entity ごとに整理して返す\nRecharts でそのまま使える形",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
                     }
                 }
             }
@@ -895,26 +838,6 @@
     },
     "components": {
         "schemas": {
-            "CO2DataByYear": {
-                "type": "object",
-                "description": "年ごとの国別CO2排出量を返すSerializer。\n\nco2_data の構造例:\n{\n    \"2000\": { \"JPN\": 1000.0, \"USA\": 5000.0 },\n    \"2001\": { \"JPN\": 1100.0, \"USA\": 5200.0 }\n}\n- 外側のキー: 年（year）\n- 内側のキー: 地域コード\n- 内側の値: CO2排出量（tonnes）",
-                "properties": {
-                    "co2_data": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "number",
-                                "format": "double"
-                            }
-                        },
-                        "description": "年ごとの国別CO2排出量。例: { '2000': {'JPN': 1000.0, 'USA': 5000.0} }"
-                    }
-                },
-                "required": [
-                    "co2_data"
-                ]
-            },
             "Dataset": {
                 "type": "object",
                 "properties": {
@@ -980,10 +903,14 @@
                         "readOnly": true
                     },
                     "schema": {
-                        "readOnly": true
+                        "$ref": "#/components/schemas/DatasetSchema"
                     },
                     "parse_result": {
-                        "readOnly": true,
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/ParseResult"
+                            }
+                        ],
                         "nullable": true
                     },
                     "source_file": {
@@ -996,7 +923,6 @@
                     "created_at",
                     "id",
                     "name",
-                    "parse_result",
                     "schema",
                     "source_file",
                     "status"
@@ -1041,6 +967,28 @@
                     "parse_result",
                     "schema",
                     "status"
+                ]
+            },
+            "DatasetSchema": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "type": "string"
+                    },
+                    "entity": {
+                        "type": "string"
+                    },
+                    "metrics": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    }
+                },
+                "required": [
+                    "metrics",
+                    "time"
                 ]
             },
             "JWT": {
@@ -1109,6 +1057,20 @@
                         "items": {
                             "$ref": "#/components/schemas/DatasetList"
                         }
+                    }
+                }
+            },
+            "ParseResult": {
+                "type": "object",
+                "properties": {
+                    "row_count": {
+                        "type": "integer"
+                    },
+                    "error_type": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
                     }
                 }
             },

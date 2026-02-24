@@ -17,10 +17,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Climate Change App",
+  title: "Vizshare",
   description:
-    "Climate Change App - Track and learn about climate change impacts",
-  icons: "/climate-logo.svg",
+    "Vizshare - CSV データをアップロードして可視化・共有できるプラットフォーム",
+  icons: "./vizshare-logo.svg",
 };
 
 export default function RootLayout({
