@@ -10,3 +10,7 @@ variable "media_bucket_name" {
   description = "Django が使用する GCS バケット名"
   type        = string
 }
+
+variable "terraform_state_bucket_name" {
+  type = string
+}
