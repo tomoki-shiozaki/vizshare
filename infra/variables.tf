@@ -31,3 +31,9 @@ variable "github_repo" {
   type        = string
   default     = "vizshare"
 }
+
+variable "terraform_state_bucket_name" {
+  description = "Terraform state 用 GCS bucket"
+  type        = string
+  default     = "terraform-state-vizshare"
+}
