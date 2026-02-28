@@ -1,5 +1,4 @@
 import csv
-import io
 
 from rest_framework.exceptions import ValidationError
 
