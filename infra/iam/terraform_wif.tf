@@ -37,3 +37,9 @@ resource "google_storage_bucket_iam_member" "terraform_state_access" {
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.terraform_sa.email}"
 }
+
+resource "google_project_iam_member" "terraform_sa_storage_admin" {
+  project = var.project_id
+  role    = "roles/storage.admin"
+  member  = "serviceAccount:${google_service_account.terraform_sa.email}"
+}
