@@ -21,7 +21,10 @@ from apps.dataset.services.csv_validation import (
             "\ufeffcol1,col2,col3\n".encode("utf-8-sig"),
             ["col1", "col2", "col3"],
         ),  # UTF-8-SIG
-        ("col1,col2,col3\n".encode("cp932"), ["col1", "col2", "col3"]),  # Shift-JIS
+        (
+            "あいう,かきく,さしす\n".encode("cp932"),
+            ["あいう", "かきく", "さしす"],
+        ),  # Shift-JIS
         (
             " col1 , col2 , col3 \n".encode("utf-8"),
             ["col1", "col2", "col3"],
@@ -31,8 +34,7 @@ from apps.dataset.services.csv_validation import (
 def test_read_csv_header_success(content, expected_header):
     f = io.BytesIO(content)
     header = read_csv_header(f)
-    # BOM を除去して比較
-    header = [h.lstrip("\ufeff") for h in header]
+    header = [h.lstrip("\ufeff") for h in header]  # BOM除去
     assert header == expected_header
 
 
@@ -47,8 +49,8 @@ def test_read_csv_header_empty_file():
 # -----------------------------
 
 
-def make_csv_file(header_line: str):
-    return io.BytesIO(header_line.encode("utf-8"))
+def make_csv_file(header_line: str, encoding="utf-8"):
+    return io.BytesIO(header_line.encode(encoding))
 
 
 @pytest.mark.parametrize(
@@ -63,6 +65,14 @@ def make_csv_file(header_line: str):
 )
 def test_validate_csv_success(header_line, schema):
     f = make_csv_file(header_line)
+    # エラーが出なければ成功
+    validate_csv_against_schema(f, schema)
+
+
+def test_validate_csv_success_japanese_cp932():
+    header_line = "時間,メトリック1,メトリック2"
+    schema = {"time": "時間", "metrics": ["メトリック1", "メトリック2"]}
+    f = make_csv_file(header_line, encoding="cp932")
     # エラーが出なければ成功
     validate_csv_against_schema(f, schema)
 

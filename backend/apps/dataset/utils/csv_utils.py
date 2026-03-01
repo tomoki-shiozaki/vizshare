@@ -10,13 +10,23 @@ def detect_csv_encoding(file_obj, sample_size: int = 4096) -> str:
     sample = file_obj.read(sample_size)
     file_obj.seek(pos)
 
-    # 文字コードを順に試す
-    for encoding in ("utf-8-sig", "utf-8", "cp932"):
-        try:
-            sample.decode(encoding)
-            return encoding
-        except UnicodeDecodeError:
-            continue
+    # BOM 判定
+    if sample.startswith(b"\xef\xbb\xbf"):
+        return "utf-8-sig"
+
+    # UTF-8 判定
+    try:
+        sample.decode("utf-8")
+        return "utf-8"
+    except UnicodeDecodeError:
+        pass
+
+    # CP932 判定
+    try:
+        sample.decode("cp932")
+        return "cp932"
+    except UnicodeDecodeError:
+        pass
 
     raise ValueError(
         "CSVの文字コードを判定できません。UTF-8（BOM付き含む）または Shift-JIS 形式で保存してください。"
