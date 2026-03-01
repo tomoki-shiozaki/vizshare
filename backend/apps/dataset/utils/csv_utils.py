@@ -19,9 +19,7 @@ def detect_csv_encoding(file_obj, sample_size: int = 4096) -> str:
     # charset-normalizer に判定させる
     result = from_bytes(sample).best()
     if result is None or result.encoding is None:
-        raise ValueError(
-            "CSVの文字コードを判定できません。UTF-8（BOM付き含む）または Shift-JIS 形式で保存してください。"
-        )
+        raise ValueError("CSVの文字コードを判定できません。")
 
     # encoding の名前を返す
     return result.encoding
