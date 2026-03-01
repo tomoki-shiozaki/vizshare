@@ -3,27 +3,15 @@ import io
 
 from rest_framework.exceptions import ValidationError
 
+from apps.dataset.utils.csv_utils import detect_csv_encoding
+
 
 def read_csv_header(source_file) -> list[str]:
     """
     CSV全文を読まず、ヘッダ行のみを安全に取得する
     UTF-8-SIG と Shift-JIS に対応
     """
-    source_file.seek(0)
-    sample = source_file.read(4096)
-
-    # 文字コードを順に試す（本体CSVパースと同じ順序）
-    for encoding in ("utf-8-sig", "utf-8", "cp932"):
-        try:
-            sample.decode(encoding)
-            detected = encoding
-            break
-        except UnicodeDecodeError:
-            continue
-    else:
-        raise ValidationError(
-            "CSVの文字コードを自動判定できません。UTF-8（BOM付き含む）または Shift-JIS で保存してください"
-        )
+    detected = detect_csv_encoding(source_file)
 
     # 後続処理のため、必ず先頭に戻す
     source_file.seek(0)
