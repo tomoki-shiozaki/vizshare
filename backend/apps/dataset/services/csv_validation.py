@@ -33,7 +33,11 @@ def read_csv_header(source_file) -> list[str]:
 
 
 def validate_csv_against_schema(source_file, schema: dict):
-    header = read_csv_header(source_file)
+    try:
+        header = read_csv_header(source_file)
+    except ValueError as e:
+        # utils の ValueError を DRF 用 ValidationError に変換
+        raise ValidationError(str(e))
 
     required_cols = [schema["time"], *schema["metrics"]]
     if schema.get("entity"):
