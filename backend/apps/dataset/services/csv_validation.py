@@ -12,17 +12,20 @@ def read_csv_header(source_file) -> list[str]:
     UTF-8-SIG と Shift-JIS に対応
     """
     detected = detect_csv_encoding(source_file)
-
     # 後続処理のため、必ず先頭に戻す
     source_file.seek(0)
+
     text_file = io.TextIOWrapper(source_file, encoding=detected, newline="")
-    reader = csv.reader(text_file)
     try:
-        header = next(reader)
-    except StopIteration:
-        raise ValidationError("CSVにヘッダ行が存在しません")
-    except Exception:
-        raise ValidationError("CSVのヘッダ行を正しく解析できません")
+        reader = csv.reader(text_file)
+        try:
+            header = next(reader)
+        except StopIteration:
+            raise ValidationError("CSVにヘッダ行が存在しません")
+        except Exception:
+            raise ValidationError("CSVのヘッダ行を正しく解析できません")
+    finally:
+        text_file.detach()
 
     # 前後の空白を除去
     header = [h.strip() for h in header if h.strip()]
