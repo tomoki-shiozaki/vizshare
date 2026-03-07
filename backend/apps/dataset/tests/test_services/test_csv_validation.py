@@ -56,7 +56,7 @@ def test_read_csv_header_all_empty_columns():
 
 
 def make_csv_file(header_line: str, encoding="utf-8"):
-    return io.BytesIO(header_line.encode(encoding))
+    return io.BytesIO((header_line + "\n").encode(encoding))
 
 
 @pytest.mark.parametrize(
@@ -96,4 +96,17 @@ def test_validate_csv_missing_entity_column():
     schema = {"time": "time", "metrics": ["metric1", "metric2"], "entity": "entity"}
     f = make_csv_file(header_line)
     with pytest.raises(ValidationError, match="CSVに存在しない列名: entity"):
+        validate_csv_against_schema(f, schema)
+
+
+def test_validate_csv_multiple_missing_columns():
+    header_line = "time"
+    schema = {"time": "time", "metrics": ["metric1", "metric2"]}
+
+    f = make_csv_file(header_line)
+
+    with pytest.raises(
+        ValidationError,
+        match="CSVに存在しない列名: metric1, metric2",
+    ):
         validate_csv_against_schema(f, schema)
