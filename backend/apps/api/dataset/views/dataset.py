@@ -28,13 +28,13 @@ class DatasetUploadAPIView(generics.CreateAPIView):
         """
 
         # 保存前に CSV × schema の整合性チェック
-        source_file = serializer.validated_data.get("source_file")
-        schema = serializer.validated_data.get("schema")  # ← validated_data を使う
+        source_file = serializer.validated_data["source_file"]
+        schema = serializer.validated_data["schema"]
 
-        if not source_file or not schema:
-            raise ValidationError("source_file と schema は必須です")
-
-        validate_csv_against_schema(source_file, schema)
+        try:
+            validate_csv_against_schema(source_file, schema)
+        except ValueError as e:
+            raise ValidationError(str(e))
 
         # バリデーション OK → データベースに保存
         dataset = serializer.save(owner=self.request.user)

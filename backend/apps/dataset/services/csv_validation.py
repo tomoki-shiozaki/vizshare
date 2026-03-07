@@ -34,11 +34,7 @@ def read_csv_header(source_file) -> list[str]:
 
 
 def validate_csv_against_schema(source_file, schema: dict):
-    try:
-        header = read_csv_header(source_file)
-    except ValueError as e:
-        # utils の ValueError を DRF 用 ValidationError に変換
-        raise ValidationError(str(e))
+    header = read_csv_header(source_file)
 
     required_cols = [schema["time"], *schema["metrics"]]
     if schema.get("entity"):
@@ -46,4 +42,4 @@ def validate_csv_against_schema(source_file, schema: dict):
 
     missing = [c for c in required_cols if c not in header]
     if missing:
-        raise ValidationError(f"CSVに存在しない列名: {', '.join(missing)}")
+        raise ValueError(f"CSVに存在しない列名: {', '.join(missing)}")
