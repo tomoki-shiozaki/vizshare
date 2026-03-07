@@ -18,13 +18,13 @@ from apps.dataset.services.csv_validation import (
     [
         (b"col1,col2,col3\n", ["col1", "col2", "col3"]),  # UTF-8
         (
-            "\ufeffcol1,col2,col3\n".encode("utf-8-sig"),
+            "col1,col2,col3\n".encode("utf-8-sig"),
             ["col1", "col2", "col3"],
         ),  # UTF-8-SIG
         (
             "あいう,かきく,さしす\n".encode("cp932"),
             ["あいう", "かきく", "さしす"],
-        ),  # Shift-JIS
+        ),  # CP932
         (
             " col1 , col2 , col3 \n".encode("utf-8"),
             ["col1", "col2", "col3"],
@@ -34,7 +34,6 @@ from apps.dataset.services.csv_validation import (
 def test_read_csv_header_success(content, expected_header):
     f = io.BytesIO(content)
     header = read_csv_header(f)
-    header = [h.lstrip("\ufeff") for h in header]  # BOM除去
     assert header == expected_header
 
 
