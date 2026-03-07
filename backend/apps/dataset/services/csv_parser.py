@@ -7,6 +7,7 @@ from django.utils.dateparse import parse_datetime
 from django.utils.timezone import is_naive, make_aware
 
 from apps.dataset.models import DataPoint, Dataset
+from apps.dataset.utils.csv_utils import detect_csv_encoding
 
 BATCH_SIZE = 1000
 
@@ -17,28 +18,7 @@ def _open_csv_text_stream(file_obj):
     streamingで読めるTextIOWrapperを返す
     （巨大CSV対応）
     """
-    # CSVの文字コードを自動判定
-    # 優先順:
-    # 1. UTF-8 with BOM (ExcelのUTF-8保存対策)
-    # 2. UTF-8 (標準的なCSV)
-    # 3. CP932 / Shift-JIS (日本のExcel保存対策)
-    # 先頭だけ読む（メモリ安全）
-    sample = file_obj.read(4096)
-
-    for encoding in ("utf-8-sig", "utf-8", "cp932"):
-        try:
-            sample.decode(encoding)
-            detected = encoding
-            break
-        except UnicodeDecodeError:
-            continue
-    else:
-        raise ValueError(
-            "CSVの文字コードを判定できません。UTF-8（BOM付き含む）または Shift-JIS 形式で保存してください。"
-        )
-
-    file_obj.seek(0)
-
+    detected = detect_csv_encoding(file_obj)
     return io.TextIOWrapper(file_obj, encoding=detected, newline="")
 
 
