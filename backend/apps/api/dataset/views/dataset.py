@@ -8,8 +8,7 @@ from apps.api.dataset.serializers import (
     DatasetSerializer,
 )
 from apps.dataset.models import Dataset
-from apps.dataset.services.csv_validation import validate_csv_against_schema
-from apps.dataset.services.enqueue import enqueue_parse_dataset
+from apps.dataset.services.dataset_service import create_dataset
 
 
 class DatasetUploadAPIView(generics.CreateAPIView):
@@ -22,25 +21,14 @@ class DatasetUploadAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        """
-        保存前に軽量バリデーションを行い、
-        保存後に非同期で CSV パース処理を開始する
-        """
 
-        # 保存前に CSV × schema の整合性チェック
-        source_file = serializer.validated_data["source_file"]
-        schema = serializer.validated_data["schema"]
-
-        try:
-            validate_csv_against_schema(source_file, schema)
-        except ValueError as e:
-            raise ValidationError(str(e))
-
-        # バリデーション OK → データベースに保存
-        dataset = serializer.save(owner=self.request.user)
-
-        # 保存後に非同期ジョブで CSV を解析
-        enqueue_parse_dataset(dataset.id)
+        data = serializer.validated_data
+        create_dataset(
+            owner=self.request.user,
+            name=data["name"],
+            source_file=data["source_file"],
+            schema=data["schema"],
+        )
 
 
 class DatasetListAPIView(generics.ListAPIView):
