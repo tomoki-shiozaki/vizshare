@@ -17,3 +17,15 @@ def test_detect_csv_encoding_success(content, expected_encoding):
     f = io.BytesIO(content)
     encoding = detect_csv_encoding(f)
     assert encoding == expected_encoding
+
+
+def test_detect_csv_encoding_keeps_position():
+    content = "col1,col2\n".encode("utf-8")
+    f = io.BytesIO(content)
+
+    f.read(2)  # 途中まで読む
+    pos = f.tell()
+
+    detect_csv_encoding(f)
+
+    assert f.tell() == pos
