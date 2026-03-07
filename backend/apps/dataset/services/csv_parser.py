@@ -19,7 +19,6 @@ def _open_csv_text_stream(file_obj):
     （巨大CSV対応）
     """
     detected = detect_csv_encoding(file_obj)
-    file_obj.seek(0)
     return io.TextIOWrapper(file_obj, encoding=detected, newline="")
 
 
