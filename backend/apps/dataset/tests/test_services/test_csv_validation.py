@@ -43,6 +43,13 @@ def test_read_csv_header_empty_file():
         read_csv_header(f)
 
 
+def test_read_csv_header_all_empty_columns():
+    f = io.BytesIO(b",,,\n")
+
+    with pytest.raises(ValidationError, match="CSVにヘッダ行が存在しません"):
+        read_csv_header(f)
+
+
 # -----------------------------
 # validate_csv_against_schema のテスト
 # -----------------------------
