@@ -23,12 +23,13 @@ class DatasetUploadAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
 
         data = serializer.validated_data
-        create_dataset(
+        dataset = create_dataset(
             owner=self.request.user,
             name=data["name"],
             source_file=data["source_file"],
             schema=data["schema"],
         )
+        serializer.instance = dataset
 
 
 class DatasetListAPIView(generics.ListAPIView):
