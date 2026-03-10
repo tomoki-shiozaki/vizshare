@@ -87,7 +87,7 @@ def test_validate_csv_missing_required_column():
     header_line = "time,metric1"
     schema = {"time": "time", "metrics": ["metric1", "metric2"]}
     f = make_csv_file(header_line)
-    with pytest.raises(ValidationError, match="CSVに存在しない列名: metric2"):
+    with pytest.raises(ValueError, match="CSVに存在しない列名: metric2"):
         validate_csv_against_schema(f, schema)
 
 
@@ -95,7 +95,7 @@ def test_validate_csv_missing_entity_column():
     header_line = "time,metric1,metric2"
     schema = {"time": "time", "metrics": ["metric1", "metric2"], "entity": "entity"}
     f = make_csv_file(header_line)
-    with pytest.raises(ValidationError, match="CSVに存在しない列名: entity"):
+    with pytest.raises(ValueError, match="CSVに存在しない列名: entity"):
         validate_csv_against_schema(f, schema)
 
 
@@ -106,7 +106,7 @@ def test_validate_csv_multiple_missing_columns():
     f = make_csv_file(header_line)
 
     with pytest.raises(
-        ValidationError,
+        ValueError,
         match="CSVに存在しない列名: metric1, metric2",
     ):
         validate_csv_against_schema(f, schema)
@@ -120,5 +120,5 @@ def test_validate_csv_header_error(mocker):
         side_effect=ValueError("CSV読み込み失敗"),
     )
 
-    with pytest.raises(ValidationError, match="CSV読み込み失敗"):
+    with pytest.raises(ValueError, match="CSV読み込み失敗"):
         validate_csv_against_schema(f, {"time": "time", "metrics": []})
