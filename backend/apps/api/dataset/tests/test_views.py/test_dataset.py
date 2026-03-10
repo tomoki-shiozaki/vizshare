@@ -2,6 +2,7 @@ import json
 
 import pytest
 from django.core.files.base import ContentFile
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -30,7 +31,7 @@ def test_dataset_upload_api_success(mocker, user, api_client: APIClient):
         "schema": json.dumps({"time": "time", "metrics": ["metric1"]}),
     }
 
-    url = "/api/v1/datasets/upload/"  # ルーター設定に応じて変更
+    url = reverse("dataset:upload")
     response = api_client.post(url, data, format="multipart")
 
     assert response.status_code == status.HTTP_201_CREATED  # type: ignore
@@ -63,7 +64,7 @@ def test_dataset_upload_api_validation_error(mocker, user, api_client: APIClient
         ),  # <- dict → JSON文字列
     }
 
-    url = "/api/v1/datasets/upload/"  # ルーター設定に応じて変更
+    url = reverse("dataset:upload")
     response = api_client.post(url, data, format="multipart")
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST  # type: ignore
