@@ -23,11 +23,7 @@ export function CsvSchemaSelector({
   toggleMetric,
   disabled,
 }: Props) {
-  const getSample = (h: string) => {
-    if (sampleRows.length === 0) return "";
-    const idx = headers.indexOf(h);
-    return sampleRows[0][idx] || "";
-  };
+  const firstRow = sampleRows[0] ?? [];
 
   return (
     <div className="space-y-4">
@@ -42,9 +38,9 @@ export function CsvSchemaSelector({
           disabled={disabled}
         >
           <option value="">選択してください</option>
-          {headers.map((h) => (
+          {headers.map((h, i) => (
             <option key={h} value={h}>
-              {h} {sampleRows.length > 0 && `(例: ${getSample(h)})`}
+              {h} {firstRow[i] && `(例: ${firstRow[i]})`}
             </option>
           ))}
         </select>
@@ -61,9 +57,9 @@ export function CsvSchemaSelector({
           disabled={disabled}
         >
           <option value="">指定しない</option>
-          {headers.map((h) => (
+          {headers.map((h, i) => (
             <option key={h} value={h}>
-              {h} {sampleRows.length > 0 && `(例: ${getSample(h)})`}
+              {h} {firstRow[i] && `(例: ${firstRow[i]})`}
             </option>
           ))}
         </select>
@@ -75,7 +71,7 @@ export function CsvSchemaSelector({
           <legend className="text-sm font-medium">Metric列（複数選択）</legend>
 
           <div className="space-y-1 border rounded-md p-3">
-            {headers.map((h) => (
+            {headers.map((h, i) => (
               <label key={h} className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
@@ -83,7 +79,7 @@ export function CsvSchemaSelector({
                   onChange={() => toggleMetric(h)}
                   disabled={disabled}
                 />
-                {h} {sampleRows.length > 0 && `(例: ${getSample(h)})`}
+                {h} {firstRow[i] && `(例: ${firstRow[i]})`}
               </label>
             ))}
           </div>
