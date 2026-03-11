@@ -36,3 +36,29 @@ export async function readCsvHeaders(file: File): Promise<CsvSample> {
     .map((line) => line.split(",").map((v) => v.trim())); // 先頭3行をサンプル
   return { headers, rows };
 }
+
+export function suggestColumns(headers: string[]): {
+  suggestedTime: string;
+  suggestedEntity: string;
+  suggestedMetrics: string[];
+} {
+  const lowerHeaders = headers.map((h) => h.toLowerCase());
+
+  const timeIndex = lowerHeaders.findIndex(
+    (s) => s.includes("time") || s.includes("date"),
+  );
+  const suggestedTime = timeIndex >= 0 ? headers[timeIndex] : "";
+
+  const entityKeywords = ["entity", "country", "product", "name", "category"];
+  const entityIndex = lowerHeaders.findIndex((h) =>
+    entityKeywords.some((kw) => h.includes(kw)),
+  );
+  const suggestedEntity = entityIndex >= 0 ? headers[entityIndex] : "";
+
+  const metricKeywords = ["value", "sales", "profit", "amount", "count"];
+  const suggestedMetrics = headers.filter((h) =>
+    metricKeywords.some((kw) => h.toLowerCase().includes(kw)),
+  );
+
+  return { suggestedTime, suggestedEntity, suggestedMetrics };
+}
