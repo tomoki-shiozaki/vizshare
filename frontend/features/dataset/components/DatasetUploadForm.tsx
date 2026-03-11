@@ -1,24 +1,28 @@
 "use client";
 
-import { useState, ChangeEvent } from "react";
-import { suggestColumns, readCsvHeaders } from "@/features/dataset/utils/csv";
+import { useCsvFile } from "@/features/dataset/hooks/useCsvFile";
 import { uploadDataset } from "@/features/dataset/api/uploadDataset";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-type Message = { type: "success" | "error"; text: string } | null;
-
 export function DatasetUploadForm() {
-  const [file, setFile] = useState<File | null>(null);
-  // ⭐ CSVヘッダ一覧
-  const [headers, setHeaders] = useState<string[]>([]);
-  const [sampleRows, setSampleRows] = useState<string[][]>([]); // サンプル行
-  const [timeColumn, setTimeColumn] = useState("");
-  const [entityColumn, setEntityColumn] = useState("");
-  const [metrics, setMetrics] = useState<string[]>([]);
-  const [message, setMessage] = useState<Message>(null);
+  const {
+    file,
+    headers,
+    sampleRows,
+    timeColumn,
+    setTimeColumn,
+    entityColumn,
+    setEntityColumn,
+    metrics,
+    toggleMetric,
+    message,
+    setMessage,
+    handleFileChange,
+    reset,
+  } = useCsvFile();
 
   const queryClient = useQueryClient();
 
@@ -32,13 +36,8 @@ export function DatasetUploadForm() {
         type: "success",
         text: `アップロード成功: ID ${data.id}, 名前 ${data.name}`,
       });
-      // reset
-      setFile(null);
-      setHeaders([]);
-      setSampleRows([]);
-      setTimeColumn("");
-      setEntityColumn("");
-      setMetrics([]);
+
+      reset();
       // ⭐ CSV一覧を即更新
       queryClient.invalidateQueries({ queryKey: ["datasets"] });
     },
@@ -55,50 +54,6 @@ export function DatasetUploadForm() {
 
   const uploading = uploadMutation.isPending;
   const isValid = !!file && timeColumn.trim() !== "" && metrics.length > 0;
-
-  // =========================
-  // ファイル選択
-  // =========================
-  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (!selected) return;
-
-    setFile(selected);
-    setMessage(null);
-
-    try {
-      const { headers: h, rows } = await readCsvHeaders(selected);
-      setHeaders(h);
-      setSampleRows(rows);
-
-      // 自動予選択
-      const { suggestedTime, suggestedEntity, suggestedMetrics } =
-        suggestColumns(h);
-
-      setTimeColumn(suggestedTime);
-      setEntityColumn(suggestedEntity);
-      setMetrics(suggestedMetrics);
-    } catch (err) {
-      setMessage({
-        type: "error",
-        text:
-          err instanceof Error
-            ? `CSV読み込み失敗: ${err.message}（例: 空ファイル、カンマ区切りなし、文字コード非対応）`
-            : "CSV読み込み失敗: 不明なエラー",
-      });
-    }
-  };
-
-  // =========================
-  // metric toggle
-  // =========================
-  const toggleMetric = (column: string) => {
-    setMetrics((prev) =>
-      prev.includes(column)
-        ? prev.filter((m) => m !== column)
-        : [...prev, column],
-    );
-  };
 
   // =========================
   // validation
