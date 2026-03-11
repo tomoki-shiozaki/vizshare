@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, ChangeEvent } from "react";
-import { readCsvHeaders } from "@/features/dataset/utils/csv";
+import { suggestColumns, readCsvHeaders } from "@/features/dataset/utils/csv";
 import { uploadDataset } from "@/features/dataset/api/uploadDataset";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -72,32 +72,8 @@ export function DatasetUploadForm() {
       setSampleRows(rows);
 
       // 自動予選択
-      const lowerHeaders = h.map((s) => s.toLowerCase());
-      const suggestedTime =
-        h[
-          lowerHeaders.findIndex(
-            (s) => s.includes("time") || s.includes("date"),
-          )
-        ] || "";
-
-      const entityKeywords = [
-        "entity",
-        "country",
-        "product",
-        "name",
-        "category",
-      ];
-      const suggestedEntity =
-        h[
-          lowerHeaders.findIndex((s) =>
-            entityKeywords.some((kw) => s.includes(kw)),
-          )
-        ] || "";
-
-      const metricKeywords = ["value", "sales", "profit", "amount", "count"];
-      const suggestedMetrics = h.filter((s) =>
-        metricKeywords.some((kw) => s.toLowerCase().includes(kw)),
-      );
+      const { suggestedTime, suggestedEntity, suggestedMetrics } =
+        suggestColumns(h);
 
       setTimeColumn(suggestedTime);
       setEntityColumn(suggestedEntity);
