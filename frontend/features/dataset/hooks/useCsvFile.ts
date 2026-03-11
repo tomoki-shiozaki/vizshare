@@ -63,7 +63,6 @@ export function useCsvFile() {
     setTimeColumn("");
     setEntityColumn("");
     setMetrics([]);
-    setMessage(null);
   };
 
   return {
