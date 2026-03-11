@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from apps.api.dataset.serializers import (
     DatasetDetailSerializer,
     DatasetListSerializer,
-    DatasetSerializer,
+    DatasetUploadSerializer,
 )
 from apps.dataset.models import Dataset
 from apps.dataset.services.dataset_service import create_dataset
@@ -17,7 +17,7 @@ class DatasetUploadAPIView(generics.CreateAPIView):
     """
 
     queryset = Dataset.objects.all()
-    serializer_class = DatasetSerializer
+    serializer_class = DatasetUploadSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):

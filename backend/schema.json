@@ -146,17 +146,17 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/Dataset"
+                                "$ref": "#/components/schemas/DatasetUpload"
                             }
                         },
                         "application/x-www-form-urlencoded": {
                             "schema": {
-                                "$ref": "#/components/schemas/Dataset"
+                                "$ref": "#/components/schemas/DatasetUpload"
                             }
                         },
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/Dataset"
+                                "$ref": "#/components/schemas/DatasetUpload"
                             }
                         }
                     },
@@ -178,7 +178,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Dataset"
+                                    "$ref": "#/components/schemas/DatasetUpload"
                                 }
                             }
                         },
@@ -838,46 +838,6 @@
     },
     "components": {
         "schemas": {
-            "Dataset": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
-                    "name": {
-                        "type": "string",
-                        "maxLength": 255
-                    },
-                    "source_file": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "owner": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
-                    "status": {
-                        "type": "string",
-                        "readOnly": true
-                    },
-                    "schema": {},
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "readOnly": true
-                    }
-                },
-                "required": [
-                    "created_at",
-                    "id",
-                    "name",
-                    "owner",
-                    "schema",
-                    "source_file",
-                    "status"
-                ]
-            },
             "DatasetDetail": {
                 "type": "object",
                 "properties": {
@@ -989,6 +949,46 @@
                 "required": [
                     "metrics",
                     "time"
+                ]
+            },
+            "DatasetUpload": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "source_file": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "owner": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "schema": {},
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "id",
+                    "name",
+                    "owner",
+                    "schema",
+                    "source_file",
+                    "status"
                 ]
             },
             "JWT": {
