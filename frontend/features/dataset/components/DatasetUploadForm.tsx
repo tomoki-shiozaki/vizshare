@@ -2,6 +2,7 @@
 
 import { useCsvFile } from "@/features/dataset/hooks/useCsvFile";
 import { uploadDataset } from "@/features/dataset/api/uploadDataset";
+import { CsvSchemaSelector } from "@/features/dataset/components/CsvSchemaSelector";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
@@ -222,105 +223,17 @@ export function DatasetUploadForm() {
 
         {/* schema（CSV選択後のみ表示） */}
         {headers.length > 0 && (
-          <div className="space-y-4">
-            {/* Time列 */}
-            <div>
-              <Label htmlFor="time-column">Time列（必須）</Label>
-              <select
-                id="time-column"
-                value={timeColumn}
-                onChange={(e) => setTimeColumn(e.target.value)}
-                className="block w-full rounded-md border px-3 py-2 text-sm"
-                disabled={uploading}
-              >
-                <option value="">選択してください</option>
-                {headers.map((h) => (
-                  <option key={h} value={h}>
-                    {h}{" "}
-                    {sampleRows.length > 0
-                      ? `(例: ${sampleRows[0][headers.indexOf(h)] || ""})`
-                      : ""}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Entity列 */}
-            <div>
-              <Label htmlFor="entity-column">Entity列（任意）</Label>
-              <select
-                id="entity-column"
-                value={entityColumn}
-                onChange={(e) => setEntityColumn(e.target.value)}
-                className="block w-full rounded-md border px-3 py-2 text-sm"
-                disabled={uploading}
-              >
-                <option value="">指定しない</option>
-                {headers.map((h) => (
-                  <option key={h} value={h}>
-                    {h}{" "}
-                    {sampleRows.length > 0
-                      ? `(例: ${sampleRows[0][headers.indexOf(h)] || ""})`
-                      : ""}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Metrics列 */}
-            <div>
-              <fieldset className="space-y-2">
-                <legend className="text-sm font-medium">
-                  Metric列（複数選択）
-                </legend>
-                <div className="space-y-1 border rounded-md p-3">
-                  {headers.map((h) => (
-                    <label key={h} className="flex items-center gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={metrics.includes(h)}
-                        onChange={() => toggleMetric(h)}
-                        disabled={uploading}
-                      />
-                      {h}{" "}
-                      {sampleRows.length > 0
-                        ? `(例: ${sampleRows[0][headers.indexOf(h)] || ""})`
-                        : ""}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-            </div>
-
-            {/* サンプルプレビュー */}
-            {sampleRows.length > 0 && (
-              <div className="text-sm border p-2 rounded">
-                <p className="font-medium mb-1">CSVサンプル行</p>
-                <table className="text-xs w-full border-collapse">
-                  <thead>
-                    <tr>
-                      {headers.map((h) => (
-                        <th key={h} className="border px-1 py-0.5 bg-gray-100">
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sampleRows.map((row, idx) => (
-                      <tr key={idx}>
-                        {headers.map((h, i) => (
-                          <td key={i} className="border px-1 py-0.5">
-                            {row[i] || ""}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+          <CsvSchemaSelector
+            headers={headers}
+            sampleRows={sampleRows}
+            timeColumn={timeColumn}
+            setTimeColumn={setTimeColumn}
+            entityColumn={entityColumn}
+            setEntityColumn={setEntityColumn}
+            metrics={metrics}
+            toggleMetric={toggleMetric}
+            disabled={uploading}
+          />
         )}
 
         {/* ボタン */}
