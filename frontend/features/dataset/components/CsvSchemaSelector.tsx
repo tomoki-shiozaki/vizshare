@@ -89,6 +89,37 @@ export function CsvSchemaSelector({
           </div>
         </fieldset>
       </div>
+
+      {/* CSVサンプルプレビュー */}
+      {sampleRows.length > 0 && (
+        <div className="text-sm border p-2 rounded">
+          <p className="font-medium mb-1">CSVサンプル行</p>
+
+          <table className="text-xs w-full border-collapse">
+            <thead>
+              <tr>
+                {headers.map((h) => (
+                  <th key={h} className="border px-1 py-0.5 bg-gray-100">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+
+            <tbody>
+              {sampleRows.map((row, idx) => (
+                <tr key={idx}>
+                  {headers.map((_, i) => (
+                    <td key={i} className="border px-1 py-0.5">
+                      {row[i] || ""}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
