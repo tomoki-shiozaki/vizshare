@@ -31,24 +31,28 @@ export function DatasetUploadForm() {
   // アップロードMutation
   // =========================
   const uploadMutation = useMutation({
+    mutationKey: ["datasetUpload"],
     mutationFn: uploadDataset,
+
     onSuccess: (data) => {
-      setMessage({
-        type: "success",
-        text: `アップロード成功: ID ${data.id}, 名前 ${data.name}`,
+      reset();
+
+      queryClient.invalidateQueries({
+        queryKey: ["datasets"],
       });
 
-      reset();
-      // ⭐ CSV一覧を即更新
-      queryClient.invalidateQueries({ queryKey: ["datasets"] });
+      setMessage({
+        type: "success",
+        text: `アップロード成功: ${data.name}`,
+      });
     },
-    onError: (error) => {
+
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : "不明なエラー";
+
       setMessage({
         type: "error",
-        text:
-          error instanceof Error
-            ? `アップロード失敗: ${error.message}`
-            : "アップロード失敗: 不明なエラー",
+        text: `アップロード失敗: ${message}`,
       });
     },
   });
