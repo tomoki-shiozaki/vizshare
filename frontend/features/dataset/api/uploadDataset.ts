@@ -15,11 +15,6 @@ export async function uploadDataset(
   const res = await apiClient.post<DatasetUploadResponse>(
     "/datasets/upload/",
     formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
   );
 
   return res.data;
