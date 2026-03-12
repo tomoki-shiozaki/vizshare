@@ -1,9 +1,8 @@
-import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { DatasetUploadForm } from "../DatasetUploadForm";
+import { DatasetUploadForm } from "@/features/dataset/components/DatasetUploadForm";
 
 // SchemaSelector をモック
 vi.mock("@/features/dataset/components/CsvSchemaSelector", () => ({
