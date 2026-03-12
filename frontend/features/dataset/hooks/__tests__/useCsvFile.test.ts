@@ -1,30 +1,38 @@
 import { renderHook, act } from "@testing-library/react";
 import { useCsvFile } from "@/features/dataset/hooks/useCsvFile";
-import { readCsvHeaders } from "@/features/dataset/utils/csv";
+import { readCsvHeaders, suggestColumns } from "@/features/dataset/utils/csv";
 import { ChangeEvent } from "react";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 
-// readCsvHeaders をモック
+// =======================
+// モジュールモック
+// =======================
 vi.mock("@/features/dataset/utils/csv", () => ({
   readCsvHeaders: vi.fn(),
-  suggestColumns: vi.fn((headers: string[]) => ({
-    suggestedTime: headers[0] || "",
-    suggestedEntity: headers[1] || "",
-    suggestedMetrics: headers.slice(2),
-  })),
+  suggestColumns: vi.fn(),
 }));
 
-vi.mock("@/features/dataset/utils/csv");
+// 型安全なモック取得
 const mockReadCsvHeaders = vi.mocked(readCsvHeaders);
+const mockSuggestColumns = vi.mocked(suggestColumns);
 
 describe("useCsvFile", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    // suggestColumns はテスト中は固定値を返す
+    mockSuggestColumns.mockImplementation(() => ({
+      suggestedTime: "time",
+      suggestedEntity: "entity",
+      suggestedMetrics: ["metric1", "metric2"],
+    }));
   });
 
   it("CSV読み込み成功時に状態が更新される", async () => {
-    const mockFile = new File(["a,b,c\n1,2,3"], "test.csv", {
+    const mockFile = new File(["a,b,c,d\n1,2,3,4"], "test.csv", {
       type: "text/csv",
     });
+
+    // readCsvHeaders はヘッダーとサンプル行を返す
     mockReadCsvHeaders.mockResolvedValue({
       headers: ["time", "entity", "metric1", "metric2"],
       rows: [["2023-01-01", "A", "10", "20"]],
@@ -32,9 +40,11 @@ describe("useCsvFile", () => {
 
     const { result } = renderHook(() => useCsvFile());
 
+    // 型安全な input 作成
     const input = document.createElement("input");
     Object.defineProperty(input, "files", {
       value: [mockFile],
+      writable: false,
     });
 
     const event = { target: input } as ChangeEvent<HTMLInputElement>;
@@ -60,6 +70,7 @@ describe("useCsvFile", () => {
 
   it("CSV読み込み失敗時にエラーメッセージが設定される", async () => {
     const mockFile = new File([""], "empty.csv", { type: "text/csv" });
+
     mockReadCsvHeaders.mockRejectedValue(new Error("空ファイル"));
 
     const { result } = renderHook(() => useCsvFile());
@@ -67,13 +78,13 @@ describe("useCsvFile", () => {
     const input = document.createElement("input");
     Object.defineProperty(input, "files", {
       value: [mockFile],
-      writable: false, // readonly なので false にしておく
+      writable: false,
     });
 
+    const event = { target: input } as ChangeEvent<HTMLInputElement>;
+
     await act(async () => {
-      await result.current.handleFileChange({
-        target: input,
-      } as ChangeEvent<HTMLInputElement>);
+      await result.current.handleFileChange(event);
     });
 
     expect(result.current.message).toEqual({
