@@ -360,17 +360,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Dataset: {
-            readonly id: number;
-            name: string;
-            /** Format: uri */
-            source_file: string;
-            readonly owner: number;
-            readonly status: string;
-            schema: unknown;
-            /** Format: date-time */
-            readonly created_at: string;
-        };
         DatasetDetail: {
             readonly id: number;
             readonly name: string;
@@ -395,6 +384,17 @@ export interface components {
             time: string;
             entity?: string;
             metrics: string[];
+        };
+        DatasetUpload: {
+            readonly id: number;
+            name: string;
+            /** Format: uri */
+            source_file: string;
+            readonly owner: number;
+            readonly status: string;
+            schema: unknown;
+            /** Format: date-time */
+            readonly created_at: string;
         };
         /** @description Serializer for JWT authentication. */
         JWT: {
@@ -600,9 +600,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Dataset"];
-                "application/x-www-form-urlencoded": components["schemas"]["Dataset"];
-                "multipart/form-data": components["schemas"]["Dataset"];
+                "application/json": components["schemas"]["DatasetUpload"];
+                "application/x-www-form-urlencoded": components["schemas"]["DatasetUpload"];
+                "multipart/form-data": components["schemas"]["DatasetUpload"];
             };
         };
         responses: {
@@ -611,7 +611,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Dataset"];
+                    "application/json": components["schemas"]["DatasetUpload"];
                 };
             };
         };

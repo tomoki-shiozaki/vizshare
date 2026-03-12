@@ -5,11 +5,10 @@ from rest_framework.permissions import IsAuthenticated
 from apps.api.dataset.serializers import (
     DatasetDetailSerializer,
     DatasetListSerializer,
-    DatasetSerializer,
+    DatasetUploadSerializer,
 )
 from apps.dataset.models import Dataset
-from apps.dataset.services.csv_validation import validate_csv_against_schema
-from apps.dataset.services.enqueue import enqueue_parse_dataset
+from apps.dataset.services.dataset_service import create_dataset
 
 
 class DatasetUploadAPIView(generics.CreateAPIView):
@@ -18,29 +17,19 @@ class DatasetUploadAPIView(generics.CreateAPIView):
     """
 
     queryset = Dataset.objects.all()
-    serializer_class = DatasetSerializer
+    serializer_class = DatasetUploadSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        """
-        保存前に軽量バリデーションを行い、
-        保存後に非同期で CSV パース処理を開始する
-        """
 
-        # 保存前に CSV × schema の整合性チェック
-        source_file = serializer.validated_data.get("source_file")
-        schema = serializer.validated_data.get("schema")  # ← validated_data を使う
-
-        if not source_file or not schema:
-            raise ValidationError("source_file と schema は必須です")
-
-        validate_csv_against_schema(source_file, schema)
-
-        # バリデーション OK → データベースに保存
-        dataset = serializer.save(owner=self.request.user)
-
-        # 保存後に非同期ジョブで CSV を解析
-        enqueue_parse_dataset(dataset.id)
+        data = serializer.validated_data
+        dataset = create_dataset(
+            owner=self.request.user,
+            name=data["name"],
+            source_file=data["source_file"],
+            schema=data["schema"],
+        )
+        serializer.instance = dataset
 
 
 class DatasetListAPIView(generics.ListAPIView):
