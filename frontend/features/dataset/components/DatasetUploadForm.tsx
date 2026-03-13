@@ -43,7 +43,7 @@ export function DatasetUploadForm() {
 
       setMessage({
         type: "success",
-        text: `アップロード成功: ${data.name}`,
+        text: `アップロード成功: ${data.name} が一覧に追加されました`,
       });
     },
 
