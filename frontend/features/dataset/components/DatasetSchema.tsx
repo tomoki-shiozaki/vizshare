@@ -23,7 +23,7 @@ export function DatasetSchemaView({ schema }: Props) {
 
           <tr>
             <td className="p-2 text-gray-500">Entity</td>
-            <td className="p-2">{schema.entity ?? "default"}</td>
+            <td className="p-2">{schema.entity ?? "__default__"}</td>
           </tr>
 
           {schema.metrics.map((m) => (

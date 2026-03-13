@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: "Vizshare",
   description:
     "Vizshare - CSV データをアップロードして可視化・共有できるプラットフォーム",
-  icons: "./vizshare-logo.svg",
+  icons: "/vizshare-logo.svg",
 };
 
 export default function RootLayout({

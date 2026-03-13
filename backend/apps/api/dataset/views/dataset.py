@@ -49,12 +49,8 @@ class DatasetDetailAPIView(generics.RetrieveAPIView):
     Dataset の詳細情報を返す API
     """
 
-    queryset = Dataset.objects.all()
     serializer_class = DatasetDetailSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """
-        ログインユーザーのデータのみに制限
-        """
-        return self.queryset.filter(owner=self.request.user)
+        return Dataset.objects.filter(owner=self.request.user)

@@ -42,7 +42,7 @@ export function DatasetList() {
   const datasets = data?.pages.flatMap((page) => page.results) ?? [];
 
   return (
-    <Card className="max-w-2xl">
+    <Card className="w-full">
       <CardContent className="pt-6 space-y-4">
         <h2 className="text-xl font-semibold text-blue-600">CSV一覧</h2>
 

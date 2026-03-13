@@ -13,5 +13,5 @@ urlpatterns = [
     path("upload/", DatasetUploadAPIView.as_view(), name="upload"),
     path("list/", DatasetListAPIView.as_view(), name="list"),
     path("<int:pk>/", DatasetDetailAPIView.as_view(), name="detail"),
-    path("<int:pk>/data/", DatasetDataAPIView.as_view(), name="data"),
+    path("<int:pk>/data/", DatasetDataAPIView.as_view(), name="datapoints"),
 ]
