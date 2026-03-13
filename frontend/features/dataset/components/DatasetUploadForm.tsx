@@ -132,7 +132,7 @@ export function DatasetUploadForm() {
   };
 
   return (
-    <Card className="max-w-xl">
+    <Card className="w-full">
       <CardContent className="space-y-6 pt-6">
         {/* CSV説明 */}
         <details className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">

@@ -10,12 +10,12 @@ export default function DatasetPage() {
     >
       <div className="flex flex-col md:flex-row gap-6">
         {/* アップロードフォーム */}
-        <div className="flex-1">
+        <div className="w-full md:w-1/2 min-w-0">
           <DatasetUploadForm />
         </div>
 
         {/* CSV一覧 */}
-        <div className="flex-1">
+        <div className="w-full md:w-1/2 min-w-0">
           <DatasetList />
         </div>
       </div>
