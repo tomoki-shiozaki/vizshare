@@ -16,12 +16,12 @@ import { useDatasetDataPoints } from "@/features/dataset/hooks/useDatasetDataPoi
 import type { TimeSeriesPoint } from "@/features/dataset/types/dataset";
 
 type DatasetChartProps = {
-  datasetId: string | number;
+  datasetId: string;
 };
 
 export const DatasetLineChart = ({ datasetId }: DatasetChartProps) => {
   // データ取得（カスタムフック）
-  const { data, isLoading, isError } = useDatasetDataPoints(String(datasetId));
+  const { data, isLoading, isError } = useDatasetDataPoints(datasetId);
 
   // 選択中の entity
   const [selectedEntity, setSelectedEntity] = useState<string>("");
@@ -77,11 +77,11 @@ export const DatasetLineChart = ({ datasetId }: DatasetChartProps) => {
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={chartData}
-          margin={{ top: 20, right: 30, left: 10, bottom: 0 }}
+          margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="time" />
-          <YAxis />
+          <YAxis width={60} />
           <Tooltip />
           <Legend />
           {metrics.map((metric, idx) => (

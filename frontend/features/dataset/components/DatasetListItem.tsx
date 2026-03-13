@@ -13,28 +13,31 @@ export function DatasetListItem({ dataset }: Props) {
 
   return (
     <li
-      className={`border rounded-lg p-3 flex items-center justify-between transition
-        ${clickable ? "hover:bg-gray-50" : "opacity-60"}
-      `}
+      className={`
+    border rounded-lg p-3 flex items-center justify-between transition min-w-0
+    ${clickable ? "hover:bg-gray-50" : "opacity-60"}
+  `}
     >
-      <div>
+      <div className="flex-1 min-w-0">
         {clickable ? (
           <Link
             href={`/dataset/${dataset.id}`}
-            className="font-medium text-blue-600 hover:underline"
+            className="font-medium text-blue-600 hover:underline truncate block"
           >
             {dataset.name}
           </Link>
         ) : (
-          <p className="font-medium">{dataset.name}</p>
+          <p className="font-medium truncate">{dataset.name}</p>
         )}
 
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 truncate">
           {new Date(dataset.created_at).toLocaleString()}
         </p>
       </div>
 
-      <DatasetBadge status={dataset.status} />
+      <div className="ml-3 flex-shrink-0">
+        <DatasetBadge status={dataset.status} />
+      </div>
     </li>
   );
 }

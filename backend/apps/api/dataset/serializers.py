@@ -113,14 +113,3 @@ class DatasetDetailSerializer(serializers.ModelSerializer):
             "parse_result",
             "source_file",
         ]
-
-
-class DataPointSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DataPoint
-        fields = [
-            "time",
-            "raw_time",
-            "value",
-            "series",
-        ]

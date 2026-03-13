@@ -43,7 +43,7 @@ export function DatasetDetail({ id }: Props) {
   return (
     <div className="space-y-4">
       {/* 戻るボタン */}
-      <Link href="/dataset" passHref>
+      <Link href="/dataset">
         <Button variant="outline" size="sm">
           <ChevronLeft className="w-4 h-4 mr-2" />
           Dataset一覧に戻る
