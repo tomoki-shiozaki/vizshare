@@ -77,11 +77,11 @@ export const DatasetLineChart = ({ datasetId }: DatasetChartProps) => {
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={chartData}
-          margin={{ top: 20, right: 30, left: 10, bottom: 0 }}
+          margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="time" />
-          <YAxis />
+          <YAxis width={60} />
           <Tooltip />
           <Legend />
           {metrics.map((metric, idx) => (
