@@ -19,7 +19,10 @@ const mainLinks = [
   { to: "/", label: "ホーム" },
   { to: "/dataset", label: "データセット管理" },
 ];
-const dropdownLinks = [{ to: "/about", label: "このサイトについて" }];
+const dropdownLinks = [
+  { to: "/about", label: "このサイトについて" },
+  { to: "/docs/csv-format", label: "CSVフォーマット" },
+];
 
 /* ======================
    共通 NavbarLink
