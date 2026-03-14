@@ -5,16 +5,26 @@ export default function HomePage() {
   return (
     <HomeLayout
       title="Vizshare"
-      description="CSVファイルをアップロードしてデータをグラフとして可視化できるアプリです。"
+      description="CSVファイルをアップロードしてデータをグラフとして可視化・共有できるアプリです。"
     >
-      <div className="grid gap-6">
-        {/* Dataset 一覧 */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* My datasets */}
         <CardLink href="/dataset">
           <h2 className="text-xl font-semibold text-blue-600 mb-2">
-            データセット管理
+            My Datasets
           </h2>
           <p className="text-gray-500 text-sm">
-            CSVをアップロードしてデータを管理・可視化できるアプリです。
+            CSVをアップロードして自分のデータセットを管理します。
+          </p>
+        </CardLink>
+
+        {/* Public datasets */}
+        <CardLink href="/datasets/public">
+          <h2 className="text-xl font-semibold text-blue-600 mb-2">
+            Public Datasets
+          </h2>
+          <p className="text-gray-500 text-sm">
+            公開されているデータセットを閲覧できます。
           </p>
         </CardLink>
       </div>
