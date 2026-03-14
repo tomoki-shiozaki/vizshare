@@ -146,9 +146,15 @@ export default function CsvFormatPage() {
               1行目は<strong>必ずヘッダ行</strong>にしてください。
             </li>
             <li>
-              Metric列は<strong>数値データ</strong>を含む必要があります。
+              Metric列は<strong>数値データのみ</strong>を含む必要があります。
             </li>
-            <li>空欄の値は許可されています。</li>
+            <li>
+              数値以外の値（例: <code>N/A</code> や <code>100円</code>
+              ）は正しく処理されません。
+            </li>
+            <li>
+              値が存在しない場合は<strong>空欄</strong>にしてください。
+            </li>
           </ul>
         </div>
 
