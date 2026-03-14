@@ -22,6 +22,7 @@ package "Dataset Domain" {
     schema
     parse_result
     created_at
+    is_public
   }
 
   entity "DataPoint" as DataPoint {
@@ -43,6 +44,9 @@ package "Dataset Domain" {
 note bottom of Dataset
 status: UPLOADED / PROCESSING / PARSED / FAILED
 schema and parse_result are JSONFields
+is_public:
+  false -> owner only
+  true  -> anyone can view (anonymous allowed)
 end note
 
 @enduml
