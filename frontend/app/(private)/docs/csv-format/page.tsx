@@ -38,19 +38,34 @@ export default function CsvFormatPage() {
           <div className="space-y-4">
             <div>
               <h3 className="font-medium">Time列（必須）</h3>
+
               <p>
                 時間・日付を表す列です。グラフの<strong>X軸</strong>になります。
               </p>
 
-              <p className="mt-2">対応例：</p>
+              <p className="mt-2">対応している主な形式：</p>
 
               <pre className="bg-gray-100 p-3 rounded text-xs mt-1">
                 {`2020
+1990.0
 2023-01
+2023/02
 2023-01-15
 2023/01/15
+15/01/2023
 2023-01-15T13:45:00Z`}
               </pre>
+
+              <p className="mt-2">
+                年・年月・日付・ISO日時などの形式は自動的に解析されます。
+              </p>
+
+              <p className="mt-2">
+                解析できない値（例: <code>Q1 2023</code> や <code>Stage1</code>
+                など）が含まれる場合、グラフは
+                <strong>CSVファイルの行順</strong>
+                をそのまま使用して表示されます。
+              </p>
             </div>
 
             <div>
