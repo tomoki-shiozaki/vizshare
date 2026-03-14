@@ -1,4 +1,4 @@
-import type { DatasetStatus } from "@/features/dataset/types/dataset";
+import type { DatasetStatus } from "@/features/datasets/types/dataset";
 
 export const STATUS_LABEL: Record<DatasetStatus, string> = {
   uploaded: "アップロード済み",

@@ -1,8 +1,8 @@
 "use client";
 
-import { useCsvFile } from "@/features/dataset/hooks/useCsvFile";
-import { uploadDataset } from "@/features/dataset/api/uploadDataset";
-import { CsvSchemaSelector } from "@/features/dataset/components/CsvSchemaSelector";
+import { useCsvFile } from "@/features/datasets/hooks/useCsvFile";
+import { uploadDataset } from "@/features/datasets/api/uploadDataset";
+import { CsvSchemaSelector } from "@/features/datasets/components/CsvSchemaSelector";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";

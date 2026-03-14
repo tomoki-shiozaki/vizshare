@@ -1,5 +1,5 @@
 import { apiClient } from "@/features/auth/api/apiClient";
-import type { DatasetDataPointsResponse } from "@/features/dataset/types/dataset";
+import type { DatasetDataPointsResponse } from "@/features/datasets/types/dataset";
 
 export const fetchDatasetDataPoints = async (
   datasetId: string,

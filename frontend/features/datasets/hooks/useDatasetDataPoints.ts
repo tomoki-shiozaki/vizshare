@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchDatasetDataPoints } from "@/features/dataset/api/fetchDatasetDataPoints";
-import type { DatasetDataPointsResponse } from "@/features/dataset/types/dataset";
+import { fetchDatasetDataPoints } from "@/features/datasets/api/fetchDatasetDataPoints";
+import type { DatasetDataPointsResponse } from "@/features/datasets/types/dataset";
 
 export const useDatasetDataPoints = (datasetId: string) => {
   return useQuery<DatasetDataPointsResponse>({

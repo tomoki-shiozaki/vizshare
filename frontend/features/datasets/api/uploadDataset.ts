@@ -1,6 +1,6 @@
 import { apiClient } from "@/features/auth/api/apiClient";
-import type { DatasetUploadResponse } from "@/features/dataset/types/dataset";
-import type { UploadVars } from "@/features/dataset/types/dataset";
+import type { DatasetUploadResponse } from "@/features/datasets/types/dataset";
+import type { UploadVars } from "@/features/datasets/types/dataset";
 
 export async function uploadDataset(
   vars: UploadVars,

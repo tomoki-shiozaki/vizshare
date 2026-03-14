@@ -2,8 +2,8 @@
 
 import { useParams } from "next/navigation";
 import { PageLayout } from "@/components/layout";
-import { DatasetDetail } from "@/features/dataset/components/DatasetDetail";
-import { DatasetLineChart } from "@/features/dataset/components/DatasetLineChart";
+import { DatasetDetail } from "@/features/datasets/components/DatasetDetail";
+import { DatasetLineChart } from "@/features/datasets/components/DatasetLineChart";
 
 export default function DatasetDetailPage() {
   const { id } = useParams<{ id: string }>();

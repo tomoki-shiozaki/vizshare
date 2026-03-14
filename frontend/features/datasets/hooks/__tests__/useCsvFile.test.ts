@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
-import { useCsvFile } from "@/features/dataset/hooks/useCsvFile";
-import { readCsvHeaders, suggestColumns } from "@/features/dataset/utils/csv";
+import { useCsvFile } from "@/features/datasets/hooks/useCsvFile";
+import { readCsvHeaders, suggestColumns } from "@/features/datasets/utils/csv";
 import { ChangeEvent } from "react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 

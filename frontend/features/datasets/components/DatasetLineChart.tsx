@@ -12,8 +12,8 @@ import {
 } from "recharts";
 import { useEffect, useState } from "react";
 import { Loading, SelectBox } from "@/components/common";
-import { useDatasetDataPoints } from "@/features/dataset/hooks/useDatasetDataPoints";
-import type { TimeSeriesPoint } from "@/features/dataset/types/dataset";
+import { useDatasetDataPoints } from "@/features/datasets/hooks/useDatasetDataPoints";
+import type { TimeSeriesPoint } from "@/features/datasets/types/dataset";
 
 type DatasetChartProps = {
   datasetId: string;

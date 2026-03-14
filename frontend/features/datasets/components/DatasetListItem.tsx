@@ -1,6 +1,6 @@
 import Link from "next/link";
-import type { DatasetListResponse } from "@/features/dataset/types/dataset";
-import { DatasetBadge } from "@/features/dataset/components/DatasetBadge";
+import type { DatasetListResponse } from "@/features/datasets/types/dataset";
+import { DatasetBadge } from "@/features/datasets/components/DatasetBadge";
 
 type Dataset = DatasetListResponse["results"][number];
 
@@ -21,7 +21,7 @@ export function DatasetListItem({ dataset }: Props) {
       <div className="flex-1 min-w-0">
         {clickable ? (
           <Link
-            href={`/dataset/${dataset.id}`}
+            href={`/datasets/${dataset.id}`}
             className="font-medium text-blue-600 hover:underline truncate block"
           >
             {dataset.name}

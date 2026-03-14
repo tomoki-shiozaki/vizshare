@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { readCsvHeaders, suggestColumns } from "@/features/dataset/utils/csv";
+import { readCsvHeaders, suggestColumns } from "@/features/datasets/utils/csv";
 
 describe("readCsvHeaders", () => {
   it("正常なCSVを読み込める", async () => {

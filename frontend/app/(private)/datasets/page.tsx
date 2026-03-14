@@ -1,6 +1,6 @@
 import { PageLayout } from "@/components/layout";
-import { DatasetUploadForm } from "@/features/dataset/components/DatasetUploadForm";
-import { DatasetList } from "@/features/dataset/components/DatasetList";
+import { DatasetUploadForm } from "@/features/datasets/components/DatasetUploadForm";
+import { DatasetList } from "@/features/datasets/components/DatasetList";
 
 export default function DatasetPage() {
   return (

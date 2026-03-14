@@ -1,14 +1,14 @@
 "use client";
 
-import { fetchDatasetDetail } from "@/features/dataset/api/fetchDatasetDetail";
+import { fetchDatasetDetail } from "@/features/datasets/api/fetchDatasetDetail";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Loading } from "@/components/common";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { DatasetSchemaView } from "@/features/dataset/components/DatasetSchema";
+import { DatasetSchemaView } from "@/features/datasets/components/DatasetSchema";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { DatasetBadge } from "@/features/dataset/components/DatasetBadge";
+import { DatasetBadge } from "@/features/datasets/components/DatasetBadge";
 
 type Props = {
   id: string;
@@ -43,7 +43,7 @@ export function DatasetDetail({ id }: Props) {
   return (
     <div className="space-y-4">
       {/* 戻るボタン */}
-      <Link href="/dataset">
+      <Link href="/datasets">
         <Button variant="outline" size="sm">
           <ChevronLeft className="w-4 h-4 mr-2" />
           Dataset一覧に戻る

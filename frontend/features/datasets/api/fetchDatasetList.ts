@@ -1,5 +1,5 @@
 import { apiClient } from "@/features/auth/api/apiClient";
-import type { DatasetListResponse } from "@/features/dataset/types/dataset";
+import type { DatasetListResponse } from "@/features/datasets/types/dataset";
 
 interface FetchDatasetListParams {
   limit: number;

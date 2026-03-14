@@ -1,4 +1,4 @@
-import type { DatasetSchema } from "@/features/dataset/types/dataset";
+import type { DatasetSchema } from "@/features/datasets/types/dataset";
 
 type Props = {
   schema: DatasetSchema;

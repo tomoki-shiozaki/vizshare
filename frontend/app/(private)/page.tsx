@@ -9,7 +9,7 @@ export default function HomePage() {
     >
       <div className="grid gap-6 md:grid-cols-2">
         {/* My datasets */}
-        <CardLink href="/dataset">
+        <CardLink href="/datasets">
           <h2 className="text-xl font-semibold text-blue-600 mb-2">
             My Datasets
           </h2>

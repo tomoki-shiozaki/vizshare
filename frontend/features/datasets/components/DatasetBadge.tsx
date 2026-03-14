@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import type { DatasetStatus } from "@/features/dataset/types/dataset";
-import { STATUS_LABEL, STATUS_VARIANT } from "@/features/dataset/constants";
+import type { DatasetStatus } from "@/features/datasets/types/dataset";
+import { STATUS_LABEL, STATUS_VARIANT } from "@/features/datasets/constants";
 import { Check, Loader2, AlertCircle } from "lucide-react";
 
 type Props = {
