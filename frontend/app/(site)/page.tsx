@@ -19,7 +19,7 @@ export default function HomePage() {
         </CardLink>
 
         {/* Public datasets */}
-        <CardLink href="/datasets/public">
+        <CardLink href="/explore">
           <h2 className="text-xl font-semibold text-blue-600 mb-2">
             Public Datasets
           </h2>
