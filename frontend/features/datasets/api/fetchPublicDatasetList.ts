@@ -1,5 +1,5 @@
 import { apiClient } from "@/features/auth/api/apiClient";
-import type { DatasetListResponse } from "@/features/datasets/types/dataset";
+import type { PaginatedPublicDatasetListResponse } from "@/features/datasets/types/public-datasets";
 
 interface FetchPublicDatasetListParams {
   limit: number;
@@ -9,8 +9,8 @@ interface FetchPublicDatasetListParams {
 export async function fetchPublicDatasetList({
   limit,
   offset,
-}: FetchPublicDatasetListParams): Promise<DatasetListResponse> {
-  const { data } = await apiClient.get<DatasetListResponse>(
+}: FetchPublicDatasetListParams): Promise<PaginatedPublicDatasetListResponse> {
+  const { data } = await apiClient.get<PaginatedPublicDatasetListResponse>(
     "/datasets/public/",
     {
       params: { limit, offset },

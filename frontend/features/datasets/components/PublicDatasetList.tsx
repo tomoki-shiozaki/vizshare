@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchPublicDatasetList } from "@/features/datasets/api/fetchPublicDatasetList";
-import { DatasetListItem } from "@/features/datasets/components/DatasetListItem";
+import { PublicDatasetListItem } from "@/features/datasets/components/PublicDatasetListItem";
 
 export function PublicDatasetList() {
   const limit = 12;
@@ -63,7 +63,7 @@ export function PublicDatasetList() {
 
         <ul className="space-y-2">
           {datasets.map((ds) => (
-            <DatasetListItem key={ds.id} dataset={ds} />
+            <PublicDatasetListItem key={ds.id} dataset={ds} />
           ))}
         </ul>
 
