@@ -7,7 +7,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 // =======================
 // モジュールモック
 // =======================
-vi.mock("@/features/dataset/utils/csv", () => ({
+vi.mock("@/features/datasets/utils/csv", () => ({
   readCsvHeaders: vi.fn(),
   suggestColumns: vi.fn(),
 }));

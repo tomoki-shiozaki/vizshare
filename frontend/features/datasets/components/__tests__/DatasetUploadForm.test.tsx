@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DatasetUploadForm } from "@/features/datasets/components/DatasetUploadForm";
 
 // SchemaSelector をモック
-vi.mock("@/features/dataset/components/CsvSchemaSelector", () => ({
+vi.mock("@/features/datasets/components/CsvSchemaSelector", () => ({
   CsvSchemaSelector: () => <div>Schema Selector</div>,
 }));
 
