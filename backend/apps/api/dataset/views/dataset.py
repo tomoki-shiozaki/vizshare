@@ -1,8 +1,7 @@
 from rest_framework import generics
-from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
-from apps.api.dataset.serializers import (
+from apps.api.dataset.serializers.dataset import (
     DatasetDetailSerializer,
     DatasetListSerializer,
     DatasetUploadSerializer,

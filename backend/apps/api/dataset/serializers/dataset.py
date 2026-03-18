@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.dataset.models import DataPoint, Dataset
+from apps.dataset.models import Dataset
 
 
 class DatasetUploadSerializer(serializers.ModelSerializer):
