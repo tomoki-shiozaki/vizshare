@@ -58,6 +58,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/datasets/public/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description 公開データセット一覧 */
+        get: operations["datasets_public_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/upload/": {
         parameters: {
             query?: never;
@@ -423,6 +440,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["DatasetList"][];
         };
+        PaginatedPublicDatasetList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=400&limit=100
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=200&limit=100
+             */
+            previous?: string | null;
+            results: components["schemas"]["PublicDataset"][];
+        };
         ParseResult: {
             row_count?: number;
             error_type?: string;
@@ -465,6 +497,14 @@ export interface components {
         };
         Ping: {
             message: string;
+        };
+        PublicDataset: {
+            readonly id: number;
+            name: string;
+            owner: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            status?: components["schemas"]["StatusEnum"];
         };
         Register: {
             username: string;
@@ -587,6 +627,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedDatasetListList"];
+                };
+            };
+        };
+    };
+    datasets_public_list: {
+        parameters: {
+            query?: {
+                /** @description Number of results to return per page. */
+                limit?: number;
+                /** @description The initial index from which to return the results. */
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedPublicDatasetList"];
                 };
             };
         };

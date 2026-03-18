@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 ====================== */
 const mainLinks = [
   { to: "/", label: "ホーム" },
-  { to: "/dataset", label: "データセット管理" },
+  { to: "/datasets", label: "データセット管理" },
 ];
 const dropdownLinks = [
   { to: "/about", label: "このサイトについて" },
