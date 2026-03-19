@@ -33,7 +33,7 @@ TimeSeriesDataByEntity = Dict[str, List[TimeSeriesPoint]]
 # ===============================
 
 
-class DatasetDataAPIView(APIView):
+class DatasetTimeSeriesAPIView(APIView):
     """
     Dataset に紐づく DataPoint を entity ごとに整理して返す
     Recharts でそのまま使える形
