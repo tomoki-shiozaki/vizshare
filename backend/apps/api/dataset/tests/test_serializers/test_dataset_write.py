@@ -1,6 +1,6 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from apps.api.dataset.serializers.dataset import DatasetUploadSerializer
+from apps.api.dataset.serializers.dataset_write import DatasetUploadSerializer
 
 
 def make_file():
