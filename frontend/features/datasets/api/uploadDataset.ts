@@ -13,7 +13,7 @@ export async function uploadDataset(
   formData.append("schema", JSON.stringify(schema));
 
   const res = await apiClient.post<DatasetUploadResponse>(
-    "/datasets/upload/",
+    "/datasets/create/",
     formData,
   );
 

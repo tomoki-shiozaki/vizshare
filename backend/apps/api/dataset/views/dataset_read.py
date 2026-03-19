@@ -1,34 +1,12 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from apps.api.dataset.serializers.dataset import (
+from apps.api.dataset.serializers.dataset_read import (
     DatasetDetailSerializer,
     DatasetListSerializer,
-    DatasetUploadSerializer,
+    PublicDatasetSerializer,
 )
 from apps.dataset.models import Dataset
-from apps.dataset.services.dataset_service import create_dataset
-
-
-class DatasetUploadAPIView(generics.CreateAPIView):
-    """
-    Dataset のアップロード専用 API
-    """
-
-    queryset = Dataset.objects.all()
-    serializer_class = DatasetUploadSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-
-        data = serializer.validated_data
-        dataset = create_dataset(
-            owner=self.request.user,
-            name=data["name"],
-            source_file=data["source_file"],
-            schema=data["schema"],
-        )
-        serializer.instance = dataset
 
 
 class DatasetListAPIView(generics.ListAPIView):
@@ -53,3 +31,22 @@ class DatasetDetailAPIView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Dataset.objects.filter(owner=self.request.user)
+
+
+class PublicDatasetListAPIView(generics.ListAPIView):
+    """
+    公開データセット一覧
+    """
+
+    serializer_class = PublicDatasetSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return (
+            Dataset.objects.filter(
+                is_public=True,
+                status=Dataset.Status.PARSED,
+            )
+            .select_related("owner")
+            .order_by("-created_at")
+        )

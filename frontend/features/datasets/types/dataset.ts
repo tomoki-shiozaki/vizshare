@@ -1,7 +1,7 @@
 import type { components, paths } from "@/types/api";
 
 export type DatasetUploadResponse =
-  paths["/api/v1/datasets/upload/"]["post"]["responses"][201]["content"]["application/json"];
+  paths["/api/v1/datasets/create/"]["post"]["responses"][201]["content"]["application/json"];
 export type DatasetUploadSchema = {
   time: string;
   entity?: string;
@@ -13,7 +13,7 @@ export type UploadVars = {
 };
 
 export type DatasetListResponse =
-  paths["/api/v1/datasets/list/"]["get"]["responses"][200]["content"]["application/json"];
+  paths["/api/v1/datasets/"]["get"]["responses"][200]["content"]["application/json"];
 
 export type DatasetDetailResponse =
   paths["/api/v1/datasets/{id}/"]["get"]["responses"][200]["content"]["application/json"];

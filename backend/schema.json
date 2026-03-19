@@ -6,6 +6,58 @@
         "description": "Vizshare is a data visualization and sharing platform. This API allows clients to access datasets, upload CSVs, and retrieve visualizations programmatically."
     },
     "paths": {
+        "/api/v1/datasets/": {
+            "get": {
+                "operationId": "datasets_list",
+                "description": "ログインユーザーの Dataset 一覧を返す API",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "required": false,
+                        "in": "query",
+                        "description": "The initial index from which to return the results.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedDatasetListList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/{id}/": {
             "get": {
                 "operationId": "datasets_retrieve",
@@ -48,9 +100,9 @@
                 }
             }
         },
-        "/api/v1/datasets/{id}/data/": {
+        "/api/v1/datasets/{id}/timeseries/": {
             "get": {
-                "operationId": "datasets_data_retrieve",
+                "operationId": "datasets_timeseries_retrieve",
                 "description": "Dataset に紐づく DataPoint を entity ごとに整理して返す\nRecharts でそのまま使える形",
                 "parameters": [
                     {
@@ -83,33 +135,33 @@
                 }
             }
         },
-        "/api/v1/datasets/list/": {
-            "get": {
-                "operationId": "datasets_list_list",
-                "description": "ログインユーザーの Dataset 一覧を返す API",
-                "parameters": [
-                    {
-                        "name": "limit",
-                        "required": false,
-                        "in": "query",
-                        "description": "Number of results to return per page.",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "offset",
-                        "required": false,
-                        "in": "query",
-                        "description": "The initial index from which to return the results.",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+        "/api/v1/datasets/create/": {
+            "post": {
+                "operationId": "datasets_create_create",
+                "description": "Dataset のアップロード専用 API",
                 "tags": [
                     "datasets"
                 ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatasetCreate"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatasetCreate"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatasetCreate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
                 "security": [
                     {
                         "jwtAuth": []
@@ -122,11 +174,11 @@
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PaginatedDatasetListList"
+                                    "$ref": "#/components/schemas/DatasetCreate"
                                 }
                             }
                         },
@@ -180,58 +232,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/PaginatedPublicDatasetList"
-                                }
-                            }
-                        },
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/api/v1/datasets/upload/": {
-            "post": {
-                "operationId": "datasets_upload_create",
-                "description": "Dataset のアップロード専用 API",
-                "tags": [
-                    "datasets"
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/DatasetUpload"
-                            }
-                        },
-                        "application/x-www-form-urlencoded": {
-                            "schema": {
-                                "$ref": "#/components/schemas/DatasetUpload"
-                            }
-                        },
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/DatasetUpload"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "security": [
-                    {
-                        "jwtAuth": []
-                    },
-                    {
-                        "jwtHeaderAuth": []
-                    },
-                    {
-                        "jwtCookieAuth": []
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DatasetUpload"
                                 }
                             }
                         },
@@ -891,6 +891,46 @@
     },
     "components": {
         "schemas": {
+            "DatasetCreate": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "source_file": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "owner": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "schema": {},
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "id",
+                    "name",
+                    "owner",
+                    "schema",
+                    "source_file",
+                    "status"
+                ]
+            },
             "DatasetDetail": {
                 "type": "object",
                 "properties": {
@@ -1002,46 +1042,6 @@
                 "required": [
                     "metrics",
                     "time"
-                ]
-            },
-            "DatasetUpload": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
-                    "name": {
-                        "type": "string",
-                        "maxLength": 255
-                    },
-                    "source_file": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "owner": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
-                    "status": {
-                        "type": "string",
-                        "readOnly": true
-                    },
-                    "schema": {},
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "readOnly": true
-                    }
-                },
-                "required": [
-                    "created_at",
-                    "id",
-                    "name",
-                    "owner",
-                    "schema",
-                    "source_file",
-                    "status"
                 ]
             },
             "JWT": {

@@ -10,7 +10,7 @@ export async function fetchDatasetList({
   limit,
   offset,
 }: FetchDatasetListParams): Promise<DatasetListResponse> {
-  const { data } = await apiClient.get<DatasetListResponse>("/datasets/list/", {
+  const { data } = await apiClient.get<DatasetListResponse>("/datasets/", {
     params: { limit, offset },
   });
   return data;

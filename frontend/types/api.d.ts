@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/v1/datasets/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description ログインユーザーの Dataset 一覧を返す API */
+        get: operations["datasets_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/{id}/": {
         parameters: {
             query?: never;
@@ -21,7 +38,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/datasets/{id}/data/": {
+    "/api/v1/datasets/{id}/timeseries/": {
         parameters: {
             query?: never;
             header?: never;
@@ -32,7 +49,7 @@ export interface paths {
          * @description Dataset に紐づく DataPoint を entity ごとに整理して返す
          *     Recharts でそのまま使える形
          */
-        get: operations["datasets_data_retrieve"];
+        get: operations["datasets_timeseries_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -41,17 +58,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/datasets/list/": {
+    "/api/v1/datasets/create/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** @description ログインユーザーの Dataset 一覧を返す API */
-        get: operations["datasets_list_list"];
+        get?: never;
         put?: never;
-        post?: never;
+        /** @description Dataset のアップロード専用 API */
+        post: operations["datasets_create_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -69,23 +86,6 @@ export interface paths {
         get: operations["datasets_public_list"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/datasets/upload/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Dataset のアップロード専用 API */
-        post: operations["datasets_upload_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -377,6 +377,17 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        DatasetCreate: {
+            readonly id: number;
+            name: string;
+            /** Format: uri */
+            source_file: string;
+            readonly owner: number;
+            readonly status: string;
+            schema: unknown;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
         DatasetDetail: {
             readonly id: number;
             readonly name: string;
@@ -401,17 +412,6 @@ export interface components {
             time: string;
             entity?: string;
             metrics: string[];
-        };
-        DatasetUpload: {
-            readonly id: number;
-            name: string;
-            /** Format: uri */
-            source_file: string;
-            readonly owner: number;
-            readonly status: string;
-            schema: unknown;
-            /** Format: date-time */
-            readonly created_at: string;
         };
         /** @description Serializer for JWT authentication. */
         JWT: {
@@ -566,6 +566,30 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    datasets_list: {
+        parameters: {
+            query?: {
+                /** @description Number of results to return per page. */
+                limit?: number;
+                /** @description The initial index from which to return the results. */
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedDatasetListList"];
+                };
+            };
+        };
+    };
     datasets_retrieve: {
         parameters: {
             query?: never;
@@ -587,7 +611,7 @@ export interface operations {
             };
         };
     };
-    datasets_data_retrieve: {
+    datasets_timeseries_retrieve: {
         parameters: {
             query?: never;
             header?: never;
@@ -607,26 +631,27 @@ export interface operations {
             };
         };
     };
-    datasets_list_list: {
+    datasets_create_create: {
         parameters: {
-            query?: {
-                /** @description Number of results to return per page. */
-                limit?: number;
-                /** @description The initial index from which to return the results. */
-                offset?: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatasetCreate"];
+                "application/x-www-form-urlencoded": components["schemas"]["DatasetCreate"];
+                "multipart/form-data": components["schemas"]["DatasetCreate"];
+            };
+        };
         responses: {
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedDatasetListList"];
+                    "application/json": components["schemas"]["DatasetCreate"];
                 };
             };
         };
@@ -651,31 +676,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedPublicDatasetList"];
-                };
-            };
-        };
-    };
-    datasets_upload_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DatasetUpload"];
-                "application/x-www-form-urlencoded": components["schemas"]["DatasetUpload"];
-                "multipart/form-data": components["schemas"]["DatasetUpload"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DatasetUpload"];
                 };
             };
         };
