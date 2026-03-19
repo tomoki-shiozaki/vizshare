@@ -13,7 +13,7 @@ def test_dataset_data_api_returns_structured_data(
 ):
     api_client.force_authenticate(user=user)
 
-    url = reverse("dataset:datapoints", args=[dataset_with_points.id])
+    url = reverse("dataset:timeseries", args=[dataset_with_points.id])
     res = api_client.get(url)
 
     assert res.status_code == status.HTTP_200_OK
@@ -29,7 +29,7 @@ def test_dataset_data_api_returns_404_for_other_users(
 ):
     api_client.force_authenticate(user=another_user)
 
-    url = reverse("dataset:datapoints", args=[dataset_with_points.id])
+    url = reverse("dataset:timeseries", args=[dataset_with_points.id])
     res = api_client.get(url)
 
     assert res.status_code == status.HTTP_404_NOT_FOUND
@@ -39,7 +39,7 @@ def test_dataset_data_api_returns_404_for_other_users(
 def test_dataset_data_api_empty_dataset(api_client, user, dataset):
     api_client.force_authenticate(user=user)
 
-    url = reverse("dataset:datapoints", args=[dataset.id])
+    url = reverse("dataset:timeseries", args=[dataset.id])
     res = api_client.get(url)
 
     assert res.status_code == status.HTTP_200_OK

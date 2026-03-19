@@ -31,7 +31,7 @@ def test_dataset_upload_api_success(mocker, user, api_client: APIClient):
         "schema": json.dumps({"time": "time", "metrics": ["metric1"]}),
     }
 
-    url = reverse("dataset:upload")
+    url = reverse("dataset:create")
     response = api_client.post(url, data, format="multipart")
 
     assert response.status_code == status.HTTP_201_CREATED  # type: ignore
@@ -64,7 +64,7 @@ def test_dataset_upload_api_validation_error(mocker, user, api_client: APIClient
         ),  # <- dict → JSON文字列
     }
 
-    url = reverse("dataset:upload")
+    url = reverse("dataset:create")
     response = api_client.post(url, data, format="multipart")
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST  # type: ignore

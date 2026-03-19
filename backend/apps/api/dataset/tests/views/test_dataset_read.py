@@ -39,7 +39,7 @@ def test_public_dataset_list_only_returns_public_parsed(api_client, user):
         is_public=True,
     )
 
-    response = api_client.get(reverse("dataset:public-list"))
+    response = api_client.get(reverse("dataset:public"))
 
     assert response.status_code == 200
     assert response.data["count"] == 1
@@ -51,6 +51,6 @@ def test_public_dataset_list_only_returns_public_parsed(api_client, user):
 
 @pytest.mark.django_db
 def test_public_dataset_list_allow_any(api_client):
-    response = api_client.get(reverse("dataset:public-list"))
+    response = api_client.get(reverse("dataset:public"))
 
     assert response.status_code == 200
