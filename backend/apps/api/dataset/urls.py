@@ -1,12 +1,12 @@
 from django.urls import path
 
 from apps.api.dataset.views.datapoint import DatasetDataAPIView
-from apps.api.dataset.views.dataset import (
+from apps.api.dataset.views.dataset_read import (
     DatasetDetailAPIView,
     DatasetListAPIView,
-    DatasetUploadAPIView,
+    PublicDatasetListAPIView,
 )
-from apps.api.dataset.views.public_datasets import PublicDatasetListAPIView
+from apps.api.dataset.views.dataset_write import DatasetUploadAPIView
 
 app_name = "dataset"
 
