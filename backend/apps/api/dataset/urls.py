@@ -14,6 +14,6 @@ urlpatterns = [
     path("", DatasetListAPIView.as_view(), name="list"),
     path("create/", DatasetCreateAPIView.as_view(), name="create"),
     path("<int:pk>/", DatasetDetailAPIView.as_view(), name="detail"),
-    path("<int:pk>/data/", DatasetTimeSeriesAPIView.as_view(), name="datapoints"),
+    path("<int:pk>/timeseries/", DatasetTimeSeriesAPIView.as_view(), name="timeseries"),
     path("public/", PublicDatasetListAPIView.as_view(), name="public"),
 ]
