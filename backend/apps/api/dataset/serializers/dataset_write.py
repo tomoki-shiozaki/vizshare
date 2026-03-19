@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.dataset.models import Dataset
 
 
-class DatasetUploadSerializer(serializers.ModelSerializer):
+class DatasetCreateSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True)
     status = serializers.CharField(read_only=True)
     created_at = serializers.DateTimeField(read_only=True)

@@ -6,12 +6,12 @@ from apps.api.dataset.views.dataset_read import (
     DatasetListAPIView,
     PublicDatasetListAPIView,
 )
-from apps.api.dataset.views.dataset_write import DatasetUploadAPIView
+from apps.api.dataset.views.dataset_write import DatasetCreateAPIView
 
 app_name = "dataset"
 
 urlpatterns = [
-    path("upload/", DatasetUploadAPIView.as_view(), name="upload"),
+    path("upload/", DatasetCreateAPIView.as_view(), name="upload"),
     path("list/", DatasetListAPIView.as_view(), name="list"),
     path("<int:pk>/", DatasetDetailAPIView.as_view(), name="detail"),
     path("<int:pk>/data/", DatasetDataAPIView.as_view(), name="datapoints"),
