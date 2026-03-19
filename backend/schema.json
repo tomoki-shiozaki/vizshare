@@ -100,9 +100,9 @@
                 }
             }
         },
-        "/api/v1/datasets/{id}/data/": {
+        "/api/v1/datasets/{id}/timeseries/": {
             "get": {
-                "operationId": "datasets_data_retrieve",
+                "operationId": "datasets_timeseries_retrieve",
                 "description": "Dataset に紐づく DataPoint を entity ごとに整理して返す\nRecharts でそのまま使える形",
                 "parameters": [
                     {

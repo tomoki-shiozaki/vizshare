@@ -38,7 +38,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/datasets/{id}/data/": {
+    "/api/v1/datasets/{id}/timeseries/": {
         parameters: {
             query?: never;
             header?: never;
@@ -49,7 +49,7 @@ export interface paths {
          * @description Dataset に紐づく DataPoint を entity ごとに整理して返す
          *     Recharts でそのまま使える形
          */
-        get: operations["datasets_data_retrieve"];
+        get: operations["datasets_timeseries_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -611,7 +611,7 @@ export interface operations {
             };
         };
     };
-    datasets_data_retrieve: {
+    datasets_timeseries_retrieve: {
         parameters: {
             query?: never;
             header?: never;
