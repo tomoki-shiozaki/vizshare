@@ -11,9 +11,9 @@ from apps.api.dataset.views.dataset_write import DatasetCreateAPIView
 app_name = "dataset"
 
 urlpatterns = [
-    path("upload/", DatasetCreateAPIView.as_view(), name="upload"),
-    path("list/", DatasetListAPIView.as_view(), name="list"),
+    path("", DatasetListAPIView.as_view(), name="list"),
+    path("create/", DatasetCreateAPIView.as_view(), name="create"),
     path("<int:pk>/", DatasetDetailAPIView.as_view(), name="detail"),
     path("<int:pk>/data/", DatasetDataAPIView.as_view(), name="datapoints"),
-    path("public/", PublicDatasetListAPIView.as_view(), name="public-list"),
+    path("public/", PublicDatasetListAPIView.as_view(), name="public"),
 ]
