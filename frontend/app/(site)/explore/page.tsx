@@ -1,5 +1,5 @@
 import { PageLayout } from "@/components/layout/PageLayout";
-import { PublicDatasetList } from "@/features/datasets/components/PublicDatasetList";
+import { PublicDatasetList } from "@/features/datasets/public/list/components/PublicDatasetList";
 
 export default function PublicDatasetsPage() {
   return (
