@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { PageLayout } from "@/components/layout";
 import { DatasetDetail } from "@/features/datasets/detail/components/DatasetDetail";
-import { DatasetLineChart } from "@/features/datasets/components/DatasetLineChart";
+import { DatasetLineChart } from "@/features/datasets/timeseries/components/DatasetLineChart";
 
 export default function DatasetDetailPage() {
   const { id } = useParams<{ id: string }>();
