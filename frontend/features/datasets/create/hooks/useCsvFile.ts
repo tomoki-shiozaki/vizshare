@@ -1,5 +1,8 @@
 import { useState, ChangeEvent } from "react";
-import { readCsvHeaders, suggestColumns } from "@/features/datasets/utils/csv";
+import {
+  readCsvHeaders,
+  suggestColumns,
+} from "@/features/datasets/create/utils/csv";
 
 export type CsvState = {
   file: File | null;

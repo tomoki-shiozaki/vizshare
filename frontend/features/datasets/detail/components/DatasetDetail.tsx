@@ -1,11 +1,11 @@
 "use client";
 
-import { fetchDatasetDetail } from "@/features/datasets/api/fetchDatasetDetail";
+import { fetchDatasetDetail } from "@/features/datasets/detail/api/fetchDatasetDetail";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Loading } from "@/components/common";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { DatasetSchemaView } from "@/features/datasets/components/DatasetSchema";
+import { DatasetSchemaView } from "@/features/datasets/detail/components/DatasetSchema";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { DatasetBadge } from "@/features/datasets/components/DatasetBadge";

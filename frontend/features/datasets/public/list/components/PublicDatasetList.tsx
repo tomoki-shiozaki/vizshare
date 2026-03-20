@@ -5,8 +5,8 @@ import { Loading } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchPublicDatasetList } from "@/features/datasets/api/fetchPublicDatasetList";
-import { PublicDatasetListItem } from "@/features/datasets/components/PublicDatasetListItem";
+import { fetchPublicDatasetList } from "@/features/datasets/public/list/api/fetchPublicDatasetList";
+import { PublicDatasetListItem } from "@/features/datasets/public/list/components/PublicDatasetListItem";
 
 export function PublicDatasetList() {
   const limit = 12;

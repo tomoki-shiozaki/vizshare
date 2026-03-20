@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { PaginatedPublicDatasetListResponse } from "@/features/datasets/types/public-datasets";
+import type { PaginatedPublicDatasetListResponse } from "@/features/datasets/types/publicDataset";
 
 type PublicDataset = PaginatedPublicDatasetListResponse["results"][number];
 

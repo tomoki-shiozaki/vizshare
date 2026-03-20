@@ -2,10 +2,10 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { DatasetUploadForm } from "@/features/datasets/components/DatasetUploadForm";
+import { DatasetUploadForm } from "@/features/datasets/create/components/DatasetUploadForm";
 
 // SchemaSelector をモック
-vi.mock("@/features/datasets/components/CsvSchemaSelector", () => ({
+vi.mock("@/features/datasets/create/components/CsvSchemaSelector", () => ({
   CsvSchemaSelector: () => <div>Schema Selector</div>,
 }));
 

@@ -1,13 +1,16 @@
 import { renderHook, act } from "@testing-library/react";
-import { useCsvFile } from "@/features/datasets/hooks/useCsvFile";
-import { readCsvHeaders, suggestColumns } from "@/features/datasets/utils/csv";
+import { useCsvFile } from "@/features/datasets/create/hooks/useCsvFile";
+import {
+  readCsvHeaders,
+  suggestColumns,
+} from "@/features/datasets/create/utils/csv";
 import { ChangeEvent } from "react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 
 // =======================
 // モジュールモック
 // =======================
-vi.mock("@/features/datasets/utils/csv", () => ({
+vi.mock("@/features/datasets/create/utils/csv", () => ({
   readCsvHeaders: vi.fn(),
   suggestColumns: vi.fn(),
 }));
