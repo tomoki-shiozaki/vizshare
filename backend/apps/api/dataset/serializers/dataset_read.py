@@ -66,3 +66,17 @@ class PublicDatasetSerializer(serializers.ModelSerializer):
             "created_at",
             "status",
         ]
+
+
+class PublicDatasetDetailSerializer(serializers.ModelSerializer):
+    owner = serializers.CharField(source="owner.username")
+
+    class Meta:
+        model = Dataset
+        fields = [
+            "id",
+            "name",
+            "owner",
+            "source_file",
+            "created_at",
+        ]
