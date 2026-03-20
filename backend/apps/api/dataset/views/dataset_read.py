@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from apps.api.dataset.serializers.dataset_read import (
     DatasetDetailSerializer,
     DatasetListSerializer,
+    PublicDatasetDetailSerializer,
     PublicDatasetSerializer,
 )
 from apps.dataset.models import Dataset
@@ -50,3 +51,15 @@ class PublicDatasetListAPIView(generics.ListAPIView):
             .select_related("owner")
             .order_by("-created_at")
         )
+
+
+class PublicDatasetDetailAPIView(generics.RetrieveAPIView):
+    """
+    公開データセットの詳細
+    """
+
+    serializer_class = PublicDatasetDetailSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Dataset.objects.filter(is_public=True, status=Dataset.Status.PARSED)

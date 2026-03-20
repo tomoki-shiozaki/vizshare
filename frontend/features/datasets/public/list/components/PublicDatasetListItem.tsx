@@ -12,7 +12,7 @@ export function PublicDatasetListItem({ dataset }: Props) {
     <li className="border rounded-lg p-3 hover:bg-gray-50 transition min-w-0">
       <div className="min-w-0">
         <Link
-          href={`/datasets/${dataset.id}`}
+          href={`/explore/${dataset.id}`}
           className="font-medium text-blue-600 hover:underline truncate block"
         >
           {dataset.name}

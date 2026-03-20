@@ -92,6 +92,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/datasets/public/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description 公開データセットの詳細 */
+        get: operations["datasets_public_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/dj-rest-auth/login/": {
         parameters: {
             query?: never;
@@ -506,6 +523,14 @@ export interface components {
             readonly created_at: string;
             status?: components["schemas"]["StatusEnum"];
         };
+        PublicDatasetDetail: {
+            readonly id: number;
+            name: string;
+            owner: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly download_url: string;
+        };
         Register: {
             username: string;
             /** Format: email */
@@ -676,6 +701,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedPublicDatasetList"];
+                };
+            };
+        };
+    };
+    datasets_public_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicDatasetDetail"];
                 };
             };
         };
