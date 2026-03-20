@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchDatasetList } from "@/features/datasets/list/api/fetchDatasetList";
-import { DatasetListItem } from "@/features/datasets/components/DatasetListItem";
+import { DatasetListItem } from "@/features/datasets/list/components/DatasetListItem";
 
 export function DatasetList() {
   const limit = 10;
