@@ -70,13 +70,14 @@ class PublicDatasetSerializer(serializers.ModelSerializer):
 
 class PublicDatasetDetailSerializer(serializers.ModelSerializer):
     owner = serializers.CharField(source="owner.username")
+    download_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Dataset
-        fields = [
-            "id",
-            "name",
-            "owner",
-            "source_file",
-            "created_at",
-        ]
+        fields = ["id", "name", "owner", "created_at", "download_url"]
+
+    def get_download_url(self, obj):
+        request = self.context.get("request")
+        if obj.source_file and request:
+            return request.build_absolute_uri(obj.source_file.url)
+        return None
