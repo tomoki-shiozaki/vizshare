@@ -1,6 +1,6 @@
 "use client";
 
-import { useCsvFile } from "@/features/datasets/hooks/useCsvFile";
+import { useCsvFile } from "@/features/datasets/create/hooks/useCsvFile";
 import { uploadDataset } from "@/features/datasets/create/api/uploadDataset";
 import { CsvSchemaSelector } from "@/features/datasets/create/components/CsvSchemaSelector";
 import { Button } from "@/components/ui/button";
