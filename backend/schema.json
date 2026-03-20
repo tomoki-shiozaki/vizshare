@@ -240,6 +240,49 @@
                 }
             }
         },
+        "/api/v1/datasets/public/{id}/": {
+            "get": {
+                "operationId": "datasets_public_retrieve",
+                "description": "公開データセットの詳細",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicDatasetDetail"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/dj-rest-auth/login/": {
             "post": {
                 "operationId": "dj_rest_auth_login_create",
@@ -1284,6 +1327,38 @@
                 },
                 "required": [
                     "created_at",
+                    "id",
+                    "name",
+                    "owner"
+                ]
+            },
+            "PublicDatasetDetail": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "owner": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "download_url": {
+                        "type": "string",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "download_url",
                     "id",
                     "name",
                     "owner"
