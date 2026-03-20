@@ -1,5 +1,5 @@
 import { apiClient } from "@/features/auth/api/apiClient";
-import type { PaginatedPublicDatasetListResponse } from "@/features/datasets/types/public-datasets";
+import type { PaginatedPublicDatasetListResponse } from "@/features/datasets/types/publicDataset";
 
 interface FetchPublicDatasetListParams {
   limit: number;
