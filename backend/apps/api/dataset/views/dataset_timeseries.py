@@ -2,10 +2,11 @@ from typing import Dict, List, TypedDict
 
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.api.dataset.services.timeseries import build_time_series_data
 from apps.dataset.models import Dataset
 
 # ===============================
@@ -43,26 +44,19 @@ class DatasetTimeSeriesAPIView(APIView):
 
     def get(self, request, pk: int):
         dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
-
         # DataPoint を取得して entity -> time -> order_index 順にソート
-        data_qs = dataset.data_points.all().order_by(  # type: ignore
-            "entity", "time", "order_index"  # type: ignore
+        data_qs = dataset.data_points.all().order_by("entity", "time", "order_index")  # type: ignore
+        result = build_time_series_data(data_qs)
+        return Response(result, status=status.HTTP_200_OK)
+
+
+class PublicDatasetTimeSeriesAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk: int):
+        dataset = get_object_or_404(
+            Dataset, pk=pk, is_public=True, status=Dataset.Status.PARSED
         )
-
-        result: TimeSeriesDataByEntity = {}
-
-        for dp in data_qs:
-            # entity ごとのリストを取得、なければ新規作成
-            entity_data = result.setdefault(dp.entity, [])
-
-            # 同じ raw_time の dict がすでにあるかチェック
-            if entity_data and entity_data[-1].get("time") == dp.raw_time:
-                # 既存の dict に metric を追加
-                entity_data[-1][dp.metric] = dp.value
-            else:
-                # 新しい dict を作成して追加（TypedDict 変数を経由することで型安全）
-                point: TimeSeriesPoint = {"time": dp.raw_time}
-                point[dp.metric] = dp.value
-                entity_data.append(point)
-
+        data_qs = dataset.data_points.all().order_by("entity", "time", "order_index")  # type: ignore
+        result = build_time_series_data(data_qs)
         return Response(result, status=status.HTTP_200_OK)
