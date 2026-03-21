@@ -1,5 +1,3 @@
-from typing import Dict, List, TypedDict
-
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -8,26 +6,6 @@ from rest_framework.views import APIView
 
 from apps.api.dataset.services.timeseries import build_time_series_data
 from apps.dataset.models import Dataset
-
-# ===============================
-# 🔹 型定義（返却データ構造）
-# ===============================
-
-
-class TimeSeriesPoint(TypedDict, total=False):
-    """
-    1つの時刻における metric データ
-    """
-
-    time: str  # CSVのraw_timeを格納
-    # metrics は任意で追加される
-    # 例: "anomaly": 0.12, "upper": 0.15
-    # TypedDict total=False により任意で追加可能
-
-
-# entityごとのデータ構造
-# キー: entity名、値: TimeSeriesPoint のリスト（時間順）
-TimeSeriesDataByEntity = Dict[str, List[TimeSeriesPoint]]
 
 # ===============================
 # 🔹 API View
