@@ -12,16 +12,26 @@ import {
 } from "recharts";
 import { useEffect, useState } from "react";
 import { Loading, SelectBox } from "@/components/common";
-import { useDatasetDataPoints } from "@/features/datasets/timeseries/hooks/useDatasetDataPoints";
-import type { TimeSeriesPoint } from "@/features/datasets/types/dataset";
+import type {
+  DatasetDataPointsResponse,
+  TimeSeriesPoint,
+} from "@/features/datasets/types/dataset";
 
 type DatasetChartProps = {
   datasetId: string;
+  useDataPoints: (datasetId: string) => {
+    data?: DatasetDataPointsResponse;
+    isLoading: boolean;
+    isError: boolean;
+  };
 };
 
-export const DatasetLineChart = ({ datasetId }: DatasetChartProps) => {
+export const DatasetLineChart = ({
+  datasetId,
+  useDataPoints,
+}: DatasetChartProps) => {
   // データ取得（カスタムフック）
-  const { data, isLoading, isError } = useDatasetDataPoints(datasetId);
+  const { data, isLoading, isError } = useDataPoints(datasetId);
 
   // 選択中の entity
   const [selectedEntity, setSelectedEntity] = useState<string>("");
