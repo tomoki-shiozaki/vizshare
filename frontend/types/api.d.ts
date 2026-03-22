@@ -46,8 +46,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * @description Dataset に紐づく DataPoint を entity ごとに整理して返す
-         *     Recharts でそのまま使える形
+         * ユーザー Dataset の時系列データ取得
+         * @description Dataset に紐づく DataPoint を entity ごとに整理して返す（Recharts 形式）
          */
         get: operations["datasets_timeseries_retrieve"];
         put?: never;
@@ -101,6 +101,26 @@ export interface paths {
         };
         /** @description 公開データセットの詳細 */
         get: operations["datasets_public_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/public/{id}/timeseries/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 公開 Dataset の時系列データ取得
+         * @description 公開 Dataset に紐づく DataPoint を entity ごとに整理して返す（Recharts 形式）
+         */
+        get: operations["datasets_public_timeseries_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -647,12 +667,17 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            time?: string;
+                        }[];
+                    };
+                };
             };
         };
     };
@@ -722,6 +747,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PublicDatasetDetail"];
+                };
+            };
+        };
+    };
+    datasets_public_timeseries_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            time?: string;
+                        }[];
+                    };
                 };
             };
         };

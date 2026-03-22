@@ -1,15 +1,14 @@
+"use client";
+
+import { useParams } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { PublicDatasetDetail } from "@/features/datasets/public/detail/components/PublicDatasetDetail";
-import { DatasetLineChart } from "@/features/datasets/timeseries/components/DatasetLineChart";
+import { DatasetLineChart } from "@/features/datasets/components/DatasetLineChart";
+import { usePublicDatasetDataPoints } from "@/features/datasets/public/timeseries/hooks/usePublicDatasetDataPoints";
 
-interface Props {
-  params: { id: string };
-}
-
-// async function にする
-export default async function PublicDatasetPage({ params }: Props) {
-  // params が Promise の場合は await で展開
-  const { id } = await params;
+export default function PublicDatasetPage() {
+  const { id } = useParams<{ id: string }>();
+  if (!id) return null;
 
   return (
     <PageLayout
@@ -17,7 +16,10 @@ export default async function PublicDatasetPage({ params }: Props) {
       description="Dataset の詳細情報と各列の構造、時系列データの傾向を確認できます"
     >
       <PublicDatasetDetail id={id} />
-      <DatasetLineChart datasetId={id} />
+      <DatasetLineChart
+        datasetId={id}
+        useDataPoints={usePublicDatasetDataPoints}
+      />
     </PageLayout>
   );
 }

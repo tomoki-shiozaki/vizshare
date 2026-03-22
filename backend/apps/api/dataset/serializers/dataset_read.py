@@ -76,8 +76,6 @@ class PublicDatasetDetailSerializer(serializers.ModelSerializer):
         model = Dataset
         fields = ["id", "name", "owner", "created_at", "download_url"]
 
-    def get_download_url(self, obj):
-        request = self.context.get("request")
-        if obj.source_file and request:
-            return request.build_absolute_uri(obj.source_file.url)
-        return None
+    def get_download_url(self, obj) -> str:
+        request = self.context["request"]
+        return request.build_absolute_uri(obj.source_file.url)
