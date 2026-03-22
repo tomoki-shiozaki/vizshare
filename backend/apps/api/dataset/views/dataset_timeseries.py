@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.api.dataset.services.timeseries import build_time_series_data
+from apps.api.dataset.types.timeseries import TimeSeriesDataByEntity
+from apps.api.utils.schema import schema
 from apps.dataset.models import Dataset
 
 # ===============================
@@ -20,6 +22,12 @@ class DatasetTimeSeriesAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @schema(
+        summary="ユーザー Dataset の時系列データ取得",
+        description="Dataset に紐づく DataPoint を entity ごとに整理して返す（Recharts 形式）",
+        tags=["Dataset"],
+        responses=TimeSeriesDataByEntity,
+    )
     def get(self, request, pk: int):
         dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
         # DataPoint を取得して entity -> time -> order_index 順にソート
@@ -31,6 +39,12 @@ class DatasetTimeSeriesAPIView(APIView):
 class PublicDatasetTimeSeriesAPIView(APIView):
     permission_classes = [AllowAny]
 
+    @schema(
+        summary="公開 Dataset の時系列データ取得",
+        description="公開 Dataset に紐づく DataPoint を entity ごとに整理して返す（Recharts 形式）",
+        tags=["Dataset"],
+        responses=TimeSeriesDataByEntity,
+    )
     def get(self, request, pk: int):
         dataset = get_object_or_404(
             Dataset, pk=pk, is_public=True, status=Dataset.Status.PARSED
