@@ -46,8 +46,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * @description Dataset に紐づく DataPoint を entity ごとに整理して返す
-         *     Recharts でそのまま使える形
+         * ユーザー Dataset の時系列データ取得
+         * @description Dataset に紐づく DataPoint を entity ごとに整理して返す（Recharts 形式）
          */
         get: operations["datasets_timeseries_retrieve"];
         put?: never;
@@ -116,6 +116,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 公開 Dataset の時系列データ取得
+         * @description 公開 Dataset に紐づく DataPoint を entity ごとに整理して返す（Recharts 形式）
+         */
         get: operations["datasets_public_timeseries_retrieve"];
         put?: never;
         post?: never;
@@ -663,12 +667,17 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            time?: string;
+                        }[];
+                    };
+                };
             };
         };
     };
@@ -753,12 +762,17 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            time?: string;
+                        }[];
+                    };
+                };
             };
         };
     };
