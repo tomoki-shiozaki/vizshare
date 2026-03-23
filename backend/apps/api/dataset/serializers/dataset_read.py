@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from rest_framework import serializers
 
 from apps.api.dataset.serializers.dataset_schema import (
@@ -70,12 +72,17 @@ class PublicDatasetSerializer(serializers.ModelSerializer):
 
 class PublicDatasetDetailSerializer(serializers.ModelSerializer):
     owner = serializers.CharField(source="owner.username")
-    download_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Dataset
-        fields = ["id", "name", "owner", "created_at", "download_url"]
+        fields = ["id", "name", "owner", "created_at"]
 
-    def get_download_url(self, obj) -> str:
-        request = self.context["request"]
-        return request.build_absolute_uri(obj.source_file.url)
+
+class DatasetDownloadSerializer(serializers.Serializer):
+    download_url = serializers.SerializerMethodField()
+
+    def get_download_url(self, obj):
+        return obj.source_file.storage.url(
+            obj.source_file.name,
+            expiration=timedelta(minutes=10),
+        )
