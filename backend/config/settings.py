@@ -287,6 +287,7 @@ if IS_PRODUCTION and not GENERATE_SCHEMA:
     DEFAULT_FILE_STORAGE_OPTIONS = {
         "bucket_name": env.str("GS_BUCKET_NAME"),
         "file_overwrite": False,
+        "iam_sign_blob": True,
     }
 
 else:
