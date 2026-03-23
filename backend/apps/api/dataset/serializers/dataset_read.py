@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from rest_framework import serializers
 
 from apps.api.dataset.serializers.dataset_schema import (
@@ -82,7 +80,4 @@ class DatasetDownloadSerializer(serializers.Serializer):
     download_url = serializers.SerializerMethodField()
 
     def get_download_url(self, obj):
-        return obj.source_file.storage.url(
-            obj.source_file.name,
-            expiration=timedelta(minutes=10),
-        )
+        return obj.get_download_url()

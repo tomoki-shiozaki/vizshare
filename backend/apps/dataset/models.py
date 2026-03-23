@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
@@ -75,6 +77,17 @@ class Dataset(models.Model):
             }
 
             locked.save(update_fields=["status", "parse_result"])
+
+    def get_download_url(self, expiration=timedelta(minutes=10)):
+        storage = self.source_file.storage
+
+        try:
+            return storage.url(
+                self.source_file.name,
+                expiration=expiration,  # type: ignore
+            )
+        except TypeError:
+            return storage.url(self.source_file.name)
 
 
 class DataPoint(models.Model):
