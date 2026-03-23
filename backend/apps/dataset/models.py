@@ -81,13 +81,13 @@ class Dataset(models.Model):
     def get_download_url(self, expiration=timedelta(minutes=10)):
         storage = self.source_file.storage
 
-        try:
-            return storage.url(
-                self.source_file.name,
-                expiration=expiration,  # type: ignore
-            )
-        except TypeError:
+        if settings.IS_DEVELOPMENT:
             return storage.url(self.source_file.name)
+
+        return storage.url(
+            self.source_file.name,
+            expiration=expiration,  # type: ignore
+        )
 
 
 class DataPoint(models.Model):
