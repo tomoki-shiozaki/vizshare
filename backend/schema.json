@@ -303,6 +303,42 @@
                 }
             }
         },
+        "/api/v1/datasets/public/{id}/download/": {
+            "get": {
+                "operationId": "datasets_public_download_retrieve",
+                "description": "公開データセットのダウンロード",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/public/{id}/timeseries/": {
             "get": {
                 "operationId": "datasets_public_timeseries_retrieve",
@@ -1426,15 +1462,10 @@
                         "type": "string",
                         "format": "date-time",
                         "readOnly": true
-                    },
-                    "download_url": {
-                        "type": "string",
-                        "readOnly": true
                     }
                 },
                 "required": [
                     "created_at",
-                    "download_url",
                     "id",
                     "name",
                     "owner"
