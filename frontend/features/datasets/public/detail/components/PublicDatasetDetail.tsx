@@ -43,6 +43,9 @@ export function PublicDatasetDetail({ id }: Props) {
     return <p className="text-sm text-gray-500">Datasetが見つかりません。</p>;
   }
 
+  // --- ダウンロード URL を変数にする ---
+  const downloadUrl = `${process.env.NEXT_PUBLIC_API_URL}/datasets/public/${id}/download/`;
+
   return (
     <div className="space-y-4">
       {/* 戻るボタン */}
@@ -64,16 +67,12 @@ export function PublicDatasetDetail({ id }: Props) {
 
       {/* ダウンロード */}
       <div>
-        <a
-          href={dataset.download_url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Button>
+        <Button asChild>
+          <a href={downloadUrl}>
             <Download className="w-4 h-4 mr-2" />
             ダウンロード
-          </Button>
-        </a>
+          </a>
+        </Button>
       </div>
     </div>
   );
