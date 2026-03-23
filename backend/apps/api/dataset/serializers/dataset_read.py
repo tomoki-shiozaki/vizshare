@@ -74,10 +74,3 @@ class PublicDatasetDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dataset
         fields = ["id", "name", "owner", "created_at"]
-
-
-class DatasetDownloadSerializer(serializers.Serializer):
-    download_url = serializers.SerializerMethodField()
-
-    def get_download_url(self, obj):
-        return obj.get_download_url()

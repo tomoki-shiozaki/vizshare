@@ -1,10 +1,9 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from apps.api.dataset.serializers.dataset_read import (
     DatasetDetailSerializer,
-    DatasetDownloadSerializer,
     DatasetListSerializer,
     PublicDatasetDetailSerializer,
     PublicDatasetSerializer,
@@ -69,10 +68,9 @@ class PublicDatasetDetailAPIView(generics.RetrieveAPIView):
 
 class PublicDatasetDownloadAPIView(generics.GenericAPIView):
     """
-    公開データセットのダウンロードURL取得
+    公開データセットのダウンロード
     """
 
-    serializer_class = DatasetDownloadSerializer
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
@@ -83,5 +81,4 @@ class PublicDatasetDownloadAPIView(generics.GenericAPIView):
             status=Dataset.Status.PARSED,
         )
 
-        serializer = self.get_serializer(dataset)
-        return Response(serializer.data)
+        return redirect(dataset.get_download_url())
