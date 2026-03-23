@@ -313,3 +313,6 @@ STORAGES = {
 # ================================
 # App-specific settings
 # ================================
+# Signed URL expiration time (seconds)
+# Used when generating temporary download URLs from Google Cloud Storage.
+SIGNED_URL_EXPIRATION = 600

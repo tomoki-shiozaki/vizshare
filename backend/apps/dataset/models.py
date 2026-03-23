@@ -78,16 +78,16 @@ class Dataset(models.Model):
 
             locked.save(update_fields=["status", "parse_result"])
 
-    def get_download_url(self, expiration=timedelta(minutes=10)):
+    def get_download_url(self):
         storage = self.source_file.storage
 
-        if settings.IS_DEVELOPMENT:
-            return storage.url(self.source_file.name)
+        if settings.IS_PRODUCTION:
+            return storage.url(
+                self.source_file.name,
+                expiration=timedelta(seconds=settings.SIGNED_URL_EXPIRATION),  # type: ignore
+            )
 
-        return storage.url(
-            self.source_file.name,
-            expiration=expiration,  # type: ignore
-        )
+        return storage.url(self.source_file.name)
 
 
 class DataPoint(models.Model):
