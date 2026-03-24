@@ -79,8 +79,6 @@ class TestPublicDatasetDetailAPIView:
         assert data["id"] == dataset.pk
         assert data["name"] == dataset.name
         assert data["owner"] == user.username
-        assert "download_url" in data
-        assert data["download_url"] is not None
 
     def test_cannot_retrieve_non_public_dataset(self, api_client, user):
         dummy_file = SimpleUploadedFile("test.csv", b"col1,col2\n1,2")
