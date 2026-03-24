@@ -1,9 +1,7 @@
-from os.path import basename
 from typing import Any, Dict, cast
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory
 
 from apps.api.dataset.serializers.dataset_read import PublicDatasetDetailSerializer
 from apps.dataset.models import Dataset
@@ -23,18 +21,11 @@ class TestPublicDatasetDetailSerializer:
             is_public=True,
         )
 
-        # RequestFactory で擬似 request を作る
-        request = RequestFactory().get("/")
-        serializer = PublicDatasetDetailSerializer(
-            dataset, context={"request": request}
-        )
+        serializer = PublicDatasetDetailSerializer(dataset)
 
         data = cast(Dict[str, Any], serializer.data)
 
-        # owner が正しくシリアライズされる
+        assert data["id"] == dataset.pk
+        assert data["name"] == dataset.name
         assert data["owner"] == user.username
-
-        # download_url が絶対 URL になっている
-        assert data["download_url"].startswith("http://")
-        assert basename(data["download_url"]).startswith("test")
-        assert basename(data["download_url"]).endswith(".csv")
+        assert "created_at" in data
