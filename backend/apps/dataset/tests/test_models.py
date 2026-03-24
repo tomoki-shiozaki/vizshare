@@ -1,6 +1,8 @@
 import pytest
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError
+from django.test import override_settings
 
 from apps.dataset.models import DataPoint, Dataset
 
@@ -148,6 +150,28 @@ class TestDatasetModel:
         dataset.delete()
 
         assert DataPoint.objects.count() == 0
+
+
+@pytest.mark.django_db
+class TestDatasetGetDownloadUrl:
+
+    def test_get_download_url_non_production(self, user):
+        dummy_file = SimpleUploadedFile("test.csv", b"col1,col2\n1,2")
+        dataset = Dataset.objects.create(
+            owner=user,
+            name="dataset",
+            source_file=dummy_file,
+            status=Dataset.Status.PARSED,
+            schema={"time": "year", "metrics": ["value"]},
+            is_public=True,
+        )
+
+        # 非 production 環境では signed URL なし
+        with override_settings(IS_PRODUCTION=False):
+            url = dataset.get_download_url()
+            # FileSystemStorage の場合は /media/... で始まる
+            assert url.startswith("/media/")
+            assert url.endswith(".csv")
 
 
 # ============================

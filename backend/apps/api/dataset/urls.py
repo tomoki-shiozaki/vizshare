@@ -4,6 +4,7 @@ from apps.api.dataset.views.dataset_read import (
     DatasetDetailAPIView,
     DatasetListAPIView,
     PublicDatasetDetailAPIView,
+    PublicDatasetDownloadAPIView,
     PublicDatasetListAPIView,
 )
 from apps.api.dataset.views.dataset_timeseries import (
@@ -27,5 +28,10 @@ urlpatterns = [
         "public/<int:pk>/timeseries/",
         PublicDatasetTimeSeriesAPIView.as_view(),
         name="public-timeseries",
+    ),
+    path(
+        "public/<int:pk>/download/",
+        PublicDatasetDownloadAPIView.as_view(),
+        name="public-download",
     ),
 ]

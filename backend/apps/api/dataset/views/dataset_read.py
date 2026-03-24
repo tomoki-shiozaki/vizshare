@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404, redirect
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
@@ -63,3 +64,21 @@ class PublicDatasetDetailAPIView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Dataset.objects.filter(is_public=True, status=Dataset.Status.PARSED)
+
+
+class PublicDatasetDownloadAPIView(generics.GenericAPIView):
+    """
+    公開データセットのダウンロード
+    """
+
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        dataset = get_object_or_404(
+            Dataset,
+            pk=pk,
+            is_public=True,
+            status=Dataset.Status.PARSED,
+        )
+
+        return redirect(dataset.get_download_url())

@@ -109,6 +109,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/datasets/public/{id}/download/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description 公開データセットのダウンロード */
+        get: operations["datasets_public_download_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/public/{id}/timeseries/": {
         parameters: {
             query?: never;
@@ -549,7 +566,6 @@ export interface components {
             owner: string;
             /** Format: date-time */
             readonly created_at: string;
-            readonly download_url: string;
         };
         Register: {
             username: string;
@@ -748,6 +764,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PublicDatasetDetail"];
                 };
+            };
+        };
+    };
+    datasets_public_download_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -1,5 +1,6 @@
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import override_settings
 from django.urls import reverse
 
 from apps.dataset.models import Dataset
@@ -79,8 +80,6 @@ class TestPublicDatasetDetailAPIView:
         assert data["id"] == dataset.pk
         assert data["name"] == dataset.name
         assert data["owner"] == user.username
-        assert "download_url" in data
-        assert data["download_url"] is not None
 
     def test_cannot_retrieve_non_public_dataset(self, api_client, user):
         dummy_file = SimpleUploadedFile("test.csv", b"col1,col2\n1,2")
@@ -116,4 +115,65 @@ class TestPublicDatasetDetailAPIView:
         url = reverse("dataset:public-detail", args=[dataset.pk])
         response = api_client.get(url)
 
+        assert response.status_code == 404
+
+
+@pytest.mark.django_db
+class TestPublicDatasetDownloadAPIView:
+    @override_settings(IS_PRODUCTION=False)
+    def test_redirects_to_download_url_for_public_parsed_dataset(
+        self, api_client, user
+    ):
+        # ダミーファイル作成
+        dummy_file = SimpleUploadedFile("test.csv", b"col1,col2\n1,2")
+
+        # 公開かつ解析済みのデータセット
+        dataset = Dataset.objects.create(
+            owner=user,
+            name="public parsed dataset",
+            source_file=dummy_file,
+            status=Dataset.Status.PARSED,
+            schema={"time": "year", "metrics": ["value"]},
+            is_public=True,
+        )
+
+        url = reverse("dataset:public-download", args=[dataset.pk])
+        response = api_client.get(url)
+
+        # リダイレクトされることを確認
+        assert response.status_code == 302
+        assert response.url == dataset.get_download_url()
+
+    def test_returns_404_for_non_public_dataset(self, api_client, user):
+        dummy_file = SimpleUploadedFile("test.csv", b"col1,col2\n1,2")
+
+        # 非公開データセット
+        dataset = Dataset.objects.create(
+            owner=user,
+            name="private dataset",
+            source_file=dummy_file,
+            status=Dataset.Status.PARSED,
+            schema={"time": "year", "metrics": ["value"]},
+            is_public=False,
+        )
+
+        url = reverse("dataset:public-download", args=[dataset.pk])
+        response = api_client.get(url)
+        assert response.status_code == 404
+
+    def test_returns_404_for_processing_dataset(self, api_client, user):
+        dummy_file = SimpleUploadedFile("test.csv", b"col1,col2\n1,2")
+
+        # 解析中のデータセット
+        dataset = Dataset.objects.create(
+            owner=user,
+            name="processing dataset",
+            source_file=dummy_file,
+            status=Dataset.Status.PROCESSING,
+            schema={"time": "year", "metrics": ["value"]},
+            is_public=True,
+        )
+
+        url = reverse("dataset:public-download", args=[dataset.pk])
+        response = api_client.get(url)
         assert response.status_code == 404

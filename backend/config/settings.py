@@ -287,6 +287,7 @@ if IS_PRODUCTION and not GENERATE_SCHEMA:
     DEFAULT_FILE_STORAGE_OPTIONS = {
         "bucket_name": env.str("GS_BUCKET_NAME"),
         "file_overwrite": False,
+        "iam_sign_blob": True,
     }
 
 else:
@@ -312,3 +313,6 @@ STORAGES = {
 # ================================
 # App-specific settings
 # ================================
+# Signed URL expiration time (seconds)
+# Used when generating temporary download URLs from Google Cloud Storage.
+SIGNED_URL_EXPIRATION = 600
