@@ -23,6 +23,8 @@ Replace `<PROJECT_ID>` with your own Google Cloud project ID.
 ### 1. Import `cloudbuild_runner` Service Account
 
 ```bash
+cd infra/prod
+
 terraform import google_service_account.cloudbuild_runner \
 cloud-build-runner-tf@<PROJECT_ID>.iam.gserviceaccount.com
 ```
@@ -82,11 +84,11 @@ and is **not required for most contributors**.
 
 ### Script Location
 
-- `infra/import_iam.sh`
+- `infra/scripts/import_iam.sh`
 
 ### Prerequisites
 
-1. Create `infra/.env.terraform` and define the following variables:
+1. Create `infra/scripts/.env.terraform` and define the following variables:
 
 ```bash
 PROJECT_ID=<your-google-cloud-project-id>
@@ -96,14 +98,14 @@ PROJECT_NUMBER=<your-google-cloud-project-number>
 2. Make the script executable:
 
 ```bash
-chmod +x infra/import_iam.sh
+chmod +x infra/scripts/import_iam.sh
 ```
 
 ### Run the Script
 
 ```bash
 cd infra
-./import_iam.sh
+./scripts/import_iam.sh
 ```
 
 All existing service accounts and IAM bindings will be imported

@@ -4,12 +4,17 @@ set -euo pipefail
 # =====================================================
 # Terraform サービスアカウント / IAM import スクリプト
 # =====================================================
-# infra/.env.terraform から環境変数を読み込み
+# infra/scripts/.env.terraform から環境変数を読み込み
 #   PROJECT_ID=<GCP プロジェクトID>
 #   PROJECT_NUMBER=<GCP プロジェクト番号>
 # =====================================================
 
-ENV_FILE=".env.terraform"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Terraform実行ディレクトリ
+cd "$SCRIPT_DIR/../prod"
+
+ENV_FILE="$SCRIPT_DIR/.env.terraform"
 
 if [ ! -f "$ENV_FILE" ]; then
   echo "❌ $ENV_FILE が見つかりません。作成してください。"
