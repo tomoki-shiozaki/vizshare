@@ -6,6 +6,12 @@ resource "google_artifact_registry_repository" "vizshare_repo" {
 
   cleanup_policy_dry_run = false
 
+  lifecycle {
+    ignore_changes = [
+      cleanup_policies
+    ]
+  }
+
   # 最新2個を残すKEEPポリシー
   cleanup_policies {
     id     = "keep-latest-2"
