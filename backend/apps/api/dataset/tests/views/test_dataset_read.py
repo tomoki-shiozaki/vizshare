@@ -1,5 +1,6 @@
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import override_settings
 from django.urls import reverse
 
 from apps.dataset.models import Dataset
@@ -119,6 +120,7 @@ class TestPublicDatasetDetailAPIView:
 
 @pytest.mark.django_db
 class TestPublicDatasetDownloadAPIView:
+    @override_settings(IS_PRODUCTION=False)
     def test_redirects_to_download_url_for_public_parsed_dataset(
         self, api_client, user
     ):
