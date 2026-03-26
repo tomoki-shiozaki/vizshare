@@ -8,7 +8,7 @@ terraform {
 
   backend "gcs" {
     bucket = "terraform-state-vizshare"
-    prefix = "prod/terraform"
+    prefix = "staging/terraform"  # GCS内のパス。好みで変えてOK
   }
 }
 
