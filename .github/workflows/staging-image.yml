@@ -38,6 +38,6 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
-            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:develop
           cache-from: type=gha
           cache-to: type=gha,mode=max
