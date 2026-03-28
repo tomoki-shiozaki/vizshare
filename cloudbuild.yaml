@@ -1,5 +1,5 @@
 # Cloud Build を実行する Service Account
-serviceAccount: cloud-build-runner-tf@${PROJECT_ID}.iam.gserviceaccount.com
+serviceAccount: vizshare-prod-cbr@${PROJECT_ID}.iam.gserviceaccount.com
 
 steps:
   # ステップ 1: Docker イメージのビルド
