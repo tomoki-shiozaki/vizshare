@@ -11,6 +11,7 @@ variable "project_number" {
 variable "env" {
   description = "Environment (prod / staging)"
   type        = string
+  default     = "staging"
 }
 
 variable "region" {
