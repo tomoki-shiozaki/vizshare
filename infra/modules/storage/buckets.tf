@@ -1,5 +1,5 @@
 resource "google_storage_bucket" "media" {
-  name     = "${var.project_id}-${var.service_name}-media"
+  name = "${var.service_name}-${var.env}-media"
   location = var.bucket_location
 
   force_destroy               = false
