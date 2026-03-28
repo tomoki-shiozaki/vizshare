@@ -17,6 +17,8 @@ module "iam" {
   media_bucket_name = module.storage.media_bucket_name
   terraform_state_bucket_name = var.terraform_state_bucket_name
   env = var.env   
+  github_owner = var.github_owner      
+  github_repo  = var.github_repo       
 }
 
 module "storage" {
