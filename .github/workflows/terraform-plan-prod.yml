@@ -22,7 +22,7 @@ jobs:
         with:
           project_id: ${{ secrets.PROJECT_ID }}
           workload_identity_provider: "projects/${{ secrets.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
-          service_account: "terraform-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com"
+          service_account: "vizshare-prod-terraform-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com"
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3

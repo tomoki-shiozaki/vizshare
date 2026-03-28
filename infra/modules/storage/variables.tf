@@ -10,3 +10,8 @@ variable "bucket_location" {
   type    = string
   default = "us-west1"
 }
+
+variable "env" {
+  description = "Environment (prod / staging)"
+  type        = string
+}

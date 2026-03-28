@@ -1,6 +1,6 @@
 resource "google_service_account" "django" {
-  account_id   = "django-app-sa"
-  display_name = "Service Account for Django app"
+  account_id   = "${var.service_name}-${local.django_sa[var.env]}"
+  display_name = "Service Account for ${var.service_name} app (${var.env})"
 }
 
 # バケットへの権限付与

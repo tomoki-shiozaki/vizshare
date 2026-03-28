@@ -1,5 +1,5 @@
 # Cloud Build を実行する Service Account
-serviceAccount: cloud-build-runner-tf@${PROJECT_ID}.iam.gserviceaccount.com
+serviceAccount: vizshare-prod-cbr@${PROJECT_ID}.iam.gserviceaccount.com
 
 steps:
   # ステップ 1: Docker イメージのビルド
@@ -37,7 +37,7 @@ steps:
         "managed",
         "--allow-unauthenticated",
         "--service-account",
-        "django-app-sa@$PROJECT_ID.iam.gserviceaccount.com",
+        "vizshare-django-prod-sa@${PROJECT_ID}.iam.gserviceaccount.com",
       ]
 
 # オプション: ロギング設定

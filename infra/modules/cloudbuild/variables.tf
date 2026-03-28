@@ -8,3 +8,8 @@ variable "cloudbuild_service_account" {
   description = "Cloud Build service account id"
   type        = string
 }
+
+variable "env" {
+  description = "Environment (prod / staging)"
+  type        = string
+}
