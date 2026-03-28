@@ -3,8 +3,8 @@
 ############################################
 resource "google_service_account" "cloudbuild_runner" {
   count        = local.cloudbuild_enabled[var.env] ? 1 : 0
-  account_id   = "cloud-build-runner-tf"
-  display_name = "Cloud Build Runner Service Account"
+  account_id   = "${var.service_name}-${var.env}-cloud-build-runner"
+  display_name = "Cloud Build Runner Service Account (${var.env})"
 }
 
 ############################################
