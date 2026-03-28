@@ -37,7 +37,7 @@ steps:
         "managed",
         "--allow-unauthenticated",
         "--service-account",
-        "django-app-sa@$PROJECT_ID.iam.gserviceaccount.com",
+        "vizshare-django-prod-sa@${PROJECT_ID}.iam.gserviceaccount.com",
       ]
 
 # オプション: ロギング設定
