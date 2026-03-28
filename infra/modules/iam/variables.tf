@@ -24,3 +24,13 @@ variable "env" {
   description = "Environment (prod / staging)"
   type        = string
 }
+
+variable "github_owner" {
+  description = "GitHub リポジトリのオーナー名"
+  type        = string
+}
+
+variable "github_repo" {
+  description = "GitHub リポジトリ名"
+  type        = string
+}
