@@ -8,6 +8,12 @@ variable "project_number" {
   type        = number
 }
 
+variable "env" {
+  description = "Environment (prod / staging)"
+  type        = string
+  default     = "prod"  # 既存の prod 環境に対応させる
+}
+
 variable "region" {
   description = "Google Cloud リージョン"
   type        = string
