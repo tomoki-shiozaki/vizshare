@@ -56,7 +56,7 @@ jobs:
         with:
           project_id: ${{ secrets.PROJECT_ID }}
           workload_identity_provider: projects/${{ secrets.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider
-          service_account: terraform-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+          service_account: vizshare-staging-terraform-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
 
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v3
