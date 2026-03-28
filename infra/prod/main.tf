@@ -13,6 +13,7 @@ module "iam" {
   source = "../modules/iam"
   project_id     = var.project_id
   project_number = var.project_number
+  service_name   = var.service_name       
   media_bucket_name = module.storage.media_bucket_name
   terraform_state_bucket_name = var.terraform_state_bucket_name
   env = var.env   

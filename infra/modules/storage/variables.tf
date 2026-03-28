@@ -11,6 +11,11 @@ variable "bucket_location" {
   default = "us-west1"
 }
 
+variable "service_name" {
+  description = "サービス名 / リソースのプレフィックス用"
+  type        = string
+}
+
 variable "env" {
   description = "Environment (prod / staging)"
   type        = string
