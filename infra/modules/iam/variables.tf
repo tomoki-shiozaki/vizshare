@@ -14,3 +14,8 @@ variable "media_bucket_name" {
 variable "terraform_state_bucket_name" {
   type = string
 }
+
+variable "env" {
+  description = "Environment (prod / staging)"
+  type        = string
+}
