@@ -44,9 +44,9 @@ resource "google_service_account_iam_member" "cloudrun_wif_binding" {
 ############################################
 # Logging 書き込み権限
 ############################################
-resource "google_project_iam_member" "runner_log_writer" {
-  count   = local.cloudbuild_enabled[var.env] ? 1 : 0
+resource "google_project_iam_member" "cloudrun_deploy_log_writer" {
+  count   = local.cloudrun_deploy_enabled[var.env] ? 1 : 0
   project = var.project_id
   role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${google_service_account.cloudbuild_runner[0].email}"
+  member  = "serviceAccount:${google_service_account.cloudrun_deploy_sa[0].email}"
 }
