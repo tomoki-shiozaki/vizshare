@@ -26,7 +26,7 @@ resource "google_project_iam_member" "cloudrun_sa_run_admin" {
 ##########################################################
 resource "google_service_account_iam_member" "cloudrun_sa_user_binding" {
   count              = local.cloudrun_deploy_enabled[var.env] ? 1 : 0
-  service_account_id = "projects/${var.project_id}/serviceAccounts/${service_name}-${local.django_sa[var.env]}@${var.project_id}.iam.gserviceaccount.com"
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${var.service_name}-${local.django_sa[var.env]}@${var.project_id}.iam.gserviceaccount.com"
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:${google_service_account.cloudrun_deploy_sa[0].email}"
 }
