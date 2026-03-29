@@ -40,3 +40,13 @@ resource "google_service_account_iam_member" "cloudrun_wif_binding" {
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/projects/${var.project_number}/locations/global/workloadIdentityPools/github-pool/attribute.repository/${var.github_owner}/${var.github_repo}"
 }
+
+############################################
+# Logging 書き込み権限
+############################################
+resource "google_project_iam_member" "runner_log_writer" {
+  count   = local.cloudbuild_enabled[var.env] ? 1 : 0
+  project = var.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.cloudbuild_runner[0].email}"
+}

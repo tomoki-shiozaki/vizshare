@@ -68,4 +68,5 @@ jobs:
             --region $REGION \
             --allow-unauthenticated \
             --service-account vizshare-django-staging-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+            --logging CLOUD_LOGGING_ONLY \
             --quiet
