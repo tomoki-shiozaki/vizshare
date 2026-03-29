@@ -7,7 +7,7 @@
 ##########################################################
 resource "google_service_account" "cloudrun_deploy_sa" {
   count        = local.cloudrun_deploy_enabled[var.env] ? 1 : 0
-  account_id   = "${var.service_name}-${var.env}-cloudrun-deploy-sa"
+  account_id   = "${var.service_name}-${var.env}-cr-deploy"
   display_name = "${var.service_name}-${var.env} Cloud Run Deploy Service Account"
 }
 
