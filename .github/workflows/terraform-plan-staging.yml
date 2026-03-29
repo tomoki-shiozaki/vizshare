@@ -37,16 +37,4 @@ jobs:
           TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
           TF_VAR_region: asia-northeast1
           TF_VAR_project_number: ${{ secrets.PROJECT_NUMBER }}
-        run: |
-          terraform plan -detailed-exitcode
-          PLAN_EXIT_CODE=$?
-          if [ $PLAN_EXIT_CODE -eq 2 ]; then
-            echo "⚠️ Terraform has changes!"
-            # ここで exit 1 にすると CI を fail させる
-            # exit 1
-          elif [ $PLAN_EXIT_CODE -eq 1 ]; then
-            echo "❌ Terraform plan error!"
-            exit 1
-          else
-            echo "✅ No changes in Terraform"
-          fi
+        run: terraform plan
