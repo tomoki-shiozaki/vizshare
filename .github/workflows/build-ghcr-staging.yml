@@ -1,4 +1,4 @@
-name: Build and Push Staging Image
+name: Build and Push Staging Image (GHCR)
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
