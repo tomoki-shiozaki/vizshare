@@ -281,6 +281,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = env.str("MEDIA_URL", default="/media/")
 
+# Use Google Cloud Storage only in real production runtime.
+# When generating OpenAPI schema (GENERATE_SCHEMA=True),
+# avoid requiring GCS configuration or credentials.
 if IS_PRODUCTION and not GENERATE_SCHEMA:
     # 本番：media → GCS
     DEFAULT_FILE_STORAGE_BACKEND = "storages.backends.gcloud.GoogleCloudStorage"
@@ -291,7 +294,7 @@ if IS_PRODUCTION and not GENERATE_SCHEMA:
     }
 
 else:
-    # 開発：media → ローカル
+    # 開発 / schema生成：media → ローカル
     DEFAULT_FILE_STORAGE_BACKEND = "django.core.files.storage.FileSystemStorage"
     DEFAULT_FILE_STORAGE_OPTIONS = {
         "location": BASE_DIR / "media",
