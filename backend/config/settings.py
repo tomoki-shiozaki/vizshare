@@ -278,6 +278,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ================================
 # Storage (Django 4.2+)
 # ================================
+# Signed URL expiration time (seconds)
+# Used when generating temporary download URLs from Google Cloud Storage.
+SIGNED_URL_EXPIRATION = 600
 
 MEDIA_URL = env.str("MEDIA_URL", default="/media/")
 
@@ -291,6 +294,7 @@ if IS_PRODUCTION and not GENERATE_SCHEMA:
         "bucket_name": env.str("GS_BUCKET_NAME"),
         "file_overwrite": False,
         "iam_sign_blob": True,
+        "expiration": SIGNED_URL_EXPIRATION,
     }
 
 else:
@@ -332,6 +336,3 @@ LOGGING = {
 # ================================
 # App-specific settings
 # ================================
-# Signed URL expiration time (seconds)
-# Used when generating temporary download URLs from Google Cloud Storage.
-SIGNED_URL_EXPIRATION = 600
