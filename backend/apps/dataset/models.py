@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.conf import settings
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
@@ -80,13 +78,6 @@ class Dataset(models.Model):
 
     def get_download_url(self):
         storage = self.source_file.storage
-
-        if settings.IS_PRODUCTION:
-            return storage.url(
-                self.source_file.name,
-                expiration=timedelta(seconds=settings.SIGNED_URL_EXPIRATION),  # type: ignore
-            )
-
         return storage.url(self.source_file.name)
 
 
