@@ -5,8 +5,9 @@
 [![Terraform Plan](https://github.com/tomoki-shiozaki/vizshare/actions/workflows/terraform-plan.yml/badge.svg)](https://github.com/tomoki-shiozaki/vizshare/actions/workflows/terraform-plan.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-VizShare is a web application that allows you to upload CSV data,
-visualize it as interactive charts, and share it with others.
+VizShare is a web application that allows users to upload CSV datasets,
+visualize them as interactive charts, and share datasets through a
+public dataset gallery.
 
 The project focuses on time-series data and aims to make data sharing
 and visualization simple and reproducible.
@@ -18,19 +19,20 @@ and visualization simple and reproducible.
 - Upload CSV files (time-series data)
 - Automatic parsing of uploaded data (schema detection, time handling)
 - Interactive visualization of time-series datasets
+- Browse and visualize public datasets
+- CSV download for shared datasets
 
 ### 🚧 In Progress / Planned
 
-- Share datasets and visualizations among users
 - Additional visualization features
 
 ## Project Status
 
 VizShare is currently in early development (MVP stage).
 
-The core functionality — CSV upload, parsing, and visualization — is implemented
-and working as a minimum viable product. The project is under active development,
-and APIs, data models, and features may change.
+The core functionality — CSV upload, dataset parsing, visualization,
+and public dataset sharing — is implemented and working as a
+minimum viable product.
 
 ## Live Demo
 
@@ -43,7 +45,8 @@ Some features and UI elements are still under construction, so you may encounter
 
 ### Demo Account
 
-Use the following account to log in and test CSV upload and visualization:
+Use the following account to explore the application,
+including CSV upload, visualization, and dataset sharing:
 
 | Username  | Password |
 | --------- | -------- |
@@ -88,7 +91,9 @@ flowchart LR
 1. User uploads a time-series CSV file.
 2. Backend parses and validates the dataset.
 3. Processed data is stored as structured datasets.
-4. Frontend renders interactive charts from stored data.
+4. Datasets may be published to the public dataset gallery.
+5. Users explore datasets and visualize them as interactive charts.
+6. Original CSV files can be downloaded from dataset pages.
 
 > Note: Uploaded CSV files are stored in Google Cloud Storage to handle large datasets efficiently and enable easy sharing.
 
