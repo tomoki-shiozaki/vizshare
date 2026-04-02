@@ -1,8 +1,8 @@
-# Vizshare Documentation
+# VizShare Documentation
 
 ## Overview
 
-This directory contains design notes, specifications, and development documentation for Vizshare.
+This directory contains design notes, specifications, and development documentation for VizShare.
 
 ## Documentation Index
 
@@ -18,8 +18,8 @@ This directory contains design notes, specifications, and development documentat
 
 ## 1. Project Overview
 
-- **Project name:** Vizshare
-- **Background:** The developer previously created [Climate Change App](https://github.com/tomoki-shiozaki/climate-change-app-v2), which visualizes temperature anomalies and CO2 emissions using graphs and maps. The temperature data used in the Climate Change App was prepared by the developer. One of the motivations for developing Vizshare is to allow users to upload their own data, visualize it in graphs, and share it with others.
+- **Project name:** VizShare
+- **Background:** The developer previously created [Climate Change App](https://github.com/tomoki-shiozaki/climate-change-app-v2), which visualizes temperature anomalies and CO2 emissions using graphs and maps. The temperature data used in the Climate Change App was prepared by the developer. One of the motivations for developing VizShare is to allow users to upload their own data, visualize it in graphs, and share it with others.
 - **Purpose:** The purposes of this app are:
   1. To allow users to upload their own datasets and visualize them as charts.
   2. To enable users to share datasets and visualizations with others.
@@ -42,7 +42,7 @@ This directory contains design notes, specifications, and development documentat
 
 ## 2.1 Use Case Diagram
 
-The following diagram illustrates the main user interactions in Vizshare,
+The following diagram illustrates the main user interactions in VizShare,
 including both MVP functionality and planned features.
 
 ![Use Case Diagram](./usecase/usecase/vizshare_use.svg)
@@ -51,7 +51,7 @@ including both MVP functionality and planned features.
 
 ## 3. ER Diagram
 
-The following diagram shows the main data models and their relationships in Vizshare. It illustrates the user, dataset, and data point models, along with key fields and constraints.
+The following diagram shows the main data models and their relationships in VizShare. It illustrates the user, dataset, and data point models, along with key fields and constraints.
 
 ![ER Diagram](./er/er/er.svg)
 
@@ -63,7 +63,7 @@ The following diagram shows the main data models and their relationships in Vizs
 
 ## 4. System Architecture
 
-The following diagram shows the overall system architecture of Vizshare,
+The following diagram shows the overall system architecture of VizShare,
 including the frontend, backend, database, storage, and deployment flow.
 
 ![System Architecture](./system_architecture/system_architecture/system_architecture.svg)
@@ -88,6 +88,6 @@ including the frontend, backend, database, storage, and deployment flow.
 
 ## 5. Screen Flow Diagram
 
-The following diagram shows the main screen transitions in the Vizshare MVP.
+The following diagram shows the main screen transitions in the VizShare MVP.
 
 ![Screen Flow Diagram](./screen_flow/screen_flow_diagram/screen_flow_vizshare.svg)
