@@ -33,6 +33,10 @@ class Dataset(models.Model):
     parse_result = models.JSONField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    # 公開・非公開フラグ
+    is_public = models.BooleanField(
+        default=False, help_text="True の場合、誰でも閲覧可能"
+    )
 
     # --- 状態管理メソッド ---
     def mark_processing(self) -> bool:
@@ -71,6 +75,10 @@ class Dataset(models.Model):
             }
 
             locked.save(update_fields=["status", "parse_result"])
+
+    def get_download_url(self):
+        storage = self.source_file.storage
+        return storage.url(self.source_file.name)
 
 
 class DataPoint(models.Model):

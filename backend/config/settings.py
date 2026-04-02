@@ -278,19 +278,27 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ================================
 # Storage (Django 4.2+)
 # ================================
+# Signed URL expiration time (seconds)
+# Used when generating temporary download URLs from Google Cloud Storage.
+SIGNED_URL_EXPIRATION = 600
 
 MEDIA_URL = env.str("MEDIA_URL", default="/media/")
 
+# Use Google Cloud Storage only in real production runtime.
+# When generating OpenAPI schema (GENERATE_SCHEMA=True),
+# avoid requiring GCS configuration or credentials.
 if IS_PRODUCTION and not GENERATE_SCHEMA:
     # 本番：media → GCS
     DEFAULT_FILE_STORAGE_BACKEND = "storages.backends.gcloud.GoogleCloudStorage"
     DEFAULT_FILE_STORAGE_OPTIONS = {
         "bucket_name": env.str("GS_BUCKET_NAME"),
         "file_overwrite": False,
+        "iam_sign_blob": True,
+        "expiration": SIGNED_URL_EXPIRATION,
     }
 
 else:
-    # 開発：media → ローカル
+    # 開発 / schema生成：media → ローカル
     DEFAULT_FILE_STORAGE_BACKEND = "django.core.files.storage.FileSystemStorage"
     DEFAULT_FILE_STORAGE_OPTIONS = {
         "location": BASE_DIR / "media",
@@ -308,6 +316,22 @@ STORAGES = {
     },
 }
 
+# ================================
+# Logging
+# ================================
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",  # stdout/stderr に出力
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "ERROR",  # ERROR 以上を出力
+    },
+}
 
 # ================================
 # App-specific settings

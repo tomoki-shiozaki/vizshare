@@ -147,6 +147,11 @@ system-prune:
 	@echo "⚠️ 停止中コンテナとタグなしイメージを削除します（安全）"
 	docker system prune -f
 
+# 中間：未使用イメージまで削除（データは残す）
+prune-images:
+	@echo "🧹 未使用イメージを削除します（データは保持）"
+	docker system prune -a -f
+
 # 強力、注意して使う
 # 停止中コンテナ・未使用イメージ・未使用ボリューム・ネットワークをまとめて削除
 full-prune:
