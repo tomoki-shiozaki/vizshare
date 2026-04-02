@@ -1,8 +1,8 @@
-# Vizshare Documentation
+# VizShare Documentation
 
 ## Overview
 
-This directory contains design notes, specifications, and development documentation for Vizshare.
+This directory contains design notes, specifications, and development documentation for VizShare.
 
 ## Documentation Index
 
@@ -18,28 +18,31 @@ This directory contains design notes, specifications, and development documentat
 
 ## 1. Project Overview
 
-- **Project name:** Vizshare
-- **Background:** The developer previously created [Climate Change App](https://github.com/tomoki-shiozaki/climate-change-app-v2), which visualizes temperature anomalies and CO2 emissions using graphs and maps. The temperature data used in the Climate Change App was prepared by the developer. One of the motivations for developing Vizshare is to allow users to upload their own data, visualize it in graphs, and share it with others.
+- **Project name:** VizShare
+- **Background:** The developer previously created [Climate Change App](https://github.com/tomoki-shiozaki/climate-change-app-v2), which visualizes temperature anomalies and CO2 emissions using graphs and maps. The temperature data used in the Climate Change App was prepared by the developer. One of the motivations for developing VizShare is to allow users to upload their own data, visualize it in graphs, and share it with others.
 - **Purpose:** The purposes of this app are:
-  1. To allow users to share their data in visualized forms.
-  2. To enable users to communicate through comments.
+  1. To allow users to upload their own datasets and visualize them as charts.
+  2. To enable users to share datasets and visualizations with others.
+  3. To support data exploration and discussion around shared datasets.
 - **MVP Implementation:**
-  - Uploading, parsing, and visualizing data.
-  - Sharing data with others.
+  - Uploading CSV datasets
+  - Parsing and validating time-series data
+  - Visualizing datasets as interactive charts
+  - Publishing datasets to a public gallery
 
 ## 2. Requirements
 
-| ID  | Requirement    | Description                                                     | Priority | Notes                     |
-| --- | -------------- | --------------------------------------------------------------- | -------- | ------------------------- |
-| R1  | Upload CSV     | Users can upload CSV files containing their own data            | High     | MVP                       |
-| R2  | Parse Data     | System parses CSV and extracts time, entity, and metric columns | High     | MVP: only numeric metrics |
-| R3  | Visualize Data | Display data in graphs (line, bar, etc.)                        | High     | MVP: basic line chart     |
-| R4  | Share Data     | Users can share visualizations with others                      | Medium   | Planned feature           |
-| R5  | Comment        | Users can comment on shared visualizations                      | Medium   | Future feature            |
+| ID  | Requirement    | Description                                                         | Priority | Notes                     |
+| --- | -------------- | ------------------------------------------------------------------- | -------- | ------------------------- |
+| R1  | Upload CSV     | Users can upload CSV files containing their own data                | High     | MVP                       |
+| R2  | Parse Data     | System parses CSV and extracts time, entity, and metric columns     | High     | MVP: only numeric metrics |
+| R3  | Visualize Data | Display data in graphs (line, bar, etc.)                            | High     | MVP: basic line chart     |
+| R4  | Share Data     | Users can publish datasets and visualizations to the public gallery | High     | MVP                       |
+| R5  | Comment        | Users can comment on shared visualizations                          | Medium   | Future feature            |
 
 ## 2.1 Use Case Diagram
 
-The following diagram illustrates the main user interactions in Vizshare,
+The following diagram illustrates the main user interactions in VizShare,
 including both MVP functionality and planned features.
 
 ![Use Case Diagram](./usecase/usecase/vizshare_use.svg)
@@ -48,7 +51,7 @@ including both MVP functionality and planned features.
 
 ## 3. ER Diagram
 
-The following diagram shows the main data models and their relationships in Vizshare. It illustrates the user, dataset, and data point models, along with key fields and constraints.
+The following diagram shows the main data models and their relationships in VizShare. It illustrates the user, dataset, and data point models, along with key fields and constraints.
 
 ![ER Diagram](./er/er/er.svg)
 
@@ -60,7 +63,7 @@ The following diagram shows the main data models and their relationships in Vizs
 
 ## 4. System Architecture
 
-The following diagram shows the overall system architecture of Vizshare,
+The following diagram shows the overall system architecture of VizShare,
 including the frontend, backend, database, storage, and deployment flow.
 
 ![System Architecture](./system_architecture/system_architecture/system_architecture.svg)
@@ -78,12 +81,13 @@ including the frontend, backend, database, storage, and deployment flow.
 
 1. Users interact with the frontend.
 2. The frontend sends API requests to the backend.
-3. The backend parses uploaded CSV files.
-4. Parsed data is stored in PostgreSQL.
-5. Uploaded CSV files are stored in Cloud Storage.
+3. Users upload CSV files through the frontend.
+4. The backend parses and validates the uploaded datasets.
+5. Parsed data is stored in PostgreSQL.
+6. Uploaded CSV files are stored in Cloud Storage.
 
 ## 5. Screen Flow Diagram
 
-The following diagram shows the main screen transitions in the Vizshare MVP.
+The following diagram shows the main screen transitions in the VizShare MVP.
 
 ![Screen Flow Diagram](./screen_flow/screen_flow_diagram/screen_flow_vizshare.svg)

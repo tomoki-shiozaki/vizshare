@@ -12,21 +12,17 @@ rectangle "Vizshare App" {
   
   package "Sharing & Interaction" {
     (Share Data)
-    (Comment)
+    (Browse Public Datasets)
     (View Shared Visualizations)
+    (Comment)
   }
 }
 
-rectangle "External Storage" {
-  (Store CSV)
-}
-
-' Actors interactions
 generalUser --> (Upload CSV)
-(Upload CSV) ..> (Store CSV) : <<include>>
 generalUser --> (Visualize Data)
 generalUser --> (Share Data)
-generalUser --> (Comment)
+generalUser --> (Browse Public Datasets)
 generalUser --> (View Shared Visualizations)
+generalUser --> (Comment)
 
 @enduml
