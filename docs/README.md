@@ -21,21 +21,24 @@ This directory contains design notes, specifications, and development documentat
 - **Project name:** Vizshare
 - **Background:** The developer previously created [Climate Change App](https://github.com/tomoki-shiozaki/climate-change-app-v2), which visualizes temperature anomalies and CO2 emissions using graphs and maps. The temperature data used in the Climate Change App was prepared by the developer. One of the motivations for developing Vizshare is to allow users to upload their own data, visualize it in graphs, and share it with others.
 - **Purpose:** The purposes of this app are:
-  1. To allow users to share their data in visualized forms.
-  2. To enable users to communicate through comments.
+  1. To allow users to upload their own datasets and visualize them as charts.
+  2. To enable users to share datasets and visualizations with others.
+  3. To support data exploration and discussion around shared datasets.
 - **MVP Implementation:**
-  - Uploading, parsing, and visualizing data.
-  - Sharing data with others.
+  - Uploading CSV datasets
+  - Parsing and validating time-series data
+  - Visualizing datasets as interactive charts
+  - Publishing datasets to a public gallery
 
 ## 2. Requirements
 
-| ID  | Requirement    | Description                                                     | Priority | Notes                     |
-| --- | -------------- | --------------------------------------------------------------- | -------- | ------------------------- |
-| R1  | Upload CSV     | Users can upload CSV files containing their own data            | High     | MVP                       |
-| R2  | Parse Data     | System parses CSV and extracts time, entity, and metric columns | High     | MVP: only numeric metrics |
-| R3  | Visualize Data | Display data in graphs (line, bar, etc.)                        | High     | MVP: basic line chart     |
-| R4  | Share Data     | Users can share visualizations with others                      | Medium   | Planned feature           |
-| R5  | Comment        | Users can comment on shared visualizations                      | Medium   | Future feature            |
+| ID  | Requirement    | Description                                                         | Priority | Notes                     |
+| --- | -------------- | ------------------------------------------------------------------- | -------- | ------------------------- |
+| R1  | Upload CSV     | Users can upload CSV files containing their own data                | High     | MVP                       |
+| R2  | Parse Data     | System parses CSV and extracts time, entity, and metric columns     | High     | MVP: only numeric metrics |
+| R3  | Visualize Data | Display data in graphs (line, bar, etc.)                            | High     | MVP: basic line chart     |
+| R4  | Share Data     | Users can publish datasets and visualizations to the public gallery | High     | MVP                       |
+| R5  | Comment        | Users can comment on shared visualizations                          | Medium   | Future feature            |
 
 ## 2.1 Use Case Diagram
 
@@ -78,9 +81,10 @@ including the frontend, backend, database, storage, and deployment flow.
 
 1. Users interact with the frontend.
 2. The frontend sends API requests to the backend.
-3. The backend parses uploaded CSV files.
-4. Parsed data is stored in PostgreSQL.
-5. Uploaded CSV files are stored in Cloud Storage.
+3. Users upload CSV files through the frontend.
+4. The backend parses and validates the uploaded datasets.
+5. Parsed data is stored in PostgreSQL.
+6. Uploaded CSV files are stored in Cloud Storage.
 
 ## 5. Screen Flow Diagram
 
