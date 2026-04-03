@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { DatasetBadge } from "@/features/datasets/components/DatasetBadge";
 import { DatasetVisibilityBadge } from "@/features/datasets/components/DatasetVisibilityBadge";
+import { DatasetVisibilityToggle } from "@/features/datasets/visibility/components/DatasetVisibilityToggle";
 
 type Props = {
   id: string;
@@ -66,6 +67,11 @@ export function DatasetDetail({ id }: Props) {
           message={dataset.parse_result?.message}
         />
         <DatasetVisibilityBadge isPublic={dataset.is_public} />
+
+        <DatasetVisibilityToggle
+          datasetId={dataset.id}
+          isPublic={dataset.is_public}
+        />
       </div>
 
       {/* Schema */}
