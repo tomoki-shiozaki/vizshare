@@ -43,7 +43,6 @@ class DatasetDetailSerializer(serializers.ModelSerializer):
             "created_at",
             "schema",
             "parse_result",
-            "source_file",
             "is_public",
         ]
         read_only_fields = [
@@ -53,7 +52,6 @@ class DatasetDetailSerializer(serializers.ModelSerializer):
             "created_at",
             "schema",
             "parse_result",
-            "source_file",
             "is_public",
         ]
 
