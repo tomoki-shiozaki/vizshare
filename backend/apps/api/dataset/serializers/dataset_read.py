@@ -17,6 +17,7 @@ class DatasetListSerializer(serializers.ModelSerializer):
             "created_at",
             "schema",
             "parse_result",
+            "is_public",
         ]
         read_only_fields = [
             "id",
@@ -25,6 +26,7 @@ class DatasetListSerializer(serializers.ModelSerializer):
             "created_at",
             "schema",
             "parse_result",
+            "is_public",
         ]
 
 
@@ -42,6 +44,7 @@ class DatasetDetailSerializer(serializers.ModelSerializer):
             "schema",
             "parse_result",
             "source_file",
+            "is_public",
         ]
         read_only_fields = [
             "id",
@@ -51,6 +54,7 @@ class DatasetDetailSerializer(serializers.ModelSerializer):
             "schema",
             "parse_result",
             "source_file",
+            "is_public",
         ]
 
 
