@@ -1121,11 +1121,6 @@
                         ],
                         "nullable": true
                     },
-                    "source_file": {
-                        "type": "string",
-                        "format": "uri",
-                        "readOnly": true
-                    },
                     "is_public": {
                         "type": "boolean",
                         "readOnly": true,
@@ -1138,7 +1133,6 @@
                     "is_public",
                     "name",
                     "schema",
-                    "source_file",
                     "status"
                 ]
             },
