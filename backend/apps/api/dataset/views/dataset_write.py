@@ -1,7 +1,10 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from apps.api.dataset.serializers.dataset_write import DatasetCreateSerializer
+from apps.api.dataset.serializers.dataset_write import (
+    DatasetCreateSerializer,
+    DatasetVisibilitySerializer,
+)
 from apps.dataset.models import Dataset
 from apps.dataset.services.dataset_service import create_dataset
 
@@ -25,3 +28,15 @@ class DatasetCreateAPIView(generics.CreateAPIView):
             schema=data["schema"],
         )
         serializer.instance = dataset
+
+
+class DatasetVisibilityUpdateAPIView(generics.UpdateAPIView):
+    """
+    Dataset の公開状態を変更する API
+    """
+
+    serializer_class = DatasetVisibilitySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Dataset.objects.filter(owner=self.request.user)
