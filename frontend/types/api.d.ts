@@ -58,6 +58,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/datasets/{id}/visibility/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description Dataset の公開状態を変更する API */
+        put: operations["datasets_visibility_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Dataset の公開状態を変更する API */
+        patch: operations["datasets_visibility_partial_update"];
+        trace?: never;
+    };
     "/api/v1/datasets/create/": {
         parameters: {
             query?: never;
@@ -469,6 +487,10 @@ export interface components {
             entity?: string;
             metrics: string[];
         };
+        DatasetVisibility: {
+            /** @description True の場合、誰でも閲覧可能 */
+            is_public?: boolean;
+        };
         /** @description Serializer for JWT authentication. */
         JWT: {
             access: string;
@@ -531,6 +553,10 @@ export interface components {
             new_password2: string;
             uid: string;
             token: string;
+        };
+        PatchedDatasetVisibility: {
+            /** @description True の場合、誰でも閲覧可能 */
+            is_public?: boolean;
         };
         /** @description User model w/o password */
         PatchedUserDetails: {
@@ -695,6 +721,60 @@ export interface operations {
                             time?: string;
                         }[];
                     };
+                };
+            };
+        };
+    };
+    datasets_visibility_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DatasetVisibility"];
+                "application/x-www-form-urlencoded": components["schemas"]["DatasetVisibility"];
+                "multipart/form-data": components["schemas"]["DatasetVisibility"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetVisibility"];
+                };
+            };
+        };
+    };
+    datasets_visibility_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedDatasetVisibility"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedDatasetVisibility"];
+                "multipart/form-data": components["schemas"]["PatchedDatasetVisibility"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetVisibility"];
                 };
             };
         };

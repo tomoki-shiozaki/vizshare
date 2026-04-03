@@ -155,6 +155,126 @@
                 }
             }
         },
+        "/api/v1/datasets/{id}/visibility/": {
+            "put": {
+                "operationId": "datasets_visibility_update",
+                "description": "Dataset の公開状態を変更する API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatasetVisibility"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatasetVisibility"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatasetVisibility"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasetVisibility"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "datasets_visibility_partial_update",
+                "description": "Dataset の公開状態を変更する API",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedDatasetVisibility"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedDatasetVisibility"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedDatasetVisibility"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasetVisibility"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/create/": {
             "post": {
                 "operationId": "datasets_create_create",
@@ -1205,6 +1325,15 @@
                     "time"
                 ]
             },
+            "DatasetVisibility": {
+                "type": "object",
+                "properties": {
+                    "is_public": {
+                        "type": "boolean",
+                        "description": "True の場合、誰でも閲覧可能"
+                    }
+                }
+            },
             "JWT": {
                 "type": "object",
                 "description": "Serializer for JWT authentication.",
@@ -1374,6 +1503,15 @@
                     "token",
                     "uid"
                 ]
+            },
+            "PatchedDatasetVisibility": {
+                "type": "object",
+                "properties": {
+                    "is_public": {
+                        "type": "boolean",
+                        "description": "True の場合、誰でも閲覧可能"
+                    }
+                }
             },
             "PatchedUserDetails": {
                 "type": "object",
