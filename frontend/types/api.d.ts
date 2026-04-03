@@ -452,6 +452,8 @@ export interface components {
             parse_result?: components["schemas"]["ParseResult"] | null;
             /** Format: uri */
             readonly source_file: string;
+            /** @description True の場合、誰でも閲覧可能 */
+            readonly is_public: boolean;
         };
         DatasetList: {
             readonly id: number;
@@ -461,6 +463,8 @@ export interface components {
             readonly created_at: string;
             readonly schema: unknown;
             readonly parse_result: unknown;
+            /** @description True の場合、誰でも閲覧可能 */
+            readonly is_public: boolean;
         };
         DatasetSchema: {
             time: string;

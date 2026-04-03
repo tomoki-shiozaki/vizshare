@@ -1125,11 +1125,17 @@
                         "type": "string",
                         "format": "uri",
                         "readOnly": true
+                    },
+                    "is_public": {
+                        "type": "boolean",
+                        "readOnly": true,
+                        "description": "True の場合、誰でも閲覧可能"
                     }
                 },
                 "required": [
                     "created_at",
                     "id",
+                    "is_public",
                     "name",
                     "schema",
                     "source_file",
@@ -1166,11 +1172,17 @@
                     "parse_result": {
                         "readOnly": true,
                         "nullable": true
+                    },
+                    "is_public": {
+                        "type": "boolean",
+                        "readOnly": true,
+                        "description": "True の場合、誰でも閲覧可能"
                     }
                 },
                 "required": [
                     "created_at",
                     "id",
+                    "is_public",
                     "name",
                     "parse_result",
                     "schema",
