@@ -9,6 +9,7 @@ import { DatasetSchemaView } from "@/features/datasets/detail/components/Dataset
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { DatasetBadge } from "@/features/datasets/components/DatasetBadge";
+import { DatasetVisibilityBadge } from "@/features/datasets/components/DatasetVisibilityBadge";
 
 type Props = {
   id: string;
@@ -59,12 +60,12 @@ export function DatasetDetail({ id }: Props) {
       </div>
 
       {/* ステータス */}
-      <div>
-        <h2 className="text-lg font-medium">ステータス</h2>
+      <div className="flex items-center gap-2">
         <DatasetBadge
           status={dataset.status}
           message={dataset.parse_result?.message}
         />
+        <DatasetVisibilityBadge isPublic={dataset.is_public} />
       </div>
 
       {/* Schema */}
