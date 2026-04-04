@@ -5,6 +5,7 @@ import "./globals.css";
 import { ErrorProvider } from "@/context/error";
 import { ClientProviders } from "@/app/providers/ClientProviders";
 import { AppContent } from "@/app/components/AppContent";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,9 @@ export default function RootLayout({
       >
         <ErrorProvider>
           <ClientProviders>
-            <AppContent>{children}</AppContent>
+            <TooltipProvider>
+              <AppContent>{children}</AppContent>
+            </TooltipProvider>
           </ClientProviders>
         </ErrorProvider>
       </body>

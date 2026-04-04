@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { DatasetListResponse } from "@/features/datasets/types/dataset";
 import { DatasetBadge } from "@/features/datasets/components/DatasetBadge";
+import { DatasetVisibilityBadge } from "@/features/datasets/components/DatasetVisibilityBadge";
 
 type Dataset = DatasetListResponse["results"][number];
 
@@ -35,8 +36,9 @@ export function DatasetListItem({ dataset }: Props) {
         </p>
       </div>
 
-      <div className="ml-3 flex-shrink-0">
+      <div className="ml-3 flex items-center gap-2 flex-shrink-0">
         <DatasetBadge status={dataset.status} />
+        <DatasetVisibilityBadge isPublic={dataset.is_public} />
       </div>
     </li>
   );

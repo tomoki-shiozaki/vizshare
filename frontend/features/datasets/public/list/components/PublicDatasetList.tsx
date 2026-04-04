@@ -7,6 +7,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchPublicDatasetList } from "@/features/datasets/public/list/api/fetchPublicDatasetList";
 import { PublicDatasetListItem } from "@/features/datasets/public/list/components/PublicDatasetListItem";
+import { datasetKeys } from "@/features/datasets/queryKeys";
 
 export function PublicDatasetList() {
   const limit = 12;
@@ -19,7 +20,7 @@ export function PublicDatasetList() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["public-datasets"],
+    queryKey: datasetKeys.publicList(),
 
     initialPageParam: 0,
 
