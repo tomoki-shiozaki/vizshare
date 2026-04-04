@@ -32,7 +32,6 @@ export function DatasetUploadForm() {
   // アップロードMutation
   // =========================
   const uploadMutation = useMutation({
-    mutationKey: ["datasetUpload"],
     mutationFn: uploadDataset,
 
     onSuccess: (data) => {
