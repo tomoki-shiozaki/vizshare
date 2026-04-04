@@ -6,4 +6,6 @@ export const datasetKeys = {
   publicList: () => [...datasetKeys.all, "public"] as const,
   publicDetail: (id: string) =>
     [...datasetKeys.all, "publicDetail", id] as const,
+  publicDataPoints: (id: string) =>
+    [...datasetKeys.all, "publicDataPoints", id] as const,
 };
