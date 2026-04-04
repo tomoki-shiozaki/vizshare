@@ -11,6 +11,7 @@ import { ChevronLeft } from "lucide-react";
 import { DatasetBadge } from "@/features/datasets/components/DatasetBadge";
 import { DatasetVisibilityBadge } from "@/features/datasets/components/DatasetVisibilityBadge";
 import { DatasetVisibilityToggle } from "@/features/datasets/visibility/components/DatasetVisibilityToggle";
+import { datasetKeys } from "@/features/datasets/queryKeys";
 
 type Props = {
   id: string;
@@ -22,7 +23,7 @@ export function DatasetDetail({ id }: Props) {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["dataset", id],
+    queryKey: datasetKeys.detail(id),
     queryFn: () => fetchDatasetDetail(id),
     enabled: !!id,
   });
