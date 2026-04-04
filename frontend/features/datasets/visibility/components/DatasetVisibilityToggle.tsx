@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { updateDatasetVisibility } from "@/features/datasets/visibility/api/updateDatasetVisibility";
+import { datasetKeys } from "@/features/datasets/queryKeys";
 
 type Props = {
   datasetId: number;
@@ -15,8 +16,14 @@ export function DatasetVisibilityToggle({ datasetId, isPublic }: Props) {
   const mutation = useMutation({
     mutationFn: updateDatasetVisibility,
     onSuccess: () => {
+      // 個別データの query を無効化
       queryClient.invalidateQueries({
-        queryKey: ["dataset", datasetId.toString()],
+        queryKey: datasetKeys.detail(datasetId.toString()),
+      });
+
+      // 一覧も更新
+      queryClient.invalidateQueries({
+        queryKey: datasetKeys.all,
       });
     },
   });
