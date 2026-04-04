@@ -3,4 +3,5 @@ export const datasetKeys = {
   list: () => [...datasetKeys.all] as const,
   detail: (id: string) => [...datasetKeys.all, "detail", id] as const,
   dataPoints: (id: string) => [...datasetKeys.all, "dataPoints", id] as const,
+  publicList: () => [...datasetKeys.all, "public"] as const,
 };
