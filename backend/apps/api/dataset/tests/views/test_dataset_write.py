@@ -70,3 +70,39 @@ class TestDatasetCreateAPIView:
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST  # type: ignore
         assert "CSV読み込み失敗" in str(response.data)  # type: ignore
+
+
+@pytest.mark.django_db
+class TestDatasetVisibilityUpdateAPIView:
+    def test_visibility_update_success(self, user, api_client: APIClient):
+        api_client.force_authenticate(user=user)
+        dataset = Dataset.objects.create(
+            name="My Dataset",
+            owner=user,
+            schema={"time": "time_col", "metrics": ["value"]},
+            is_public=False,
+        )
+        url = reverse("dataset:visibility", args=[dataset.pk])
+
+        response = api_client.patch(url, {"is_public": True}, format="json")
+        assert response.status_code == status.HTTP_200_OK  # type: ignore
+        dataset.refresh_from_db()
+        assert dataset.is_public is True
+
+    def test_visibility_update_permission_denied(
+        self, user, another_user, api_client: APIClient
+    ):
+        # 他ユーザーの dataset を作る
+        other_user_dataset = Dataset.objects.create(
+            name="Other Dataset",
+            owner=another_user,
+            schema={"time": "time_col", "metrics": ["value"]},
+            is_public=False,
+        )
+        api_client.force_authenticate(user=user)
+        url = reverse("dataset:visibility", args=[other_user_dataset.pk])
+
+        response = api_client.patch(url, {"is_public": True}, format="json")
+        assert (
+            response.status_code == status.HTTP_404_NOT_FOUND  # type: ignore
+        )  # queryset に入らないため
