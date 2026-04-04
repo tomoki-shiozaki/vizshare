@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateDatasetVisibility } from "@/features/datasets/visibility/api/updateDatasetVisibility";
 import { datasetKeys } from "@/features/datasets/queryKeys";
-import { Switch } from "@/components/ui/switch"; // shadcn/ui の Switch を想定
+import { Switch } from "@/components/ui/switch"; // shadcn/ui
 import {
   Tooltip,
   TooltipContent,
@@ -25,7 +25,6 @@ export function DatasetVisibilityToggle({ datasetId, isPublic }: Props) {
   const mutation = useMutation({
     mutationFn: updateDatasetVisibility,
     onSuccess: () => {
-      // 成功したらキャッシュを最新化
       queryClient.invalidateQueries({
         queryKey: datasetKeys.detail(datasetId),
       });
@@ -41,6 +40,13 @@ export function DatasetVisibilityToggle({ datasetId, isPublic }: Props) {
 
   const handleToggle = () => {
     const nextState = !localPublic;
+
+    // 軽い確認ダイアログ
+    const message = nextState
+      ? "このデータセットを公開しますか？"
+      : "このデータセットを非公開にしますか？";
+    if (!window.confirm(message)) return;
+
     setLocalPublic(nextState); // UIを即時更新
     mutation.mutate({
       id: datasetId,
