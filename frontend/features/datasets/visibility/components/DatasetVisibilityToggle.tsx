@@ -6,7 +6,7 @@ import { updateDatasetVisibility } from "@/features/datasets/visibility/api/upda
 import { datasetKeys } from "@/features/datasets/queryKeys";
 
 type Props = {
-  datasetId: number;
+  datasetId: string;
   isPublic: boolean;
 };
 
@@ -18,7 +18,7 @@ export function DatasetVisibilityToggle({ datasetId, isPublic }: Props) {
     onSuccess: () => {
       // 個別データの query を無効化
       queryClient.invalidateQueries({
-        queryKey: datasetKeys.detail(datasetId.toString()),
+        queryKey: datasetKeys.detail(datasetId),
       });
 
       // 一覧も更新

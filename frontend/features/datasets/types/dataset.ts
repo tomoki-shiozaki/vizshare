@@ -59,6 +59,6 @@ export type DatasetVisibilityResponse =
   paths["/api/v1/datasets/{id}/visibility/"]["patch"]["responses"][200]["content"]["application/json"];
 
 export type DatasetVisibilityVars = {
-  id: number;
+  id: string;
   is_public: boolean;
 };
