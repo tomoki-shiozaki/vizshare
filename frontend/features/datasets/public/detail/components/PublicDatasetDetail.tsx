@@ -8,6 +8,7 @@ import { Loading } from "@/components/common";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Download } from "lucide-react";
+import { datasetKeys } from "@/features/datasets/queryKeys";
 
 type Props = {
   id: string;
@@ -19,7 +20,7 @@ export function PublicDatasetDetail({ id }: Props) {
     isLoading,
     error,
   } = useQuery<PublicDatasetDetailResponse>({
-    queryKey: ["publicDataset", id],
+    queryKey: datasetKeys.publicDetail(id),
     queryFn: () => fetchPublicDatasetDetail(id),
     enabled: !!id,
   });
