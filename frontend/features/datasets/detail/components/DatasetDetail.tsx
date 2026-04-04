@@ -9,6 +9,9 @@ import { DatasetSchemaView } from "@/features/datasets/detail/components/Dataset
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { DatasetBadge } from "@/features/datasets/components/DatasetBadge";
+import { DatasetVisibilityBadge } from "@/features/datasets/components/DatasetVisibilityBadge";
+import { DatasetVisibilityToggle } from "@/features/datasets/visibility/components/DatasetVisibilityToggle";
+import { datasetKeys } from "@/features/datasets/queryKeys";
 
 type Props = {
   id: string;
@@ -20,7 +23,7 @@ export function DatasetDetail({ id }: Props) {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["dataset", id],
+    queryKey: datasetKeys.detail(id),
     queryFn: () => fetchDatasetDetail(id),
     enabled: !!id,
   });
@@ -59,11 +62,16 @@ export function DatasetDetail({ id }: Props) {
       </div>
 
       {/* ステータス */}
-      <div>
-        <h2 className="text-lg font-medium">ステータス</h2>
+      <div className="flex items-center gap-2">
         <DatasetBadge
           status={dataset.status}
           message={dataset.parse_result?.message}
+        />
+        <DatasetVisibilityBadge isPublic={dataset.is_public} />
+
+        <DatasetVisibilityToggle
+          datasetId={String(dataset.id)}
+          isPublic={dataset.is_public}
         />
       </div>
 

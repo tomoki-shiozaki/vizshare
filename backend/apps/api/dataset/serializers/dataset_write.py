@@ -50,3 +50,10 @@ class DatasetCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("each metric must be a string")
 
         return value
+
+
+class DatasetVisibilitySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Dataset
+        fields = ["is_public"]
