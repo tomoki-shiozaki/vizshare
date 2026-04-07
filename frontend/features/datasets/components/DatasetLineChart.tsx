@@ -61,10 +61,10 @@ export const DatasetLineChart = ({
 
   // 初期metric設定
   useEffect(() => {
-    if (metrics.length > 0 && selectedMetrics.length === 0) {
-      setSelectedMetrics(metrics.slice(0, 2));
+    if (metrics.length > 0) {
+      setSelectedMetrics(metrics);
     }
-  }, [metrics, selectedMetrics.length]);
+  }, [selectedEntity, metrics]);
 
   // metricトグル
   const toggleMetric = (metric: string) => {
@@ -132,11 +132,11 @@ export const DatasetLineChart = ({
           <Tooltip />
           <Legend />
 
-          {selectedMetrics.map((metric) => (
+          {selectedMetrics.map((metric, idx) => (
             <Line
               key={metric}
               dataKey={metric}
-              stroke={colors[metrics.indexOf(metric)]}
+              stroke={colors[idx]}
               type="monotone"
             />
           ))}
