@@ -10,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Loading, SelectBox } from "@/components/common";
 import type {
   DatasetDataPointsResponse,
@@ -30,49 +30,66 @@ export const DatasetLineChart = ({
   datasetId,
   useDataPoints,
 }: DatasetChartProps) => {
-  // データ取得（カスタムフック）
   const { data, isLoading, isError } = useDataPoints(datasetId);
 
-  // 選択中の entity
   const [selectedEntity, setSelectedEntity] = useState<string>("");
+  const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
 
-  // データ取得後に初期 entity をセット
-  useEffect(() => {
-    if (data) {
-      const id = setTimeout(() => {
-        setSelectedEntity((prev) => prev || Object.keys(data)[0] || "");
-      }, 0);
-      return () => clearTimeout(id); // クリーンアップ
-    }
+  // entity一覧
+  const entities = useMemo(() => {
+    return data ? Object.keys(data) : [];
   }, [data]);
 
-  if (isLoading) return <Loading />;
-  if (isError) return <p>データ取得に失敗しました</p>;
-  if (!data || Object.keys(data).length === 0) return <p>データがありません</p>;
+  // 初期entity設定
+  useEffect(() => {
+    if (entities.length > 0) {
+      setSelectedEntity((prev) => prev || entities[0]);
+    }
+  }, [entities]);
 
-  const entities = Object.keys(data);
+  // 選択entityのデータ
+  const chartData: TimeSeriesPoint[] = useMemo(() => {
+    if (!selectedEntity || !data) return [];
+    return data[selectedEntity] ?? [];
+  }, [data, selectedEntity]);
 
-  // 選択中の entity のデータ
-  const chartData: TimeSeriesPoint[] = selectedEntity
-    ? (data[selectedEntity] ?? [])
-    : [];
+  // metric自動検出
+  const metrics = useMemo(() => {
+    if (chartData.length === 0) return [];
+    return Object.keys(chartData[0]).filter((k) => k !== "time");
+  }, [chartData]);
 
-  // SelectBox 用オプション
+  // 初期metric設定
+  useEffect(() => {
+    if (metrics.length > 0 && selectedMetrics.length === 0) {
+      setSelectedMetrics(metrics.slice(0, 2));
+    }
+  }, [metrics, selectedMetrics.length]);
+
+  // metricトグル
+  const toggleMetric = (metric: string) => {
+    setSelectedMetrics((prev) =>
+      prev.includes(metric)
+        ? prev.filter((m) => m !== metric)
+        : [...prev, metric],
+    );
+  };
+
+  // 色パレット
+  const colors = metrics.map(
+    (_, idx) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`,
+  );
+
+  // SelectBox options
   const options = entities.map((e) => ({
     value: e,
     label: e,
   }));
 
-  // metric を自動検出（time 以外を抽出）
-  const metrics =
-    chartData.length > 0
-      ? Object.keys(chartData[0]).filter((k) => k !== "time")
-      : [];
-
-  // グラフの色パレット
-  const colors = metrics.map(
-    (_, idx) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`,
-  );
+  // early return
+  if (isLoading) return <Loading />;
+  if (isError) return <p>データ取得に失敗しました</p>;
+  if (!data || entities.length === 0) return <p>データがありません</p>;
 
   return (
     <div>
@@ -84,6 +101,21 @@ export const DatasetLineChart = ({
         onChange={setSelectedEntity}
       />
 
+      {/* metric選択 */}
+      <div style={{ marginBottom: "1rem" }}>
+        <p>Metrics 選択</p>
+        {metrics.map((metric) => (
+          <label key={metric} style={{ marginRight: "12px" }}>
+            <input
+              type="checkbox"
+              checked={selectedMetrics.includes(metric)}
+              onChange={() => toggleMetric(metric)}
+            />
+            {metric}
+          </label>
+        ))}
+      </div>
+
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={chartData}
@@ -94,11 +126,12 @@ export const DatasetLineChart = ({
           <YAxis width={60} />
           <Tooltip />
           <Legend />
-          {metrics.map((metric, idx) => (
+
+          {selectedMetrics.map((metric) => (
             <Line
               key={metric}
               dataKey={metric}
-              stroke={colors[idx]}
+              stroke={colors[metrics.indexOf(metric)]}
               type="monotone"
             />
           ))}
