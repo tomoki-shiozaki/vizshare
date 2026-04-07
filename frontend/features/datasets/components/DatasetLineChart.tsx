@@ -68,11 +68,16 @@ export const DatasetLineChart = ({
 
   // metricトグル
   const toggleMetric = (metric: string) => {
-    setSelectedMetrics((prev) =>
-      prev.includes(metric)
+    setSelectedMetrics((prev) => {
+      // 1個だけのときは外せない
+      if (prev.includes(metric) && prev.length === 1) {
+        return prev;
+      }
+
+      return prev.includes(metric)
         ? prev.filter((m) => m !== metric)
-        : [...prev, metric],
-    );
+        : [...prev, metric];
+    });
   };
 
   // 色パレット
