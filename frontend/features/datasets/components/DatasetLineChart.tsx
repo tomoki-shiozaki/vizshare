@@ -132,11 +132,11 @@ export const DatasetLineChart = ({
           <Tooltip />
           <Legend />
 
-          {selectedMetrics.map((metric, idx) => (
+          {selectedMetrics.map((metric) => (
             <Line
               key={metric}
               dataKey={metric}
-              stroke={colors[idx]}
+              stroke={colors[metrics.indexOf(metric)]}
               type="monotone"
             />
           ))}
