@@ -16,6 +16,9 @@ import type {
   DatasetDataPointsResponse,
   TimeSeriesPoint,
 } from "@/features/datasets/types/dataset";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 type DatasetChartProps = {
   datasetId: string;
@@ -107,18 +110,47 @@ export const DatasetLineChart = ({
       />
 
       {/* metric選択 */}
-      <div style={{ marginBottom: "1rem" }}>
-        <p>Metrics 選択</p>
-        {metrics.map((metric) => (
-          <label key={metric} style={{ marginRight: "12px" }}>
-            <input
-              type="checkbox"
-              checked={selectedMetrics.includes(metric)}
-              onChange={() => toggleMetric(metric)}
-            />
-            {metric}
-          </label>
-        ))}
+      <div className="mb-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium">
+            Metrics ({selectedMetrics.length})
+          </p>
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedMetrics(metrics)}
+            >
+              All
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setSelectedMetrics(metrics.length ? [metrics[0]] : [])
+              }
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-4">
+          {metrics.map((metric) => (
+            <div key={metric} className="flex items-center space-x-2">
+              <Checkbox
+                id={`metric-${metric}`}
+                checked={selectedMetrics.includes(metric)}
+                onCheckedChange={() => toggleMetric(metric)}
+              />
+              <Label htmlFor={`metric-${metric}`} className="text-sm">
+                {metric}
+              </Label>
+            </div>
+          ))}
+        </div>
       </div>
 
       <ResponsiveContainer width="100%" height={400}>
