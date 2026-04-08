@@ -3,26 +3,28 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 type Props = {
-  metrics: string[];
-  selectedMetrics: string[];
-  setSelectedMetrics: React.Dispatch<React.SetStateAction<string[]>>;
+  items: string[];
+  selectedItems: string[];
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
+  label?: string;
 };
 
 export const ItemSelector = ({
-  metrics,
-  selectedMetrics,
-  setSelectedMetrics,
+  items,
+  selectedItems,
+  setSelectedItems,
+  label = "Items",
 }: Props) => {
-  const toggleMetric = (metric: string) => {
-    setSelectedMetrics((prev) => {
+  const toggleItem = (item: string) => {
+    setSelectedItems((prev) => {
       // 1個だけのときは外せない
-      if (prev.includes(metric) && prev.length === 1) {
+      if (prev.includes(item) && prev.length === 1) {
         return prev;
       }
 
-      return prev.includes(metric)
-        ? prev.filter((m) => m !== metric)
-        : [...prev, metric];
+      return prev.includes(item)
+        ? prev.filter((i) => i !== item)
+        : [...prev, item];
     });
   };
 
@@ -30,14 +32,14 @@ export const ItemSelector = ({
     <div className="mb-4 space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium">
-          Metrics ({selectedMetrics.length})
+          {label} ({selectedItems.length})
         </p>
 
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setSelectedMetrics(metrics)}
+            onClick={() => setSelectedItems(items)}
           >
             All
           </Button>
@@ -45,9 +47,7 @@ export const ItemSelector = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>
-              setSelectedMetrics(metrics.length ? [metrics[0]] : [])
-            }
+            onClick={() => setSelectedItems(items.length ? [items[0]] : [])}
           >
             Single
           </Button>
@@ -55,15 +55,15 @@ export const ItemSelector = ({
       </div>
 
       <div className="flex flex-wrap gap-4">
-        {metrics.map((metric) => (
-          <div key={metric} className="flex items-center space-x-2">
+        {items.map((item) => (
+          <div key={item} className="flex items-center space-x-2">
             <Checkbox
-              id={`metric-${metric}`}
-              checked={selectedMetrics.includes(metric)}
-              onCheckedChange={() => toggleMetric(metric)}
+              id={`item-${item}`}
+              checked={selectedItems.includes(item)}
+              onCheckedChange={() => toggleItem(item)}
             />
-            <Label htmlFor={`metric-${metric}`} className="text-sm">
-              {metric}
+            <Label htmlFor={`item-${item}`} className="text-sm">
+              {item}
             </Label>
           </div>
         ))}

@@ -143,9 +143,10 @@ export const DatasetLineChart = ({
           />
 
           <ItemSelector
-            metrics={metrics}
-            selectedMetrics={selectedMetrics}
-            setSelectedMetrics={setSelectedMetrics}
+            items={metrics}
+            selectedItems={selectedMetrics}
+            setSelectedItems={setSelectedMetrics}
+            label="Metrics"
           />
 
           <ResponsiveContainer width="100%" height={400}>
@@ -181,9 +182,10 @@ export const DatasetLineChart = ({
           />
 
           <ItemSelector
-            metrics={entities}
-            selectedMetrics={selectedEntities}
-            setSelectedMetrics={setSelectedEntities}
+            items={entities}
+            selectedItems={selectedEntities}
+            setSelectedItems={setSelectedEntities}
+            label="Entities"
           />
 
           <ResponsiveContainer width="100%" height={400}>
