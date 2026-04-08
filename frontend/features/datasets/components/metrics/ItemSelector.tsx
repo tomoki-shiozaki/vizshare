@@ -8,7 +8,7 @@ type Props = {
   setSelectedMetrics: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-export const MetricSelector = ({
+export const ItemSelector = ({
   metrics,
   selectedMetrics,
   setSelectedMetrics,

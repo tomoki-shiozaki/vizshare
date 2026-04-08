@@ -16,7 +16,7 @@ import type {
   DatasetDataPointsResponse,
   TimeSeriesPoint,
 } from "@/features/datasets/types/dataset";
-import { MetricSelector } from "@/features/datasets/components/metrics/MetricSelector";
+import { ItemSelector } from "@/features/datasets/components/metrics/ItemSelector";
 import { Button } from "@/components/ui/button";
 import { MergedTimeSeriesPoint } from "@/features/datasets/types/dataset";
 
@@ -142,7 +142,7 @@ export const DatasetLineChart = ({
             onChange={setSelectedEntity}
           />
 
-          <MetricSelector
+          <ItemSelector
             metrics={metrics}
             selectedMetrics={selectedMetrics}
             setSelectedMetrics={setSelectedMetrics}
@@ -180,7 +180,7 @@ export const DatasetLineChart = ({
             onChange={setSelectedMetric}
           />
 
-          <MetricSelector
+          <ItemSelector
             metrics={entities}
             selectedMetrics={selectedEntities}
             setSelectedMetrics={setSelectedEntities}
