@@ -16,9 +16,7 @@ import type {
   DatasetDataPointsResponse,
   TimeSeriesPoint,
 } from "@/features/datasets/types/dataset";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { MetricSelector } from "@/features/datasets/components/metrics/MetricSelector";
 
 type DatasetChartProps = {
   datasetId: string;
@@ -69,20 +67,6 @@ export const DatasetLineChart = ({
     }
   }, [selectedEntity, metrics]);
 
-  // metricトグル
-  const toggleMetric = (metric: string) => {
-    setSelectedMetrics((prev) => {
-      // 1個だけのときは外せない
-      if (prev.includes(metric) && prev.length === 1) {
-        return prev;
-      }
-
-      return prev.includes(metric)
-        ? prev.filter((m) => m !== metric)
-        : [...prev, metric];
-    });
-  };
-
   // 色パレット
   const colors = metrics.map(
     (_, idx) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`,
@@ -109,49 +93,11 @@ export const DatasetLineChart = ({
         onChange={setSelectedEntity}
       />
 
-      {/* metric選択 */}
-      <div className="mb-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-medium">
-            Metrics ({selectedMetrics.length})
-          </p>
-
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedMetrics(metrics)}
-            >
-              All
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setSelectedMetrics(metrics.length ? [metrics[0]] : [])
-              }
-            >
-              Reset
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-4">
-          {metrics.map((metric) => (
-            <div key={metric} className="flex items-center space-x-2">
-              <Checkbox
-                id={`metric-${metric}`}
-                checked={selectedMetrics.includes(metric)}
-                onCheckedChange={() => toggleMetric(metric)}
-              />
-              <Label htmlFor={`metric-${metric}`} className="text-sm">
-                {metric}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
+      <MetricSelector
+        metrics={metrics}
+        selectedMetrics={selectedMetrics}
+        setSelectedMetrics={setSelectedMetrics}
+      />
 
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
