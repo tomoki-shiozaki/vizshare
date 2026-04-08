@@ -49,7 +49,7 @@ export const MetricSelector = ({
               setSelectedMetrics(metrics.length ? [metrics[0]] : [])
             }
           >
-            Reset
+            Single
           </Button>
         </div>
       </div>
