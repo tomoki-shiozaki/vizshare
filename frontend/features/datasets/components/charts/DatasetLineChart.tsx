@@ -52,7 +52,8 @@ export const DatasetLineChart = ({
   useEffect(() => {
     if (entities.length > 0) {
       setSelectedEntity((prev) => prev || entities[0]);
-      setSelectedEntities([entities[0]]);
+
+      setSelectedEntities((prev) => (prev.length === 0 ? [entities[0]] : prev));
     }
   }, [entities]);
 
@@ -68,13 +69,19 @@ export const DatasetLineChart = ({
     return Object.keys(chartDataSingleEntity[0]).filter((k) => k !== "time");
   }, [chartDataSingleEntity]);
 
-  // ---- 初期metric設定 ----
+  // ---- 初期 metrics 選択 ----
   useEffect(() => {
-    if (metrics.length > 0) {
-      setSelectedMetrics(metrics); // metricsモード用
-      setSelectedMetric(metrics[0]); // entitiesモード用
+    if (metrics.length > 0 && selectedMetrics.length === 0) {
+      setSelectedMetrics(metrics);
     }
-  }, [metrics]);
+  }, [metrics, selectedMetrics.length]);
+
+  // ---- 初期 metric (entitiesモード用) ----
+  useEffect(() => {
+    if (metrics.length > 0 && !selectedMetric) {
+      setSelectedMetric(metrics[0]);
+    }
+  }, [metrics, selectedMetric]);
 
   // ---- colors ----
   const getColor = (idx: number) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`;
