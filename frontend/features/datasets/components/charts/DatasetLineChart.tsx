@@ -16,7 +16,7 @@ import type {
   DatasetDataPointsResponse,
   TimeSeriesPoint,
 } from "@/features/datasets/types/dataset";
-import { ItemSelector } from "@/features/datasets/components/metrics/ItemSelector";
+import { ItemSelector } from "@/features/datasets/components/selectors/ItemSelector";
 import { Button } from "@/components/ui/button";
 import { MergedTimeSeriesPoint } from "@/features/datasets/types/dataset";
 
