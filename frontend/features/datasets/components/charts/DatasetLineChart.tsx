@@ -77,9 +77,7 @@ export const DatasetLineChart = ({
   }, [metrics]);
 
   // ---- colors ----
-  const colors = metrics.map(
-    (_, idx) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`,
-  );
+  const getColor = (idx: number) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`;
 
   // ---- SelectBox options ----
   const options = entities.map((e) => ({ value: e, label: e }));
@@ -163,7 +161,7 @@ export const DatasetLineChart = ({
                 <Line
                   key={metric}
                   dataKey={metric}
-                  stroke={colors[metrics.indexOf(metric)]}
+                  stroke={getColor(metrics.indexOf(metric))}
                   type="monotone"
                 />
               ))}
@@ -198,13 +196,13 @@ export const DatasetLineChart = ({
               <YAxis width={60} />
               <Tooltip />
               <Legend />
-              {selectedEntities.map((entity, idx) => (
+              {selectedEntities.map((entity) => (
                 <Line
                   key={entity}
                   dataKey={entity}
-                  stroke={colors[idx % colors.length]}
+                  stroke={getColor(entities.indexOf(entity))}
                   type="monotone"
-                  connectNulls={true} // null は線で飛ばす
+                  connectNulls
                 />
               ))}
             </LineChart>
