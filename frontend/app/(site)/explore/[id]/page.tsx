@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { PublicDatasetDetail } from "@/features/datasets/public/detail/components/PublicDatasetDetail";
-import { DatasetLineChart } from "@/features/datasets/components/DatasetLineChart";
+import { DatasetLineChart } from "@/features/datasets/components/charts/DatasetLineChart";
 import { usePublicDatasetDataPoints } from "@/features/datasets/public/timeseries/hooks/usePublicDatasetDataPoints";
 
 export default function PublicDatasetPage() {

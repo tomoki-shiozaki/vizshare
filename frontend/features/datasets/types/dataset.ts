@@ -51,6 +51,11 @@ export type TimeSeriesPoint = {
 
 export type DatasetDataPointsResponse = Record<string, TimeSeriesPoint[]>;
 
+export type MergedTimeSeriesPoint = {
+  time: string;
+  [entity: string]: number | null | string;
+};
+
 // =============================
 // Visibility
 // =============================
