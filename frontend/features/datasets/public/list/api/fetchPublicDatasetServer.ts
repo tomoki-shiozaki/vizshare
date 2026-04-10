@@ -12,7 +12,7 @@ export async function fetchPublicDatasetListServer(
   });
 
   const res = await fetch(`${BASE_URL}/datasets/public/?${params}`, {
-    cache: "no-store",
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) {
