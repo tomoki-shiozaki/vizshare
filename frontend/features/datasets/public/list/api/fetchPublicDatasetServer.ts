@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { PaginatedPublicDatasetListResponse } from "@/features/datasets/types/publicDataset";
 
 const BASE_URL = process.env.API_URL || "http://localhost:8000/api/v1";
