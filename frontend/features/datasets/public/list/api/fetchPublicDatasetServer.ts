@@ -1,7 +1,6 @@
 import type { PaginatedPublicDatasetListResponse } from "@/features/datasets/types/publicDataset";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const BASE_URL = process.env.API_URL || "http://localhost:8000/api/v1";
 
 export async function fetchPublicDatasetListServer(
   limit = 5,
@@ -14,7 +13,6 @@ export async function fetchPublicDatasetListServer(
 
   const res = await fetch(`${BASE_URL}/datasets/public/?${params}`, {
     cache: "no-store",
-    credentials: "include",
   });
 
   if (!res.ok) {
