@@ -17,3 +17,13 @@ module "storage" {
   service_name = var.service_name
   env          = var.env
 }
+
+module "cloudrun" {
+  source = "../modules/cloudrun"
+
+  service_name = var.service_name
+  job_name     = "vizshare-staging-migrate"
+  region       = "asia-northeast1"
+  image        = "docker.io/shiozaki1/vizshare:staging"
+  env          = var.env
+}
