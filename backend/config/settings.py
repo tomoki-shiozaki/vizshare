@@ -283,13 +283,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SIGNED_URL_EXPIRATION = 600
 
 MEDIA_URL = env.str("MEDIA_URL", default="/media/")
-
-USE_GCS = env.bool("USE_GCS", default=False)
+GS_BUCKET_NAME = env.str("GS_BUCKET_NAME", default=None)
+USE_GCS = bool(GS_BUCKET_NAME)
 
 if USE_GCS:
     DEFAULT_FILE_STORAGE_BACKEND = "storages.backends.gcloud.GoogleCloudStorage"
     DEFAULT_FILE_STORAGE_OPTIONS = {
-        "bucket_name": env.str("GS_BUCKET_NAME"),
+        "bucket_name": GS_BUCKET_NAME,
         "file_overwrite": False,
         "iam_sign_blob": True,
         "expiration": SIGNED_URL_EXPIRATION,
