@@ -49,12 +49,12 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-2">
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2">
             {data.results.map((dataset) => (
               <Link
                 key={dataset.id}
                 href={`/explore/${dataset.id}`}
-                className="min-w-[220px]"
+                className="min-w-[220px] snap-start"
               >
                 <Card className="h-full hover:bg-muted transition">
                   <CardHeader>
