@@ -284,11 +284,9 @@ SIGNED_URL_EXPIRATION = 600
 
 MEDIA_URL = env.str("MEDIA_URL", default="/media/")
 
-# Use Google Cloud Storage only in real production runtime.
-# When generating OpenAPI schema (GENERATE_SCHEMA=True),
-# avoid requiring GCS configuration or credentials.
-if IS_PRODUCTION and not GENERATE_SCHEMA:
-    # 本番：media → GCS
+USE_GCS = env.bool("USE_GCS", default=False)
+
+if USE_GCS:
     DEFAULT_FILE_STORAGE_BACKEND = "storages.backends.gcloud.GoogleCloudStorage"
     DEFAULT_FILE_STORAGE_OPTIONS = {
         "bucket_name": env.str("GS_BUCKET_NAME"),
@@ -296,9 +294,7 @@ if IS_PRODUCTION and not GENERATE_SCHEMA:
         "iam_sign_blob": True,
         "expiration": SIGNED_URL_EXPIRATION,
     }
-
 else:
-    # 開発 / schema生成：media → ローカル
     DEFAULT_FILE_STORAGE_BACKEND = "django.core.files.storage.FileSystemStorage"
     DEFAULT_FILE_STORAGE_OPTIONS = {
         "location": BASE_DIR / "media",
