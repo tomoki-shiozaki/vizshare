@@ -55,7 +55,6 @@ jobs:
             -e DATABASE_URL=${{ secrets.DATABASE_URL_DEVELOP }} \
             -e DJANGO_SETTINGS_MODULE=config.settings \
             -e SECRET_KEY=${{ secrets.SECRET_KEY_DEVELOP }} \
-            -e USE_GCS=false \
             $IMAGE_NAME:${{ github.sha }} \
             python manage.py migrate --noinput
 
