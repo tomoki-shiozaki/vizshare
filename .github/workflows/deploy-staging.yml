@@ -49,15 +49,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run migrations
-        run: |
-          docker run --rm \
-            -e DATABASE_URL=${{ secrets.DATABASE_URL_DEVELOP }} \
-            -e DJANGO_SETTINGS_MODULE=config.settings \
-            -e SECRET_KEY=${{ secrets.SECRET_KEY_DEVELOP }} \
-            $IMAGE_NAME:${{ github.sha }} \
-            python manage.py migrate --noinput
-
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
         with:
@@ -76,3 +67,14 @@ jobs:
             --allow-unauthenticated \
             --service-account vizshare-django-staging-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
             --quiet
+      - name: Update migration job image
+        run: |
+          gcloud run jobs update vizshare-migrate \
+            --image $IMAGE_NAME:${{ github.sha }} \
+            --region asia-northeast1
+
+      - name: Run migrations
+        run: |
+          gcloud run jobs execute vizshare-migrate \
+            --region asia-northeast1 \
+            --wait
