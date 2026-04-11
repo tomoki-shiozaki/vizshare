@@ -1,51 +1,60 @@
-# --- Build Stage ---
+# ----------------------------
+# Build Stage
+# ----------------------------
 FROM python:3.13-slim-trixie AS builder
 
-# 環境変数
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    DJANGO_SETTINGS_MODULE=config.settings
+    PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# 依存関係のコピー
+# 依存関係
 COPY requirements/prod.txt requirements/prod.txt
 
-# pipでインストール
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements/prod.txt
+RUN pip install --upgrade pip \
+ && pip install --no-cache-dir -r requirements/prod.txt
 
-
-# ソースコードをコピー
+# ソース
 COPY . .
 
-# --- Final Stage ---
+# collectstaticをbuild時に実行
+ENV DJANGO_SETTINGS_MODULE=config.settings
+RUN python manage.py collectstatic --noinput
+
+
+# ----------------------------
+# Runtime Stage
+# ----------------------------
 FROM python:3.13-slim-trixie
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    DJANGO_SETTINGS_MODULE=config.settings \
+    PORT=8080
 
 WORKDIR /app
 
-# 非rootユーザー作成
-ARG UID=1001
-ARG GID=1001
-RUN groupadd -g $GID appuser && \
-    useradd -m -u $UID -g $GID -s /bin/bash appuser
+# 非rootユーザー
+RUN addgroup --system app \
+ && adduser --system --ingroup app app
 
-# ビルドステージからコピー（所有者を appuser に変更）
-COPY --from=builder --chown=appuser:appuser /usr/local/bin /usr/local/bin
-COPY --from=builder --chown=appuser:appuser /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
-COPY --from=builder --chown=appuser:appuser /app /app
+# builderからコピー
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder /app /app
 
-# staticfiles ディレクトリ作成＆権限付与
-RUN mkdir -p /app/staticfiles && chown -R appuser:appuser /app/staticfiles
+# 権限
+RUN chown -R app:app /app
 
-# ユーザー切替
-USER appuser
+USER app
 
-# ポート環境変数（Cloud Run が参照）
-ENV PORT=8080
+EXPOSE 8080
 
-# Entrypoint
-COPY --chown=appuser:appuser docker/entrypoint.prod.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["gunicorn", "config.wsgi:application", \
+     "--bind", "0.0.0.0:8080", \
+     "--workers", "1", \
+     "--threads", "8", \
+     "--worker-tmp-dir", "/dev/shm", \
+     "--timeout", "120", \
+     "--access-logfile", "-", \
+     "--error-logfile", "-"]
