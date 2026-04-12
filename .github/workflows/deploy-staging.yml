@@ -69,6 +69,7 @@ jobs:
       # 👇 ② Migration実行
       - name: Run migrations
         run: |
+          set -e
           gcloud run jobs execute vizshare-migrate \
             --region $REGION \
             --wait
