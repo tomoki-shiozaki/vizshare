@@ -28,6 +28,5 @@ module "cloudrun" {
 
   name_prefix = local.name_prefix
 
-  job_name = "${local.name_prefix}-migrate"
   image    = "docker.io/shiozaki1/${var.service_name}:${var.env}"
 }

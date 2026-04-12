@@ -1,9 +1,15 @@
+locals {
+  job_name = "${var.name_prefix}-migrate"
+}
+
 resource "google_cloud_run_v2_job" "migrate" {
-  name     = var.job_name
+  name     = local.job_name
   location = var.region
 
   template {
     template {
+      service_account = var.service_account
+
       containers {
         image = var.image
 

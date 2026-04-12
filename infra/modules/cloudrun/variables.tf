@@ -1,3 +1,15 @@
-variable "job_name" {}
-variable "region" {}
-variable "image" {}
+variable "name_prefix" {
+  type = string
+}
+
+variable "region" {
+  type = string
+}
+
+variable "image" {
+  type = string
+}
+
+variable "service_account" {
+  type = string
+}
