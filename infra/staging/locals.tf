@@ -1,3 +1,3 @@
 locals {
-  service_full_name = "${var.service_name}-${var.env}"
+  name_prefix = "${var.service_name}-${var.env}"
 }
