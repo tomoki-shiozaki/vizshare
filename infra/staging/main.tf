@@ -18,6 +18,8 @@ module "iam" {
   env          = var.env
   github_owner = var.github_owner
   github_repo  = var.github_repo
+
+  name_prefix = local.name_prefix
 }
 
 module "cloudrun" {
