@@ -23,10 +23,11 @@ module "iam" {
 module "cloudrun" {
   source = "../modules/cloudrun"
 
-  project_id  = var.project_id
-  service_name = var.service_name
-  env          = var.env
-  region       = var.region
-  job_name = "${var.service_name}-${var.env}-migrate"
+  project_id = var.project_id
+  region     = var.region
+
+  name_prefix = local.name_prefix
+
+  job_name = "${local.name_prefix}-migrate"
   image    = "docker.io/shiozaki1/${var.service_name}:${var.env}"
 }
