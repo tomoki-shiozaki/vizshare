@@ -41,6 +41,16 @@ resource "google_service_account_iam_member" "cloudrun_wif_binding" {
   member             = "principalSet://iam.googleapis.com/projects/${var.project_number}/locations/global/workloadIdentityPools/github-pool/attribute.repository/${var.github_owner}/${var.github_repo}"
 }
 
+##########################################################
+# 5️⃣ Migration Job 用 SA に対する ServiceAccountUser 権限
+##########################################################
+resource "google_service_account_iam_member" "cloudrun_migrate_sa_user_binding" {
+  count              = local.cloudrun_deploy_enabled[var.env] ? 1 : 0
+  service_account_id = google_service_account.cloud_run_job_migrate.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.cloudrun_deploy_sa[0].email}"
+}
+
 ############################################
 # Logging 書き込み権限
 ############################################
