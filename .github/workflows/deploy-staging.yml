@@ -62,7 +62,7 @@ jobs:
       # 👇 ① Job更新（先）
       - name: Update migration job image
         run: |
-          gcloud run jobs update vizshare-migrate \
+          gcloud run jobs update vizshare-staging-migrate \
             --image $IMAGE_NAME:${{ github.sha }} \
             --region $REGION
 
@@ -70,7 +70,7 @@ jobs:
       - name: Run migrations
         run: |
           set -e
-          gcloud run jobs execute vizshare-migrate \
+          gcloud run jobs execute vizshare-staging-migrate \
             --region $REGION \
             --wait
 
