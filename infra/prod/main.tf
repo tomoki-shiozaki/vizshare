@@ -28,3 +28,14 @@ module "storage" {
   service_name = var.service_name
   env = var.env   
 }
+
+module "cloudrun" {
+  source = "../modules/cloudrun"
+
+  region      = var.region
+  name_prefix = local.name_prefix
+
+  image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.service_name}/${var.service_name}:${var.env}"
+
+  service_account = module.iam.cloud_run_job_migrate_sa_email
+}
