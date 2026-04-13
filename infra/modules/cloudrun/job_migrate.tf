@@ -11,6 +11,7 @@ resource "google_cloud_run_v2_job" "migrate" {
       service_account = var.service_account
 
       containers {
+        name  = "migrate"
         image = var.image
 
         command = ["python"]
