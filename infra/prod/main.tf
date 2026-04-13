@@ -5,7 +5,7 @@ module "cloudbuild" {
   region       = var.region
   github_repo  = var.github_repo
   github_owner = var.github_owner
-  cloudbuild_service_account = module.iam.cloudbuild_runner_sa_id
+  cloudbuild_service_account = module.iam.cloudbuild_runner_sa_email
   env = var.env   
 }
 
@@ -19,6 +19,7 @@ module "iam" {
   env = var.env   
   github_owner = var.github_owner      
   github_repo  = var.github_repo       
+  name_prefix = local.name_prefix
 }
 
 module "storage" {

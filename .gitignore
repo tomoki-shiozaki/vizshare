@@ -13,7 +13,11 @@ memo/
 # =========================
 # Terraform
 # =========================
+# Terraform
 **/.terraform/
 **/terraform.tfstate
 **/terraform.tfstate.*
-**/*.tfvars
+
+# tfvars
+*.tfvars
+!terraform.tfvars
