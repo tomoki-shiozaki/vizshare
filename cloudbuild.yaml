@@ -1,8 +1,9 @@
-# Cloud Build を実行する Service Account
 serviceAccount: vizshare-prod-cbr@${PROJECT_ID}.iam.gserviceaccount.com
 
 steps:
-  # ステップ 1: Docker イメージのビルド
+  # ----------------------------
+  # ① Build Image
+  # ----------------------------
   - name: "gcr.io/cloud-builders/docker"
     args:
       [
@@ -14,7 +15,9 @@ steps:
         "backend",
       ]
 
-  # ステップ 2: Docker イメージを Artifact Registry にプッシュ
+  # ----------------------------
+  # ② Push Image
+  # ----------------------------
   - name: "gcr.io/cloud-builders/docker"
     args:
       [
@@ -22,13 +25,49 @@ steps:
         "asia-northeast1-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}/${_APP_NAME}-image:$COMMIT_SHA",
       ]
 
-  # ステップ 3: Cloud Run にデプロイ
+  # ----------------------------
+  # ③ Update migration job image
+  # ----------------------------
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    args: [
+    args:
+      [
+        "gcloud",
+        "run",
+        "jobs",
+        "update",
+        "${_APP_NAME}-prod-migrate",
+        "--image",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}/${_APP_NAME}-image:$COMMIT_SHA",
+        "--region",
+        "asia-northeast1",
+      ]
+
+  # ----------------------------
+  # ④ Run migrations
+  # ----------------------------
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    args:
+      [
+        "gcloud",
+        "run",
+        "jobs",
+        "execute",
+        "${_APP_NAME}-prod-migrate",
+        "--region",
+        "asia-northeast1",
+        "--wait",
+      ]
+
+  # ----------------------------
+  # ⑤ Deploy Cloud Run Service
+  # ----------------------------
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    args:
+      [
         "gcloud",
         "run",
         "deploy",
-        "${_APP_NAME}", # サービス名も _APP_NAME で管理
+        "${_APP_NAME}",
         "--image",
         "asia-northeast1-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}/${_APP_NAME}-image:$COMMIT_SHA",
         "--region",
@@ -40,9 +79,7 @@ steps:
         "vizshare-django-prod-sa@${PROJECT_ID}.iam.gserviceaccount.com",
       ]
 
-# オプション: ロギング設定
 options:
   logging: CLOUD_LOGGING_ONLY
 
-# タイムアウト設定（600秒 = 10分）
 timeout: 600s

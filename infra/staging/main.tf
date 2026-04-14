@@ -29,7 +29,7 @@ module "cloudrun" {
 
   name_prefix = local.name_prefix
 
-  image    = "docker.io/shiozaki1/${var.service_name}:${var.env}"
+  image = "dummy"
 
   service_account = module.iam.cloud_run_job_migrate_sa_email
 }
