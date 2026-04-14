@@ -34,3 +34,7 @@ variable "github_repo" {
   description = "GitHub リポジトリ名"
   type        = string
 }
+
+variable "name_prefix" {
+  type = string
+}

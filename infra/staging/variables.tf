@@ -1,45 +1,44 @@
 variable "project_id" {
-  description = "Google Cloudの プロジェクト ID（文字列）"
+  description = "Google Cloud project ID"
   type        = string
 }
 
 variable "project_number" {
-  description = "Google Cloudの プロジェクト番号（数字）"
+  description = "Google Cloud project number"
   type        = number
 }
 
 variable "env" {
   description = "Environment (prod / staging)"
   type        = string
-  default     = "staging"
+
+  validation {
+    condition     = contains(["staging", "prod"], var.env)
+    error_message = "env must be staging or prod"
+  }
 }
 
 variable "region" {
-  description = "Google Cloud リージョン"
+  description = "Google Cloud region"
   type        = string
-  default     = "asia-northeast1"
 }
 
 variable "service_name" {
-  description = "サービス名 / プロジェクト内リソースのプレフィックス"
+  description = "Service name prefix"
   type        = string
-  default     = "vizshare"
 }
 
 variable "github_owner" {
-  description = "GitHub リポジトリオーナー"
+  description = "GitHub owner"
   type        = string
-  default     = "tomoki-shiozaki"
 }
 
 variable "github_repo" {
-  description = "GitHub リポジトリ名"
+  description = "GitHub repo"
   type        = string
-  default     = "vizshare"
 }
 
 variable "terraform_state_bucket_name" {
-  description = "Terraform state 用 GCS bucket"
+  description = "Terraform state bucket"
   type        = string
-  default     = "terraform-state-vizshare"
 }

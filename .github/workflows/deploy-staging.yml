@@ -59,6 +59,22 @@ jobs:
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v3
 
+      # 👇 ① Job更新（先）
+      - name: Update migration job image
+        run: |
+          gcloud run jobs update vizshare-staging-migrate \
+            --image $IMAGE_NAME:${{ github.sha }} \
+            --region $REGION
+
+      # 👇 ② Migration実行
+      - name: Run migrations
+        run: |
+          set -e
+          gcloud run jobs execute vizshare-staging-migrate \
+            --region $REGION \
+            --wait
+
+      # 👇 ③ 最後にDeploy
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy $SERVICE_NAME \

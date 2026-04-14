@@ -40,11 +40,18 @@ resource "google_project_iam_member" "runner_cloudrun" {
 ############################################
 # Service Account User 権限
 ############################################
-resource "google_project_iam_member" "runner_sa_user" {
+resource "google_service_account_iam_member" "cloudrun_sa_user_binding" {
+  count              = local.cloudbuild_enabled[var.env] ? 1 : 0
+  service_account_id = google_service_account.django.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.cloudbuild_runner[0].email}"
+}
+
+resource "google_service_account_iam_member" "runner_impersonate_runtime_sa" {
   count   = local.cloudbuild_enabled[var.env] ? 1 : 0
-  project = var.project_id
-  role    = "roles/iam.serviceAccountUser"
-  member  = "serviceAccount:${google_service_account.cloudbuild_runner[0].email}"
+  service_account_id = google_service_account.cloud_run_job_migrate.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.cloudbuild_runner[0].email}"
 }
 
 ############################################

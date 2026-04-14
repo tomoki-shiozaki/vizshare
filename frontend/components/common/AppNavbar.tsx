@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 const mainLinks = [
   { to: "/", label: "ホーム" },
   { to: "/datasets", label: "データセット管理" },
+  { to: "/explore", label: "公開データ" },
 ];
 const dropdownLinks = [
   { to: "/about", label: "このサイトについて" },
@@ -124,7 +125,11 @@ export const AppNavbar = () => {
               <NavbarLink
                 key={link.to}
                 to={link.to}
-                active={pathname === link.to}
+                active={
+                  link.to === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.to)
+                }
               >
                 {link.label}
               </NavbarLink>
