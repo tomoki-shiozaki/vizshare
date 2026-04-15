@@ -56,9 +56,11 @@ export default async function HomePage() {
                 href={`/explore/${dataset.id}`}
                 className="min-w-[220px] snap-start"
               >
-                <Card className="h-full hover:bg-muted transition">
+                <Card className="h-full hover:bg-muted transition overflow-hidden">
                   <CardHeader>
-                    <CardTitle className="text-base">{dataset.name}</CardTitle>
+                    <CardTitle className="text-base truncate">
+                      {dataset.name}
+                    </CardTitle>
                   </CardHeader>
 
                   <CardContent>
