@@ -10,12 +10,16 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useEffect, useState, useMemo } from "react";
+
+import { useEffect, useState, useMemo, useRef } from "react";
+import { toPng } from "html-to-image";
+
 import { Loading, SelectBox } from "@/components/common";
 import type {
   DatasetDataPointsResponse,
   TimeSeriesPoint,
 } from "@/features/datasets/types/dataset";
+
 import { ItemSelector } from "@/features/datasets/components/selectors/ItemSelector";
 import { Button } from "@/components/ui/button";
 import { MergedTimeSeriesPoint } from "@/features/datasets/types/dataset";
@@ -35,6 +39,9 @@ export const DatasetLineChart = ({
 }: DatasetChartProps) => {
   const { data, isLoading, isError } = useDataPoints(datasetId);
 
+  // ---- ref（PNG用）----
+  const chartRef = useRef<HTMLDivElement>(null);
+
   // ---- Mode state ----
   // "metrics" = Single Entity × Multiple Metrics
   // "entities" = Multiple Entities × Single Metric
@@ -52,7 +59,6 @@ export const DatasetLineChart = ({
   useEffect(() => {
     if (entities.length > 0) {
       setSelectedEntity((prev) => prev || entities[0]);
-
       setSelectedEntities((prev) => (prev.length === 0 ? [entities[0]] : prev));
     }
   }, [entities]);
@@ -111,6 +117,23 @@ export const DatasetLineChart = ({
     });
   }, [data, selectedEntities, selectedMetric]);
 
+  // -------------------------
+  // PNGダウンロード
+  // -------------------------
+  const handleDownloadPNG = async () => {
+    if (!chartRef.current) return;
+
+    const dataUrl = await toPng(chartRef.current, {
+      backgroundColor: "#ffffff",
+      pixelRatio: 2,
+    });
+
+    const link = document.createElement("a");
+    link.download = `vizshare-chart.png`;
+    link.href = dataUrl;
+    link.click();
+  };
+
   // ---- early return ----
   if (isLoading) return <Loading />;
   if (isError) return <p>データ取得に失敗しました</p>;
@@ -118,7 +141,7 @@ export const DatasetLineChart = ({
 
   return (
     <div>
-      {/* --- Mode切替 --- */}
+      {/* Mode切替 */}
       <div className="mb-4 flex gap-2">
         <Button
           variant={mode === "metrics" ? "default" : "outline"}
@@ -127,12 +150,18 @@ export const DatasetLineChart = ({
         >
           Metrics比較
         </Button>
+
         <Button
           variant={mode === "entities" ? "default" : "outline"}
           size="sm"
           onClick={() => setMode("entities")}
         >
           Entity比較
+        </Button>
+
+        {/* PNGボタン */}
+        <Button variant="outline" size="sm" onClick={handleDownloadPNG}>
+          PNGダウンロード
         </Button>
       </div>
 
@@ -154,26 +183,29 @@ export const DatasetLineChart = ({
             label="Metrics"
           />
 
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart
-              data={chartDataSingleEntity}
-              margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis width={60} />
-              <Tooltip />
-              <Legend />
-              {selectedMetrics.map((metric) => (
-                <Line
-                  key={metric}
-                  dataKey={metric}
-                  stroke={getColor(metrics.indexOf(metric))}
-                  type="monotone"
-                />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
+          {/* 👇 ここが重要（refで囲む） */}
+          <div ref={chartRef} className="bg-white">
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart
+                data={chartDataSingleEntity}
+                margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" />
+                <YAxis width={60} />
+                <Tooltip />
+                <Legend />
+                {selectedMetrics.map((metric) => (
+                  <Line
+                    key={metric}
+                    dataKey={metric}
+                    stroke={getColor(metrics.indexOf(metric))}
+                    type="monotone"
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </>
       ) : (
         <>
@@ -193,27 +225,30 @@ export const DatasetLineChart = ({
             label="Entities"
           />
 
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart
-              data={mergedChartData}
-              margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis width={60} />
-              <Tooltip />
-              <Legend />
-              {selectedEntities.map((entity) => (
-                <Line
-                  key={entity}
-                  dataKey={entity}
-                  stroke={getColor(entities.indexOf(entity))}
-                  type="monotone"
-                  connectNulls
-                />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
+          {/* 👇 ここも同じくref */}
+          <div ref={chartRef} className="bg-white">
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart
+                data={mergedChartData}
+                margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" />
+                <YAxis width={60} />
+                <Tooltip />
+                <Legend />
+                {selectedEntities.map((entity) => (
+                  <Line
+                    key={entity}
+                    dataKey={entity}
+                    stroke={getColor(entities.indexOf(entity))}
+                    type="monotone"
+                    connectNulls
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </>
       )}
     </div>
