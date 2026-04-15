@@ -182,30 +182,6 @@ export const DatasetLineChart = ({
             setSelectedItems={setSelectedMetrics}
             label="Metrics"
           />
-
-          {/* 👇 ここが重要（refで囲む） */}
-          <div ref={chartRef} className="bg-white">
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart
-                data={chartDataSingleEntity}
-                margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis width={60} />
-                <Tooltip />
-                <Legend />
-                {selectedMetrics.map((metric) => (
-                  <Line
-                    key={metric}
-                    dataKey={metric}
-                    stroke={getColor(metrics.indexOf(metric))}
-                    type="monotone"
-                  />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
         </>
       ) : (
         <>
@@ -224,20 +200,32 @@ export const DatasetLineChart = ({
             setSelectedItems={setSelectedEntities}
             label="Entities"
           />
+        </>
+      )}
 
-          {/* 👇 ここも同じくref */}
-          <div ref={chartRef} className="bg-white">
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart
-                data={mergedChartData}
-                margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis width={60} />
-                <Tooltip />
-                <Legend />
-                {selectedEntities.map((entity) => (
+      {/* 👇 refはここ1箇所だけにする */}
+      <div ref={chartRef} className="bg-white mt-4">
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart
+            data={mode === "metrics" ? chartDataSingleEntity : mergedChartData}
+            margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="time" />
+            <YAxis width={60} />
+            <Tooltip />
+            <Legend />
+
+            {mode === "metrics"
+              ? selectedMetrics.map((metric) => (
+                  <Line
+                    key={metric}
+                    dataKey={metric}
+                    stroke={getColor(metrics.indexOf(metric))}
+                    type="monotone"
+                  />
+                ))
+              : selectedEntities.map((entity) => (
                   <Line
                     key={entity}
                     dataKey={entity}
@@ -246,11 +234,9 @@ export const DatasetLineChart = ({
                     connectNulls
                   />
                 ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </>
-      )}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };
