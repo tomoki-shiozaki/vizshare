@@ -14,7 +14,7 @@ from apps.dataset.models import Dataset
 # ===============================
 # 🔹 API View
 # ===============================
-class DatasetDataPointListAPIView(APIView):
+class DatasetDataPointAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk: int):

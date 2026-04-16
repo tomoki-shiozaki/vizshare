@@ -8,6 +8,8 @@ from apps.api.dataset.views.dataset_read import (
     PublicDatasetListAPIView,
 )
 from apps.api.dataset.views.dataset_timeseries import (
+    DatasetDataPointAPIView,
+    DatasetMetaAPIView,
     DatasetTimeSeriesAPIView,
     PublicDatasetTimeSeriesAPIView,
 )
@@ -22,6 +24,12 @@ urlpatterns = [
     path("", DatasetListAPIView.as_view(), name="list"),
     path("create/", DatasetCreateAPIView.as_view(), name="create"),
     path("<int:pk>/", DatasetDetailAPIView.as_view(), name="detail"),
+    # --- Core APIs ---
+    path(
+        "<int:pk>/data-points/", DatasetDataPointAPIView.as_view(), name="data-points"
+    ),
+    path("<int:pk>/meta/", DatasetMetaAPIView.as_view(), name="meta"),
+    # --- Legacy / UI-oriented ---
     path("<int:pk>/timeseries/", DatasetTimeSeriesAPIView.as_view(), name="timeseries"),
     path(
         "<int:pk>/visibility/",
@@ -32,6 +40,7 @@ urlpatterns = [
     path(
         "public/<int:pk>/", PublicDatasetDetailAPIView.as_view(), name="public-detail"
     ),
+    # public版
     path(
         "public/<int:pk>/timeseries/",
         PublicDatasetTimeSeriesAPIView.as_view(),
