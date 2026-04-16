@@ -4,14 +4,75 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.api.dataset.serializers.dataset_timeseries import DataPointSerializer
 from apps.api.dataset.services.timeseries import build_time_series_data
 from apps.api.dataset.types.timeseries import TimeSeriesDataByEntity
 from apps.api.utils.schema import schema
 from apps.dataset.models import Dataset
 
+
 # ===============================
 # 🔹 API View
 # ===============================
+class DatasetDataPointListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk: int):
+        dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
+
+        qs = dataset.data_points.all()  # type: ignore
+
+        # ------------------------
+        # クエリパラメータ取得
+        # ------------------------
+        entities = request.query_params.get("entities")
+        metrics = request.query_params.get("metrics")
+        start = request.query_params.get("start")
+        end = request.query_params.get("end")
+
+        # ------------------------
+        # フィルタ
+        # ------------------------
+        if entities:
+            entity_list = [e.strip() for e in entities.split(",")]
+            qs = qs.filter(entity__in=entity_list)
+
+        if metrics:
+            metric_list = [m.strip() for m in metrics.split(",")]
+            qs = qs.filter(metric__in=metric_list)
+
+        if start:
+            qs = qs.filter(raw_time__gte=start)
+
+        if end:
+            qs = qs.filter(raw_time__lte=end)
+
+        # ------------------------
+        # 並び順（重要）
+        # ------------------------
+        qs = qs.order_by("time", "entity", "metric", "order_index")
+
+        serializer = DataPointSerializer(qs, many=True)
+        return Response(serializer.data)
+
+
+class DatasetMetaAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk: int):
+        dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
+
+        qs = dataset.data_points.all()  # type: ignore
+
+        entities = list(qs.values_list("entity", flat=True).distinct())
+        metrics = list(qs.values_list("metric", flat=True).distinct())
+
+        return Response(
+            {
+                "entities": sorted(entities),
+                "metrics": sorted(metrics),
+            }
+        )
 
 
 class DatasetTimeSeriesAPIView(APIView):
