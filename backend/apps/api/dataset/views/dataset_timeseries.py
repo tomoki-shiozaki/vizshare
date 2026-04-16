@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,25 +15,25 @@ from apps.dataset.models import Dataset
 # ===============================
 # 🔹 API View
 # ===============================
-class DatasetDataPointAPIView(APIView):
+class DatasetDataPointAPIView(ListAPIView):
+    serializer_class = DataPointSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk: int):
-        dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
+    def get_queryset(self):
+        dataset = get_object_or_404(
+            Dataset,
+            pk=self.kwargs["pk"],
+            owner=self.request.user,
+        )
 
         qs = dataset.data_points.all()  # type: ignore
 
-        # ------------------------
-        # クエリパラメータ取得
-        # ------------------------
-        entities = request.query_params.get("entities")
-        metrics = request.query_params.get("metrics")
-        start = request.query_params.get("start")
-        end = request.query_params.get("end")
+        # --- クエリパラメータ ---
+        entities = self.request.query_params.get("entities")  # type: ignore
+        metrics = self.request.query_params.get("metrics")  # type: ignore
+        start = self.request.query_params.get("start")  # type: ignore
+        end = self.request.query_params.get("end")  # type: ignore
 
-        # ------------------------
-        # フィルタ
-        # ------------------------
         if entities:
             entity_list = [e.strip() for e in entities.split(",")]
             qs = qs.filter(entity__in=entity_list)
@@ -47,13 +48,7 @@ class DatasetDataPointAPIView(APIView):
         if end:
             qs = qs.filter(raw_time__lte=end)
 
-        # ------------------------
-        # 並び順（重要）
-        # ------------------------
-        qs = qs.order_by("time", "entity", "metric", "order_index")
-
-        serializer = DataPointSerializer(qs, many=True)
-        return Response(serializer.data)
+        return qs.order_by("time", "entity", "metric", "order_index")
 
 
 class DatasetMetaAPIView(APIView):
