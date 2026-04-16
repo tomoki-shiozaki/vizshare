@@ -13,3 +13,8 @@ class DataPointSerializer(serializers.ModelSerializer):
             "metric",
             "value",
         ]
+
+
+class DatasetMetaSerializer(serializers.Serializer):
+    entities = serializers.ListField(child=serializers.CharField())
+    metrics = serializers.ListField(child=serializers.CharField())

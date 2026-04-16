@@ -1,11 +1,14 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.api.dataset.serializers.dataset_timeseries import DataPointSerializer
+from apps.api.dataset.serializers.dataset_timeseries import (
+    DataPointSerializer,
+    DatasetMetaSerializer,
+)
 from apps.api.dataset.services.timeseries import build_time_series_data
 from apps.api.dataset.types.timeseries import TimeSeriesDataByEntity
 from apps.api.utils.schema import schema
@@ -51,23 +54,22 @@ class DatasetDataPointAPIView(ListAPIView):
         return qs.order_by("time", "entity", "metric", "order_index")
 
 
-class DatasetMetaAPIView(APIView):
+class DatasetMetaAPIView(GenericAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = DatasetMetaSerializer
 
     def get(self, request, pk: int):
         dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
 
         qs = dataset.data_points.all()  # type: ignore
 
-        entities = list(qs.values_list("entity", flat=True).distinct())
-        metrics = list(qs.values_list("metric", flat=True).distinct())
+        data = {
+            "entities": sorted(qs.values_list("entity", flat=True).distinct()),
+            "metrics": sorted(qs.values_list("metric", flat=True).distinct()),
+        }
 
-        return Response(
-            {
-                "entities": sorted(entities),
-                "metrics": sorted(metrics),
-            }
-        )
+        serializer = self.get_serializer(data)
+        return Response(serializer.data)
 
 
 class DatasetTimeSeriesAPIView(APIView):
