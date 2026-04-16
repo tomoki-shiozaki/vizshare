@@ -45,7 +45,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["datasets_data_points_retrieve"];
+        get: operations["datasets_data_points_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -481,6 +481,15 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        DataPoint: {
+            raw_time: string;
+            /** Format: date-time */
+            time?: string | null;
+            entity?: string;
+            metric: string;
+            /** Format: double */
+            value?: number | null;
+        };
         DatasetCreate: {
             readonly id: number;
             name: string;
@@ -514,6 +523,10 @@ export interface components {
             /** @description True の場合、誰でも閲覧可能 */
             readonly is_public: boolean;
         };
+        DatasetMeta: {
+            entities: string[];
+            metrics: string[];
+        };
         DatasetSchema: {
             time: string;
             entity?: string;
@@ -534,6 +547,21 @@ export interface components {
             /** Format: email */
             email?: string;
             password: string;
+        };
+        PaginatedDataPointList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=400&limit=100
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=200&limit=100
+             */
+            previous?: string | null;
+            results: components["schemas"]["DataPoint"][];
         };
         PaginatedDatasetListList: {
             /** @example 123 */
@@ -732,9 +760,14 @@ export interface operations {
             };
         };
     };
-    datasets_data_points_retrieve: {
+    datasets_data_points_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Number of results to return per page. */
+                limit?: number;
+                /** @description The initial index from which to return the results. */
+                offset?: number;
+            };
             header?: never;
             path: {
                 id: number;
@@ -743,12 +776,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaginatedDataPointList"];
+                };
             };
         };
     };
@@ -763,12 +797,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["DatasetMeta"];
+                };
             };
         };
     };

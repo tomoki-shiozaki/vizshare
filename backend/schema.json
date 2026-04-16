@@ -102,7 +102,7 @@
         },
         "/api/v1/datasets/{id}/data-points/": {
             "get": {
-                "operationId": "datasets_data_points_retrieve",
+                "operationId": "datasets_data_points_list",
                 "parameters": [
                     {
                         "in": "path",
@@ -111,6 +111,24 @@
                             "type": "integer"
                         },
                         "required": true
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "required": false,
+                        "in": "query",
+                        "description": "The initial index from which to return the results.",
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "tags": [
@@ -129,7 +147,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "No response body"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedDataPointList"
+                                }
+                            }
+                        },
+                        "description": ""
                     }
                 }
             }
@@ -163,7 +188,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "No response body"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasetMeta"
+                                }
+                            }
+                        },
+                        "description": ""
                     }
                 }
             }
@@ -1234,6 +1266,37 @@
     },
     "components": {
         "schemas": {
+            "DataPoint": {
+                "type": "object",
+                "properties": {
+                    "raw_time": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "entity": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "metric": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "value": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "metric",
+                    "raw_time"
+                ]
+            },
             "DatasetCreate": {
                 "type": "object",
                 "properties": {
@@ -1371,6 +1434,27 @@
                     "status"
                 ]
             },
+            "DatasetMeta": {
+                "type": "object",
+                "properties": {
+                    "entities": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "metrics": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "entities",
+                    "metrics"
+                ]
+            },
             "DatasetSchema": {
                 "type": "object",
                 "properties": {
@@ -1439,6 +1523,37 @@
                 "required": [
                     "password"
                 ]
+            },
+            "PaginatedDataPointList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=400&limit=100"
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=200&limit=100"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DataPoint"
+                        }
+                    }
+                }
             },
             "PaginatedDatasetListList": {
                 "type": "object",
