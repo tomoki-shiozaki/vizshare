@@ -4,6 +4,6 @@ import type { DatasetDataPointsResponse } from "@/features/datasets/types/datase
 export const fetchDatasetDataPoints = async (
   datasetId: string,
 ): Promise<DatasetDataPointsResponse> => {
-  const { data } = await apiClient.get(`/datasets/${datasetId}/timeseries/`);
+  const { data } = await apiClient.get(`/datasets/${datasetId}/data-points/`);
   return data;
 };
