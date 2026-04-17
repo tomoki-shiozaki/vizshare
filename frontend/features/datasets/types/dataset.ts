@@ -44,17 +44,11 @@ export type DatasetSchema = components["schemas"]["DatasetSchema"];
 // TimeSeries
 // =============================
 
-export type TimeSeriesPoint = {
-  time: string;
-  [metric: string]: number | string; // time 以外は任意の metric
-};
+export type DatasetDataPointsResponse =
+  paths["/api/v1/datasets/{id}/data-points/"]["get"]["responses"][200]["content"]["application/json"];
 
-export type DatasetDataPointsResponse = Record<string, TimeSeriesPoint[]>;
-
-export type MergedTimeSeriesPoint = {
-  time: string;
-  [entity: string]: number | null | string;
-};
+export type DatasetMetaResponse =
+  paths["/api/v1/datasets/{id}/meta/"]["get"]["responses"][200]["content"]["application/json"];
 
 // =============================
 // Visibility
