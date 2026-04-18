@@ -57,7 +57,15 @@ class DatasetEntityComparisonAPIView(APIView):
     def get(self, request, pk: int):
         dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
 
-        data_qs = dataset.data_points.all().order_by("time", "entity", "order_index")  # type: ignore
+        metric = request.query_params.get("metric")
+        if not metric:
+            return Response(
+                {"detail": "metric is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        data_qs = dataset.data_points.filter(metric=metric).order_by(  # type: ignore
+            "time", "entity", "order_index"
+        )
 
         result = build_entity_comparison_data(data_qs)
 
