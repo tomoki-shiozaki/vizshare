@@ -4,6 +4,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.api.dataset.services.entity_comparison_builder import (
+    build_entity_comparison_data,
+)
 from apps.api.dataset.services.timeseries import build_time_series_data
 from apps.api.dataset.types.timeseries import TimeSeriesDataByEntity
 from apps.api.utils.schema import schema
@@ -33,6 +36,24 @@ class DatasetTimeSeriesAPIView(APIView):
         # DataPoint を取得して entity -> time -> order_index 順にソート
         data_qs = dataset.data_points.all().order_by("entity", "time", "order_index")  # type: ignore
         result = build_time_series_data(data_qs)
+        return Response(result, status=status.HTTP_200_OK)
+
+
+class DatasetEntityComparisonAPIView(APIView):
+    """
+    Dataset の entity 比較用時系列データ（wide形式）
+    Recharts でそのまま使える形
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk: int):
+        dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
+
+        data_qs = dataset.data_points.all().order_by("time", "entity", "order_index")  # type: ignore
+
+        result = build_entity_comparison_data(data_qs)
+
         return Response(result, status=status.HTTP_200_OK)
 
 
