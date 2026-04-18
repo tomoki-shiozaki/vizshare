@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchDatasetEntityComparison } from "@/features/datasets/timeseries/api/fetchDatasetEntityComparison";
-import type { EntityComparisonPoint } from "@/features/datasets/types/dataset";
 import { datasetKeys } from "@/features/datasets/queryKeys";
 
-export const useDatasetEntityComparison = (datasetId: string) => {
-  return useQuery<EntityComparisonPoint[]>({
-    queryKey: datasetKeys.entityComparison(datasetId),
-    queryFn: () => fetchDatasetEntityComparison(datasetId),
+export const useDatasetEntityComparison = (
+  datasetId: string,
+  metric: string,
+) => {
+  return useQuery({
+    queryKey: datasetKeys.entityComparison(datasetId, metric),
+    queryFn: () => fetchDatasetEntityComparison(datasetId, metric),
     staleTime: 1000 * 60 * 60,
   });
 };
