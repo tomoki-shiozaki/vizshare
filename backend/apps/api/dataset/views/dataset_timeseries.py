@@ -8,6 +8,7 @@ from apps.api.dataset.services.entity_comparison_builder import (
     build_entity_comparison_data,
 )
 from apps.api.dataset.services.timeseries import build_time_series_data
+from apps.api.dataset.types.entity_comparison_types import EntityComparisonResponse
 from apps.api.dataset.types.timeseries import TimeSeriesDataByEntity
 from apps.api.utils.schema import schema
 from apps.dataset.models import Dataset
@@ -47,6 +48,12 @@ class DatasetEntityComparisonAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @schema(
+        summary="ユーザー Dataset の entity比較データ取得",
+        description="timeを軸にentityを横展開したRecharts用データ",
+        tags=["Dataset"],
+        responses=EntityComparisonResponse,
+    )
     def get(self, request, pk: int):
         dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
 
