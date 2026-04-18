@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useState, useMemo, useEffect } from "react";
-import { Loading } from "@/components/common";
+import { Loading, SelectBox } from "@/components/common";
 import { ItemSelector } from "@/features/datasets/components/selectors/ItemSelector";
 import { useDatasetEntityComparison } from "@/features/datasets/timeseries/hooks/useDatasetEntityComparison";
 
@@ -20,22 +20,41 @@ type Props = {
 };
 
 export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
-  const { data, isLoading, isError } = useDatasetEntityComparison(datasetId);
+  const [selectedEntities, setSelectedEntities] = useState<string[]>([]);
+  const [selectedMetric, setSelectedMetric] = useState<string>("");
+
+  const { data, isLoading, isError } = useDatasetEntityComparison(
+    datasetId,
+    selectedMetric,
+  );
 
   // ---- entity一覧 ----
   const entities = useMemo(() => {
     if (!data || data.length === 0) return [];
-    const keys = Object.keys(data[0]);
-    return keys.filter((k) => k !== "time");
+    return Object.keys(data[0]).filter((k) => k !== "time");
   }, [data]);
 
-  const [selectedEntities, setSelectedEntities] = useState<string[]>([]);
+  // ---- metric一覧（仮想的にAPI構造から取得）----
+  const metrics = useMemo(() => {
+    if (!data || data.length === 0) return [];
+    return ["value"]; // ← 本来はAPI設計次第（ここ重要）
+  }, [data]);
 
-  // ---- 初期選択 ----
+  // ---- 初期 metric ----
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (entities.length > 0 && selectedEntities.length === 0) {
-      setSelectedEntities(entities.slice(0, 3));
+    if (!selectedMetric && metrics.length > 0) {
+      setSelectedMetric(metrics[0]);
     }
+  }, [metrics, selectedMetric]);
+
+  // ---- 初期 entity ----
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!entities.length) return;
+    if (selectedEntities.length > 0) return;
+
+    setSelectedEntities(entities.slice(0, 3));
   }, [entities, selectedEntities.length]);
 
   // ---- color ----
@@ -48,6 +67,15 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
 
   return (
     <div>
+      {/* Metric選択 */}
+      <SelectBox
+        id="metric-select"
+        label="Metric 選択"
+        options={metrics.map((m) => ({ value: m, label: m }))}
+        value={selectedMetric}
+        onChange={setSelectedMetric}
+      />
+
       {/* Entity選択 */}
       <ItemSelector
         items={entities}
