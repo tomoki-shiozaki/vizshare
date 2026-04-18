@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 type Props = {
   items: string[];
   selectedItems: string[];
-  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
+  setSelectedItems: (items: string[]) => void;
   label?: string;
 };
 
@@ -16,16 +16,16 @@ export const ItemSelector = ({
   label = "Items",
 }: Props) => {
   const toggleItem = (item: string) => {
-    setSelectedItems((prev) => {
-      // 1個だけのときは外せない
-      if (prev.includes(item) && prev.length === 1) {
-        return prev;
-      }
+    // 1個だけのときは外せない
+    if (selectedItems.includes(item) && selectedItems.length === 1) {
+      return;
+    }
 
-      return prev.includes(item)
-        ? prev.filter((i) => i !== item)
-        : [...prev, item];
-    });
+    const next = selectedItems.includes(item)
+      ? selectedItems.filter((i) => i !== item)
+      : [...selectedItems, item];
+
+    setSelectedItems(next);
   };
 
   return (
