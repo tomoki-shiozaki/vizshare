@@ -56,6 +56,11 @@ export type MergedTimeSeriesPoint = {
   [entity: string]: number | null | string;
 };
 
+export type EntityComparisonPoint = { time: string } & Record<
+  string,
+  number | null
+>;
+
 // =============================
 // Visibility
 // =============================
