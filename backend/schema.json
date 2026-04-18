@@ -155,6 +155,53 @@
                 }
             }
         },
+        "/api/v1/datasets/{id}/timeseries/entity/": {
+            "get": {
+                "operationId": "datasets_timeseries_entity_retrieve",
+                "description": "timeを軸にentityを横展開したRecharts用データ",
+                "summary": "ユーザー Dataset の entity比較データ取得",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "additionalProperties": {}
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/{id}/visibility/": {
             "put": {
                 "operationId": "datasets_visibility_update",
