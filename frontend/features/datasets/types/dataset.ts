@@ -50,6 +50,10 @@ export type DatasetDataPointsResponse =
 export type DatasetMetaResponse =
   paths["/api/v1/datasets/{id}/meta/"]["get"]["responses"][200]["content"]["application/json"];
 
+export type MergedTimeSeriesPoint = {
+  time: number;
+  [key: string]: number | null;
+};
 // =============================
 // Visibility
 // =============================

@@ -11,18 +11,23 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useEffect, useState, useMemo } from "react";
-import { Loading, SelectBox } from "@/components/common";
+import { Loading } from "@/components/common";
 import type {
   DatasetDataPointsResponse,
-  TimeSeriesPoint,
+  MergedTimeSeriesPoint,
 } from "@/features/datasets/types/dataset";
 import { ItemSelector } from "@/features/datasets/components/selectors/ItemSelector";
-import { Button } from "@/components/ui/button";
-import { MergedTimeSeriesPoint } from "@/features/datasets/types/dataset";
+import { useDatasetMeta } from "@/features/datasets/meta/hooks/useDatasetMeta";
 
 type DatasetChartProps = {
   datasetId: string;
-  useDataPoints: (datasetId: string) => {
+  useDataPoints: (
+    datasetId: string,
+    params: {
+      entities?: string[];
+      metrics?: string[];
+    },
+  ) => {
     data?: DatasetDataPointsResponse;
     isLoading: boolean;
     isError: boolean;
@@ -33,189 +38,173 @@ export const DatasetLineChart = ({
   datasetId,
   useDataPoints,
 }: DatasetChartProps) => {
-  const { data, isLoading, isError } = useDataPoints(datasetId);
+  // ---- meta ----
+  const {
+    data: meta,
+    isLoading: metaLoading,
+    isError: metaError,
+  } = useDatasetMeta(datasetId);
 
-  // ---- Mode state ----
-  // "metrics" = Single Entity × Multiple Metrics
-  // "entities" = Multiple Entities × Single Metric
-  const [mode, setMode] = useState<"metrics" | "entities">("metrics");
-
-  const [selectedEntity, setSelectedEntity] = useState<string>("");
+  // ---- filters ----
   const [selectedEntities, setSelectedEntities] = useState<string[]>([]);
   const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
-  const [selectedMetric, setSelectedMetric] = useState<string>("");
 
-  // ---- entity一覧 ----
-  const entities = useMemo(() => (data ? Object.keys(data) : []), [data]);
+  // ---- data ----
+  const { data, isLoading, isError } = useDataPoints(datasetId, {
+    entities: selectedEntities,
+    metrics: selectedMetrics,
+  });
 
-  // ---- 初期entity設定 ----
+  // ---- meta derived ----
+  const entities = useMemo(() => meta?.entities ?? [], [meta?.entities]);
+
+  const metrics = useMemo(() => meta?.metrics ?? [], [meta?.metrics]);
+
+  // ---- init ----
   useEffect(() => {
-    if (entities.length > 0) {
-      setSelectedEntity((prev) => prev || entities[0]);
-
-      setSelectedEntities((prev) => (prev.length === 0 ? [entities[0]] : prev));
+    if (entities.length > 0 && selectedEntities.length === 0) {
+      setSelectedEntities([entities[0]]);
     }
-  }, [entities]);
+  }, [entities, selectedEntities.length]);
 
-  // 選択entityのデータ
-  const chartDataSingleEntity: TimeSeriesPoint[] = useMemo(() => {
-    if (!selectedEntity || !data) return [];
-    return data[selectedEntity] ?? [];
-  }, [data, selectedEntity]);
-
-  // ---- metric自動検出 ----
-  const metrics = useMemo(() => {
-    if (chartDataSingleEntity.length === 0) return [];
-    return Object.keys(chartDataSingleEntity[0]).filter((k) => k !== "time");
-  }, [chartDataSingleEntity]);
-
-  // ---- 初期 metrics 選択 ----
   useEffect(() => {
     if (metrics.length > 0 && selectedMetrics.length === 0) {
-      setSelectedMetrics(metrics);
+      setSelectedMetrics([metrics[0]]);
     }
   }, [metrics, selectedMetrics.length]);
 
-  // ---- 初期 metric (entitiesモード用) ----
-  useEffect(() => {
-    if (metrics.length > 0 && !selectedMetric) {
-      setSelectedMetric(metrics[0]);
-    }
-  }, [metrics, selectedMetric]);
-
-  // ---- colors ----
   const getColor = (idx: number) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`;
 
-  // ---- SelectBox options ----
-  const options = entities.map((e) => ({ value: e, label: e }));
+  // =========================================================
+  // ① flat results → pivot index
+  // =========================================================
+  const indexedData = useMemo(() => {
+    if (!data?.results) return null;
 
-  // ---- chartData for entities mode ----
+    const map: Record<string, Map<number, Record<string, number | null>>> = {};
+
+    for (const r of data.results) {
+      if (!r.entity) continue;
+      if (r.time == null) continue;
+
+      const entity = r.entity;
+      const time = Number(r.time);
+
+      if (!map[entity]) {
+        map[entity] = new Map();
+      }
+
+      const entityMap = map[entity];
+
+      const prev = entityMap.get(time) ?? { time };
+
+      entityMap.set(time, {
+        ...prev,
+        [r.metric]: r.value ?? null,
+      });
+    }
+
+    return map;
+  }, [data]);
+
+  // =========================================================
+  // ② time axis
+  // =========================================================
+  const allTimes = useMemo(() => {
+    if (!indexedData || selectedEntities.length === 0) return [];
+
+    const set = new Set<number>();
+
+    for (const entity of selectedEntities) {
+      const entityMap = indexedData[entity];
+      if (!entityMap) continue;
+
+      for (const time of entityMap.keys()) {
+        set.add(time);
+      }
+    }
+
+    return Array.from(set).sort((a, b) => a - b);
+  }, [indexedData, selectedEntities]);
+
+  // =========================================================
+  // ③ merged chart data
+  // =========================================================
   const mergedChartData: MergedTimeSeriesPoint[] = useMemo(() => {
-    if (!data || selectedEntities.length === 0 || !selectedMetric) return [];
-
-    const allTimes = Array.from(
-      new Set(
-        selectedEntities.flatMap((e) => (data[e] ?? []).map((p) => p.time)),
-      ),
-    ).sort((a, b) => Number(a) - Number(b));
+    if (
+      !indexedData ||
+      selectedEntities.length === 0 ||
+      selectedMetrics.length === 0
+    ) {
+      return [];
+    }
 
     return allTimes.map((time) => {
       const point: MergedTimeSeriesPoint = { time };
-      selectedEntities.forEach((entity) => {
-        const entityPoint = data[entity]?.find((p) => p.time === time);
-        point[entity] = entityPoint
-          ? Number(entityPoint[selectedMetric])
-          : null;
-      });
+
+      for (const entity of selectedEntities) {
+        const entityMap = indexedData[entity];
+        const p = entityMap?.get(time);
+
+        for (const metric of selectedMetrics) {
+          point[`${entity}_${metric}`] = p?.[metric] ?? null;
+        }
+      }
+
       return point;
     });
-  }, [data, selectedEntities, selectedMetric]);
+  }, [indexedData, allTimes, selectedEntities, selectedMetrics]);
 
-  // ---- early return ----
-  if (isLoading) return <Loading />;
-  if (isError) return <p>データ取得に失敗しました</p>;
-  if (!data || entities.length === 0) return <p>データがありません</p>;
+  // ---- loading / error ----
+  if (metaLoading || isLoading) return <Loading />;
+  if (metaError || isError) return <p>データ取得に失敗しました</p>;
+
+  if (!meta || entities.length === 0 || metrics.length === 0)
+    return <p>データがありません</p>;
 
   return (
     <div>
-      {/* --- Mode切替 --- */}
-      <div className="mb-4 flex gap-2">
-        <Button
-          variant={mode === "metrics" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setMode("metrics")}
-        >
-          Metrics比較
-        </Button>
-        <Button
-          variant={mode === "entities" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setMode("entities")}
-        >
-          Entity比較
-        </Button>
-      </div>
+      {/* ---- selectors ---- */}
+      <ItemSelector
+        items={entities}
+        selectedItems={selectedEntities}
+        setSelectedItems={setSelectedEntities}
+        label="Entities"
+      />
 
-      {mode === "metrics" ? (
-        <>
-          {/* Single Entity × Multiple Metrics */}
-          <SelectBox
-            id="entity-select"
-            label="Entity 選択"
-            options={options}
-            value={selectedEntity}
-            onChange={setSelectedEntity}
-          />
+      <ItemSelector
+        items={metrics}
+        selectedItems={selectedMetrics}
+        setSelectedItems={setSelectedMetrics}
+        label="Metrics"
+      />
 
-          <ItemSelector
-            items={metrics}
-            selectedItems={selectedMetrics}
-            setSelectedItems={setSelectedMetrics}
-            label="Metrics"
-          />
+      {/* ---- chart ---- */}
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart data={mergedChartData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="time" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
 
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart
-              data={chartDataSingleEntity}
-              margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis width={60} />
-              <Tooltip />
-              <Legend />
-              {selectedMetrics.map((metric) => (
+          {selectedEntities.flatMap((entity, eIdx) =>
+            selectedMetrics.map((metric, mIdx) => {
+              const key = `${entity}_${metric}`;
+
+              return (
                 <Line
-                  key={metric}
-                  dataKey={metric}
-                  stroke={getColor(metrics.indexOf(metric))}
-                  type="monotone"
-                />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
-        </>
-      ) : (
-        <>
-          {/* Multiple Entities × Single Metric */}
-          <SelectBox
-            id="metric-select"
-            label="Metric 選択"
-            options={metrics.map((m) => ({ value: m, label: m }))}
-            value={selectedMetric}
-            onChange={setSelectedMetric}
-          />
-
-          <ItemSelector
-            items={entities}
-            selectedItems={selectedEntities}
-            setSelectedItems={setSelectedEntities}
-            label="Entities"
-          />
-
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart
-              data={mergedChartData}
-              margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis width={60} />
-              <Tooltip />
-              <Legend />
-              {selectedEntities.map((entity) => (
-                <Line
-                  key={entity}
-                  dataKey={entity}
-                  stroke={getColor(entities.indexOf(entity))}
+                  key={key}
+                  dataKey={key}
+                  stroke={getColor(eIdx * 10 + mIdx)}
                   type="monotone"
                   connectNulls
                 />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
-        </>
-      )}
+              );
+            }),
+          )}
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 };
