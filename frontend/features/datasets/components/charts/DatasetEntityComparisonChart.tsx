@@ -10,10 +10,11 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Loading, SelectBox } from "@/components/common";
 import { ItemSelector } from "@/features/datasets/components/selectors/ItemSelector";
 import { useDatasetEntityComparison } from "@/features/datasets/timeseries/hooks/useDatasetEntityComparison";
+import { useDatasetMeta } from "@/features/datasets/meta/hooks/useDatasetMeta";
 
 type Props = {
   datasetId: string;
@@ -23,46 +24,35 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
   const [selectedEntities, setSelectedEntities] = useState<string[]>([]);
   const [selectedMetric, setSelectedMetric] = useState<string>("");
 
-  const { data, isLoading, isError } = useDatasetEntityComparison(
-    datasetId,
-    selectedMetric,
-  );
+  // ---- meta ----
+  const {
+    data: meta,
+    isLoading: isMetaLoading,
+    isError: isMetaError,
+  } = useDatasetMeta(datasetId);
 
-  // ---- entity一覧 ----
-  const entities = useMemo(() => {
-    if (!data || data.length === 0) return [];
-    return Object.keys(data[0]).filter((k) => k !== "time");
-  }, [data]);
+  // ---- 安定化（eslint対策）----
+  const entities = useMemo(() => meta?.entities ?? [], [meta]);
+  const metrics = useMemo(() => meta?.metrics ?? [], [meta]);
 
-  // ---- metric一覧（仮想的にAPI構造から取得）----
-  const metrics = useMemo(() => {
-    if (!data || data.length === 0) return [];
-    return ["value"]; // ← 本来はAPI設計次第（ここ重要）
-  }, [data]);
+  // ---- fallback（useEffect使わない）----
+  const actualMetric = selectedMetric || metrics[0] || "";
+  const actualEntities =
+    selectedEntities.length > 0 ? selectedEntities : entities.slice(0, 3);
 
-  // ---- 初期 metric ----
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (!selectedMetric && metrics.length > 0) {
-      setSelectedMetric(metrics[0]);
-    }
-  }, [metrics, selectedMetric]);
+  // ---- data ----
+  const {
+    data,
+    isLoading: isDataLoading,
+    isError: isDataError,
+  } = useDatasetEntityComparison(datasetId, actualMetric);
 
-  // ---- 初期 entity ----
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (!entities.length) return;
-    if (selectedEntities.length > 0) return;
-
-    setSelectedEntities(entities.slice(0, 3));
-  }, [entities, selectedEntities.length]);
-
-  // ---- color ----
   const getColor = (idx: number) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`;
 
   // ---- loading ----
-  if (isLoading) return <Loading />;
-  if (isError) return <p>データ取得に失敗しました</p>;
+  if (isMetaLoading || isDataLoading) return <Loading />;
+  if (isMetaError || isDataError) return <p>データ取得に失敗しました</p>;
+  if (!meta) return <p>メタデータがありません</p>;
   if (!data || data.length === 0) return <p>データがありません</p>;
 
   return (
@@ -72,14 +62,14 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
         id="metric-select"
         label="Metric 選択"
         options={metrics.map((m) => ({ value: m, label: m }))}
-        value={selectedMetric}
+        value={actualMetric}
         onChange={setSelectedMetric}
       />
 
       {/* Entity選択 */}
       <ItemSelector
         items={entities}
-        selectedItems={selectedEntities}
+        selectedItems={actualEntities}
         setSelectedItems={setSelectedEntities}
         label="Entities"
       />
@@ -95,7 +85,7 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
           <Tooltip />
           <Legend />
 
-          {selectedEntities.map((entity, idx) => (
+          {actualEntities.map((entity, idx) => (
             <Line
               key={entity}
               dataKey={entity}

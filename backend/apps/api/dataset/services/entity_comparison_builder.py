@@ -8,16 +8,22 @@ def build_entity_comparison_data(data_qs: Iterable) -> List[Dict[str, Any]]:
     timeを軸にして entity を横展開する
     """
 
-    # time -> {entity -> value}
-    table: Dict[str, Dict[str, Any]] = defaultdict(dict)
-    all_times = set()
+    table: Dict[Any, Dict[str, Any]] = defaultdict(dict)
+    time_map: Dict[Any, str] = {}
+
+    ordered_times: List[Any] = []
+    seen = set()
 
     for dp in data_qs:
-        time = dp.raw_time
+        t = dp.time
+        raw = dp.raw_time
         entity = dp.entity
 
-        all_times.add(time)
-        table[time][entity] = dp.value
+        if t not in seen:
+            seen.add(t)
+            ordered_times.append(t)
 
-    # time順に整形
-    return [{"time": t, **table[t]} for t in sorted(all_times)]
+        table[t][entity] = dp.value
+        time_map[t] = raw
+
+    return [{"time": time_map[t], **table[t]} for t in ordered_times]
