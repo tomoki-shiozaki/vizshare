@@ -10,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Loading, SelectBox } from "@/components/common";
 import { ItemSelector } from "@/features/datasets/components/selectors/ItemSelector";
 import { useDatasetEntityComparison } from "@/features/datasets/timeseries/hooks/useDatasetEntityComparison";
@@ -37,12 +37,16 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
   // ---- metric（derived）----
   const actualMetric = selectedMetric || metrics[0] || "";
 
-  // ---- 初期3つ ----
-  const defaultEntities = entities.slice(0, 3);
+  // ---- 🔥 初期選択をここで一度だけ入れる ----
 
-  // ---- 表示用 ----
-  const actualEntities =
-    selectedEntities.length > 0 ? selectedEntities : defaultEntities;
+  useEffect(() => {
+    if (entities.length === 0) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedEntities((prev) => {
+      if (prev.length > 0) return prev;
+      return entities.slice(0, 3);
+    });
+  }, [entities]);
 
   // ---- data ----
   const {
@@ -73,15 +77,8 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
       {/* Entity選択 */}
       <ItemSelector
         items={entities}
-        selectedItems={actualEntities}
-        setSelectedItems={(updater) => {
-          setSelectedEntities((prev) => {
-            // 👇 初回だけ defaultEntities をベースにする
-            const base = prev.length > 0 ? prev : defaultEntities;
-
-            return typeof updater === "function" ? updater(base) : updater;
-          });
-        }}
+        selectedItems={selectedEntities}
+        setSelectedItems={setSelectedEntities}
         label="Entities"
       />
 
@@ -96,7 +93,7 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
           <Tooltip />
           <Legend />
 
-          {actualEntities.map((entity, idx) => (
+          {selectedEntities.map((entity, idx) => (
             <Line
               key={entity}
               dataKey={entity}
