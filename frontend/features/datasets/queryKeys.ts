@@ -7,6 +7,7 @@ export const datasetKeys = {
 
   entityComparison: (id: string, metric: string) =>
     [...datasetKeys.all, "entityComparison", id, metric] as const,
+  meta: (id: string) => [...datasetKeys.all, "meta", id] as const,
 
   publicList: () => [...datasetKeys.all, "public"] as const,
   publicDetail: (id: string) =>
