@@ -31,14 +31,18 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
     isError: isMetaError,
   } = useDatasetMeta(datasetId);
 
-  // ---- 安定化（eslint対策）----
   const entities = useMemo(() => meta?.entities ?? [], [meta]);
   const metrics = useMemo(() => meta?.metrics ?? [], [meta]);
 
-  // ---- fallback（useEffect使わない）----
+  // ---- metric（derived）----
   const actualMetric = selectedMetric || metrics[0] || "";
+
+  // ---- 初期3つ ----
+  const defaultEntities = entities.slice(0, 3);
+
+  // ---- 表示用 ----
   const actualEntities =
-    selectedEntities.length > 0 ? selectedEntities : entities.slice(0, 3);
+    selectedEntities.length > 0 ? selectedEntities : defaultEntities;
 
   // ---- data ----
   const {
@@ -70,7 +74,14 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
       <ItemSelector
         items={entities}
         selectedItems={actualEntities}
-        setSelectedItems={setSelectedEntities}
+        setSelectedItems={(updater) => {
+          setSelectedEntities((prev) => {
+            // 👇 初回だけ defaultEntities をベースにする
+            const base = prev.length > 0 ? prev : defaultEntities;
+
+            return typeof updater === "function" ? updater(base) : updater;
+          });
+        }}
         label="Entities"
       />
 
