@@ -38,6 +38,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/datasets/{id}/meta/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["datasets_meta_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/{id}/timeseries/": {
         parameters: {
             query?: never;
@@ -502,6 +518,10 @@ export interface components {
             /** @description True の場合、誰でも閲覧可能 */
             readonly is_public: boolean;
         };
+        DatasetMeta: {
+            entities: string[];
+            metrics: string[];
+        };
         DatasetSchema: {
             time: string;
             entity?: string;
@@ -716,6 +736,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DatasetDetail"];
+                };
+            };
+        };
+    };
+    datasets_meta_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetMeta"];
                 };
             };
         };

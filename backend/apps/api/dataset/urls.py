@@ -9,6 +9,7 @@ from apps.api.dataset.views.dataset_read import (
 )
 from apps.api.dataset.views.dataset_timeseries import (
     DatasetEntityComparisonAPIView,
+    DatasetMetaAPIView,
     DatasetTimeSeriesAPIView,
     PublicDatasetTimeSeriesAPIView,
 )
@@ -29,6 +30,7 @@ urlpatterns = [
         DatasetEntityComparisonAPIView.as_view(),
         name="timeseries-entity",
     ),
+    path("<int:pk>/meta/", DatasetMetaAPIView.as_view(), name="meta"),
     path(
         "<int:pk>/visibility/",
         DatasetVisibilityUpdateAPIView.as_view(),

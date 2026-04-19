@@ -100,6 +100,47 @@
                 }
             }
         },
+        "/api/v1/datasets/{id}/meta/": {
+            "get": {
+                "operationId": "datasets_meta_retrieve",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasetMeta"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/{id}/timeseries/": {
             "get": {
                 "operationId": "datasets_timeseries_retrieve",
@@ -1348,6 +1389,27 @@
                     "parse_result",
                     "schema",
                     "status"
+                ]
+            },
+            "DatasetMeta": {
+                "type": "object",
+                "properties": {
+                    "entities": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "metrics": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "entities",
+                    "metrics"
                 ]
             },
             "DatasetSchema": {

@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.api.dataset.serializers.dataset_timeseries import DatasetMetaSerializer
 from apps.api.dataset.services.entity_comparison_builder import (
     build_entity_comparison_data,
 )
@@ -70,6 +72,24 @@ class DatasetEntityComparisonAPIView(APIView):
         result = build_entity_comparison_data(data_qs)
 
         return Response(result, status=status.HTTP_200_OK)
+
+
+class DatasetMetaAPIView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = DatasetMetaSerializer
+
+    def get(self, request, pk: int):
+        dataset = get_object_or_404(Dataset, pk=pk, owner=request.user)
+
+        qs = dataset.data_points.all()  # type: ignore
+
+        data = {
+            "entities": sorted(qs.values_list("entity", flat=True).distinct()),
+            "metrics": sorted(qs.values_list("metric", flat=True).distinct()),
+        }
+
+        serializer = self.get_serializer(data)
+        return Response(serializer.data)
 
 
 class PublicDatasetTimeSeriesAPIView(APIView):
