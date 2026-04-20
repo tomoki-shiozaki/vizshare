@@ -6,6 +6,10 @@ def build_entity_comparison_data(data_qs: Iterable) -> List[Dict[str, Any]]:
     """
     entity比較用（wide形式）
     timeを軸にして entity を横展開する
+
+    前提:
+    - data_qs は単一 metric にフィルタ済み
+    - time は None でない
     """
 
     table: Dict[Any, Dict[str, Any]] = defaultdict(dict)
@@ -14,7 +18,19 @@ def build_entity_comparison_data(data_qs: Iterable) -> List[Dict[str, Any]]:
     ordered_times: List[Any] = []
     seen = set()
 
+    metric_seen = None  # 単一metricチェック用
+
     for dp in data_qs:
+        # --- metricガード ---
+        if metric_seen is None:
+            metric_seen = dp.metric
+        elif dp.metric != metric_seen:
+            raise ValueError("Multiple metrics not allowed")
+
+        # --- timeガード ---
+        if dp.time is None:
+            raise ValueError("time must not be None")
+
         t = dp.time
         raw = dp.raw_time
         entity = dp.entity
