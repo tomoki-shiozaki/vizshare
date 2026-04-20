@@ -64,46 +64,50 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
   if (!data || data.length === 0) return <p>データがありません</p>;
 
   return (
-    <div>
-      {/* Metric選択 */}
-      <SelectBox
-        id="metric-select"
-        label="Metric 選択"
-        options={metrics.map((m) => ({ value: m, label: m }))}
-        value={actualMetric}
-        onChange={setSelectedMetric}
-      />
+    <div className="flex gap-6">
+      {/* 左：コントロール */}
+      <div className="w-64 shrink-0 space-y-4">
+        <SelectBox
+          id="metric-select"
+          label="Metric 選択"
+          options={metrics.map((m) => ({ value: m, label: m }))}
+          value={actualMetric}
+          onChange={setSelectedMetric}
+        />
 
-      {/* Entity選択 */}
-      <ItemSelector
-        items={entities}
-        selectedItems={selectedEntities}
-        setSelectedItems={setSelectedEntities}
-        label="Entities"
-      />
+        <ItemSelector
+          items={entities}
+          selectedItems={selectedEntities}
+          setSelectedItems={setSelectedEntities}
+          label="Entities"
+        />
+      </div>
 
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart
-          data={data}
-          margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="time" />
-          <YAxis width={60} />
-          <Tooltip />
-          <Legend />
+      {/* 右：グラフ */}
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart
+            data={data}
+            margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="time" />
+            <YAxis width={60} />
+            <Tooltip />
+            <Legend />
 
-          {selectedEntities.map((entity, idx) => (
-            <Line
-              key={entity}
-              dataKey={entity}
-              stroke={getColor(idx)}
-              type="monotone"
-              connectNulls
-            />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
+            {selectedEntities.map((entity, idx) => (
+              <Line
+                key={entity}
+                dataKey={entity}
+                stroke={getColor(idx)}
+                type="monotone"
+                connectNulls
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };
