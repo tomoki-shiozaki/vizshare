@@ -56,6 +56,14 @@ export type MergedTimeSeriesPoint = {
   [entity: string]: number | null | string;
 };
 
+export type EntityComparisonPoint = { time: string } & Record<
+  string,
+  number | null
+>;
+
+export type DatasetMetaResponse =
+  paths["/api/v1/datasets/{id}/meta/"]["get"]["responses"][200]["content"]["application/json"];
+
 // =============================
 // Visibility
 // =============================

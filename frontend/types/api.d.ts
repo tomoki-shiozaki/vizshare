@@ -38,6 +38,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/datasets/{id}/meta/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["datasets_meta_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/{id}/timeseries/": {
         parameters: {
             query?: never;
@@ -50,6 +66,26 @@ export interface paths {
          * @description Dataset に紐づく DataPoint を entity ごとに整理して返す（Recharts 形式）
          */
         get: operations["datasets_timeseries_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/{id}/timeseries/entity/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * ユーザー Dataset の entity比較データ取得
+         * @description timeを軸にentityを横展開したRecharts用データ
+         */
+        get: operations["datasets_timeseries_entity_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -482,6 +518,10 @@ export interface components {
             /** @description True の場合、誰でも閲覧可能 */
             readonly is_public: boolean;
         };
+        DatasetMeta: {
+            entities: string[];
+            metrics: string[];
+        };
         DatasetSchema: {
             time: string;
             entity?: string;
@@ -700,6 +740,27 @@ export interface operations {
             };
         };
     };
+    datasets_meta_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetMeta"];
+                };
+            };
+        };
+    };
     datasets_timeseries_retrieve: {
         parameters: {
             query?: never;
@@ -721,6 +782,29 @@ export interface operations {
                             time?: string;
                         }[];
                     };
+                };
+            };
+        };
+    };
+    datasets_timeseries_entity_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
                 };
             };
         };
