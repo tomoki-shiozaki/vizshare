@@ -40,6 +40,78 @@ class TestDatasetTimeSeriesAPIView:
 
 
 @pytest.mark.django_db
+class TestDatasetMetaAPIView:
+    def test_get_dataset_meta_success(
+        self,
+        api_client,
+        user,
+        dataset_with_points,
+    ):
+        api_client.force_authenticate(user=user)
+
+        url = reverse("dataset:meta", args=[dataset_with_points.id])
+        res = api_client.get(url)
+
+        assert res.status_code == 200
+        assert res.data["entities"] == ["A", "B"]
+        assert res.data["metrics"] == ["anomaly", "value"]
+
+    def test_get_dataset_meta_only_owner_can_access(
+        self,
+        api_client,
+        another_user,
+        dataset_with_points,
+    ):
+        api_client.force_authenticate(user=another_user)
+
+        url = reverse("dataset:meta", args=[dataset_with_points.id])
+        res = api_client.get(url)
+
+        assert res.status_code == 404
+
+    def test_get_dataset_meta_distinct_behavior(
+        self,
+        api_client,
+        user,
+        dataset_with_points,
+    ):
+        api_client.force_authenticate(user=user)
+
+        # duplicate insert
+        dataset = dataset_with_points
+        DataPoint.objects.create(
+            dataset=dataset,
+            entity="A",
+            metric="value",
+            raw_time="2026-03-13T02:00:00Z",
+            value=3,
+            order_index=2,
+        )
+
+        url = reverse("dataset:meta", args=[dataset.id])
+        res = api_client.get(url)
+
+        assert res.status_code == 200
+        assert res.data["entities"] == ["A", "B"]
+        assert set(res.data["metrics"]) == {"anomaly", "value"}
+
+    def test_get_dataset_meta_empty(
+        self,
+        api_client,
+        user,
+        dataset,
+    ):
+        api_client.force_authenticate(user=user)
+
+        url = reverse("dataset:meta", args=[dataset.id])
+        res = api_client.get(url)
+
+        assert res.status_code == 200
+        assert res.data["entities"] == []
+        assert res.data["metrics"] == []
+
+
+@pytest.mark.django_db
 class TestPublicDatasetTimeSeriesAPIView:
     def test_returns_structured_data(self, api_client, user):
         """公開かつ解析済みの Dataset の時系列が取得できる"""
