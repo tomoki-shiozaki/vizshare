@@ -10,5 +10,6 @@ export const useDatasetEntityComparison = (
     queryKey: datasetKeys.entityComparison(datasetId, metric),
     queryFn: () => fetchDatasetEntityComparison(datasetId, metric),
     staleTime: 1000 * 60 * 60,
+    placeholderData: (previousData) => previousData,
   });
 };
