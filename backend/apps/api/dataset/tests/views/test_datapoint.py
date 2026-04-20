@@ -3,6 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.dataset.models import DataPoint, Dataset
+from apps.dataset.services.csv_parser import parse_row_time
 
 
 @pytest.mark.django_db
@@ -37,6 +38,99 @@ class TestDatasetTimeSeriesAPIView:
 
         assert res.status_code == status.HTTP_200_OK
         assert res.data == {}
+
+
+@pytest.mark.django_db
+class TestDatasetEntityComparisonAPIView:
+    def test_get_success(self, api_client, user, dataset):
+        api_client.force_authenticate(user=user)
+
+        DataPoint.objects.create(
+            dataset=dataset,
+            entity="A",
+            metric="value",
+            raw_time="2026-03-13T00:00:00Z",
+            time=parse_row_time("2026-03-13T00:00:00Z"),
+            value=1,
+            order_index=0,
+        )
+        DataPoint.objects.create(
+            dataset=dataset,
+            entity="B",
+            metric="value",
+            raw_time="2026-03-13T01:00:00Z",
+            time=parse_row_time("2026-03-13T01:00:00Z"),
+            value=2,
+            order_index=0,
+        )
+
+        url = reverse("dataset:timeseries-entity", args=[dataset.id])
+        res = api_client.get(url, {"metric": "value"})
+
+        assert res.status_code == 200
+        assert res.data == [
+            {"time": "2026-03-13T00:00:00Z", "A": 1.0},
+            {"time": "2026-03-13T01:00:00Z", "B": 2.0},
+        ]
+
+    def test_metric_required(self, api_client, user, dataset):
+        api_client.force_authenticate(user=user)
+
+        url = reverse("dataset:timeseries-entity", args=[dataset.id])
+        res = api_client.get(url)
+
+        assert res.status_code == 400
+        assert res.data["detail"] == "metric is required"
+
+    def test_only_owner_can_access(self, api_client, another_user, dataset):
+        api_client.force_authenticate(user=another_user)
+
+        url = reverse("dataset:timeseries-entity", args=[dataset.id])
+        res = api_client.get(url, {"metric": "value"})
+
+        assert res.status_code == 404
+
+    def test_empty_result(self, api_client, user, dataset):
+        api_client.force_authenticate(user=user)
+
+        url = reverse("dataset:timeseries-entity", args=[dataset.id])
+        res = api_client.get(url, {"metric": "value"})
+
+        assert res.status_code == 200
+        assert res.data == []
+
+    def test_metric_filtering(self, api_client, user, dataset):
+        api_client.force_authenticate(user=user)
+
+        # value（対象）
+        DataPoint.objects.create(
+            dataset=dataset,
+            entity="A",
+            metric="value",
+            raw_time="2026-03-13T00:00:00Z",
+            time=parse_row_time("2026-03-13T00:00:00Z"),
+            value=1,
+            order_index=0,
+        )
+
+        # anomaly（対象外）
+        DataPoint.objects.create(
+            dataset=dataset,
+            entity="A",
+            metric="anomaly",
+            raw_time="2026-03-13T00:00:01Z",
+            time=parse_row_time("2026-03-13T00:00:01Z"),
+            value=0.1,
+            order_index=1,
+        )
+
+        url = reverse("dataset:timeseries-entity", args=[dataset.id])
+        res = api_client.get(url, {"metric": "value"})
+
+        assert res.status_code == 200
+        assert res.data == [
+            {"time": "2026-03-13T00:00:00Z", "A": 1.0},
+        ]
 
 
 @pytest.mark.django_db
