@@ -55,7 +55,13 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
     isError: isDataError,
   } = useDatasetEntityComparison(datasetId, actualMetric);
 
-  const getColor = (idx: number) => `hsl(${(idx * 137.5) % 360}, 65%, 50%)`;
+  const colorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    entities.forEach((entity, idx) => {
+      map[entity] = `hsl(${(idx * 137.5) % 360}, 65%, 50%)`;
+    });
+    return map;
+  }, [entities]);
 
   // ---- loading ----
   if (isMetaLoading || isDataLoading) return <Loading />;
@@ -81,6 +87,7 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
           selectedItems={selectedEntities}
           setSelectedItems={setSelectedEntities}
           label="Entities"
+          colorMap={colorMap}
         />
       </div>
 
@@ -97,11 +104,11 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
             <Tooltip />
             <Legend />
 
-            {selectedEntities.map((entity, idx) => (
+            {selectedEntities.map((entity) => (
               <Line
                 key={entity}
                 dataKey={entity}
-                stroke={getColor(idx)}
+                stroke={colorMap[entity]}
                 type="monotone"
                 connectNulls
               />

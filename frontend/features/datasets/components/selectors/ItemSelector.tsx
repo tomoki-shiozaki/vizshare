@@ -7,6 +7,7 @@ type Props = {
   selectedItems: string[];
   setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
   label?: string;
+  colorMap?: Record<string, string>;
 };
 
 export const ItemSelector = ({
@@ -14,6 +15,7 @@ export const ItemSelector = ({
   selectedItems,
   setSelectedItems,
   label = "Items",
+  colorMap,
 }: Props) => {
   const toggleItem = (item: string) => {
     setSelectedItems((prev) => {
@@ -62,11 +64,20 @@ export const ItemSelector = ({
             key={item}
             className="flex items-center space-x-2 hover:bg-gray-50 rounded px-1 py-1"
           >
+            {/* 色ドット */}
+            {colorMap && (
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: colorMap[item] }}
+              />
+            )}
+
             <Checkbox
               id={`item-${item}`}
               checked={selectedItems.includes(item)}
               onCheckedChange={() => toggleItem(item)}
             />
+
             <Label htmlFor={`item-${item}`} className="text-sm">
               {item}
             </Label>
