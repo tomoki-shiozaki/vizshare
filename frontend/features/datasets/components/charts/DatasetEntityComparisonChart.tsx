@@ -64,7 +64,7 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
   if (!data || data.length === 0) return <p>データがありません</p>;
 
   return (
-    <div className="flex gap-6">
+    <div className="flex gap-6 items-start">
       {/* 左：コントロール */}
       <div className="w-64 shrink-0 space-y-4">
         <SelectBox
@@ -75,6 +75,7 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
           onChange={setSelectedMetric}
         />
 
+        {/* 👇 ラッパー削除 */}
         <ItemSelector
           items={entities}
           selectedItems={selectedEntities}
@@ -84,7 +85,7 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
       </div>
 
       {/* 右：グラフ */}
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <ResponsiveContainer width="100%" height={400}>
           <LineChart
             data={data}

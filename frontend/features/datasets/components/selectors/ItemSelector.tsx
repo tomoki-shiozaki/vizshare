@@ -29,7 +29,8 @@ export const ItemSelector = ({
   };
 
   return (
-    <div className="mb-4 space-y-3">
+    <div className="space-y-3">
+      {/* ヘッダー */}
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium">
           {label} ({selectedItems.length})
@@ -54,9 +55,13 @@ export const ItemSelector = ({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4">
+      {/* 👇 スクロール領域 */}
+      <div className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
         {items.map((item) => (
-          <div key={item} className="flex items-center space-x-2">
+          <div
+            key={item}
+            className="flex items-center space-x-2 hover:bg-gray-50 rounded px-1 py-1"
+          >
             <Checkbox
               id={`item-${item}`}
               checked={selectedItems.includes(item)}
