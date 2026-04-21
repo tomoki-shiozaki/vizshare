@@ -10,50 +10,33 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useState, useMemo, useEffect } from "react";
-import { Loading, SelectBox } from "@/components/common";
+import { SelectBox } from "@/components/common";
 import { ItemSelector } from "@/features/datasets/components/selectors/ItemSelector";
-import { useDatasetEntityComparison } from "@/features/datasets/timeseries/hooks/useDatasetEntityComparison";
-import { useDatasetMeta } from "@/features/datasets/meta/hooks/useDatasetMeta";
+import { useMemo } from "react";
+import type { EntityComparisonPoint } from "@/features/datasets/types/dataset";
 
 type Props = {
-  datasetId: string;
+  entities: string[];
+  metrics: string[];
+  data: EntityComparisonPoint[];
+
+  selectedEntities: string[];
+  setSelectedEntities: React.Dispatch<React.SetStateAction<string[]>>;
+
+  selectedMetric: string;
+  setSelectedMetric: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
-  const [selectedEntities, setSelectedEntities] = useState<string[]>([]);
-  const [selectedMetric, setSelectedMetric] = useState<string>("");
-
-  // ---- meta ----
-  const {
-    data: meta,
-    isLoading: isMetaLoading,
-    isError: isMetaError,
-  } = useDatasetMeta(datasetId);
-
-  const entities = useMemo(() => meta?.entities ?? [], [meta]);
-  const metrics = useMemo(() => meta?.metrics ?? [], [meta]);
-
-  // ---- metric（derived）----
+export const DatasetEntityComparisonChartPure = ({
+  entities,
+  metrics,
+  data,
+  selectedEntities,
+  setSelectedEntities,
+  selectedMetric,
+  setSelectedMetric,
+}: Props) => {
   const actualMetric = selectedMetric || metrics[0] || "";
-
-  // ---- 🔥 初期選択をここで一度だけ入れる ----
-
-  useEffect(() => {
-    if (entities.length === 0) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSelectedEntities((prev) => {
-      if (prev.length > 0) return prev;
-      return entities.slice(0, 3);
-    });
-  }, [entities]);
-
-  // ---- data ----
-  const {
-    data,
-    isLoading: isDataLoading,
-    isError: isDataError,
-  } = useDatasetEntityComparison(datasetId, actualMetric);
 
   const colorMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -62,12 +45,6 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
     });
     return map;
   }, [entities]);
-
-  // ---- loading ----
-  if (isMetaLoading || isDataLoading) return <Loading />;
-  if (isMetaError || isDataError) return <p>データ取得に失敗しました</p>;
-  if (!meta) return <p>メタデータがありません</p>;
-  if (!data || data.length === 0) return <p>データがありません</p>;
 
   return (
     <div className="flex gap-6 items-start">
@@ -81,7 +58,6 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
           onChange={setSelectedMetric}
         />
 
-        {/* 👇 ラッパー削除 */}
         <ItemSelector
           items={entities}
           selectedItems={selectedEntities}
@@ -93,7 +69,6 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
 
       {/* 右：グラフ */}
       <div className="flex-1 min-w-0 flex flex-col">
-        {/* グラフ */}
         <div className="flex-1 min-h-[300px]">
           <ResponsiveContainer width="100%" height={400}>
             <LineChart
