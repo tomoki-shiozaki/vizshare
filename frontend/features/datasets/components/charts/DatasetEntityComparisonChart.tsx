@@ -92,29 +92,46 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
       </div>
 
       {/* 右：グラフ */}
-      <div className="flex-1 min-w-0">
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart
-            data={data}
-            margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" />
-            <YAxis width={60} />
-            <Tooltip />
-            <Legend />
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* グラフ */}
+        <div className="flex-1 min-h-[300px]">
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart
+              data={data}
+              margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis width={60} />
+              <Tooltip />
+              {/* 👇 Legend無効化 */}
+              <Legend content={() => null} />
 
-            {selectedEntities.map((entity) => (
-              <Line
-                key={entity}
-                dataKey={entity}
-                stroke={colorMap[entity]}
-                type="monotone"
-                connectNulls
+              {selectedEntities.map((entity) => (
+                <Line
+                  key={entity}
+                  dataKey={entity}
+                  stroke={colorMap[entity]}
+                  type="monotone"
+                  connectNulls
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* 👇 下にLegend */}
+        <div className="mt-2 max-h-24 overflow-y-auto border-t pt-2 text-xs flex flex-wrap gap-3">
+          {selectedEntities.map((entity) => (
+            <div key={entity} className="flex items-center gap-2">
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: colorMap[entity] }}
               />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+              <span className="truncate max-w-[120px]">{entity}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
