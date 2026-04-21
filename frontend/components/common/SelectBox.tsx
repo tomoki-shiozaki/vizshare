@@ -1,4 +1,12 @@
-import React from "react";
+"use client";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Option {
   value: string;
@@ -13,28 +21,32 @@ interface SelectBoxProps {
   onChange: (value: string) => void;
 }
 
-export const SelectBox: React.FC<SelectBoxProps> = ({
+export const SelectBox = ({
   id,
   label,
   options,
   value,
   onChange,
-}) => (
-  <div className="mb-4 flex items-center">
-    <label htmlFor={id} className="mr-2 font-medium">
+}: SelectBoxProps) => (
+  <div className="mb-4 space-y-1">
+    <label htmlFor={id} className="text-sm font-medium">
       {label}
     </label>
-    <select
-      id={id}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-    >
-      {options.map((opt) => (
-        <option key={opt.value} value={opt.value}>
-          {opt.label}
-        </option>
-      ))}
-    </select>
+
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger id={id} className="w-full">
+        <SelectValue placeholder="Select..." />
+      </SelectTrigger>
+
+      <SelectContent>
+        {options.map((opt) => (
+          <SelectItem key={opt.value} value={opt.value}>
+            <span className="truncate" title={opt.label}>
+              {opt.label}
+            </span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   </div>
 );
