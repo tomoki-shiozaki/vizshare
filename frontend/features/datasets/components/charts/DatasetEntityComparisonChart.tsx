@@ -102,7 +102,15 @@ export const DatasetEntityComparisonChart = ({ datasetId }: Props) => {
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="time" />
-              <YAxis width={60} />
+              <YAxis
+                width={60}
+                tickFormatter={(value) => {
+                  if (value >= 1_000_000)
+                    return `${(value / 1_000_000).toFixed(1)}M`;
+                  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
+                  return value;
+                }}
+              />
               <Tooltip />
               {/* 👇 Legend無効化 */}
               <Legend content={() => null} />
