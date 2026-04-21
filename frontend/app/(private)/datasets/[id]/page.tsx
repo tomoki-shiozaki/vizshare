@@ -5,7 +5,7 @@ import { PageLayout } from "@/components/layout";
 import { DatasetDetail } from "@/features/datasets/detail/components/DatasetDetail";
 import { DatasetLineChart } from "@/features/datasets/components/charts/DatasetLineChart";
 import { useDatasetDataPoints } from "@/features/datasets/timeseries/hooks/useDatasetDataPoints";
-import { DatasetEntityComparisonChart } from "@/features/datasets/components/charts/DatasetEntityComparisonChart";
+import { DatasetEntityComparisonChart } from "@/features/datasets/components/charts/DatasetEntityComparisonChartPure";
 
 export default function DatasetDetailPage() {
   const { id } = useParams<{ id: string }>();
