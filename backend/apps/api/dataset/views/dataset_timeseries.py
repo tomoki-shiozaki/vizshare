@@ -10,7 +10,6 @@ from apps.api.dataset.services.entity_comparison_builder import (
     build_entity_comparison_data,
 )
 from apps.api.dataset.services.timeseries import build_time_series_data
-from apps.api.dataset.types.dataset_meta_types import DatasetMetaData
 from apps.api.dataset.types.entity_comparison_types import EntityComparisonResponse
 from apps.api.dataset.types.timeseries import TimeSeriesDataByEntity
 from apps.api.utils.schema import schema
@@ -89,7 +88,7 @@ class DatasetMetaAPIView(GenericAPIView):
             "metrics": sorted(qs.values_list("metric", flat=True).distinct()),
         }
 
-        serializer = self.get_serializer(data)
+        serializer = self.get_serializer(instance=data)
         return Response(serializer.data)
 
 
@@ -155,7 +154,7 @@ class PublicDatasetMetaAPIView(APIView):
     @schema(
         summary="Public Dataset のメタデータ取得",
         tags=["Dataset"],
-        responses=DatasetMetaData,
+        responses=DatasetMetaSerializer,
     )
     def get(self, request, pk: int):
         dataset = get_object_or_404(
