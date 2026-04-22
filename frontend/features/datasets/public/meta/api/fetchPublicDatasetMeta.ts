@@ -1,9 +1,12 @@
 import { apiClient } from "@/features/auth/api/apiClient";
-import type { DatasetMetaResponse } from "@/features/datasets/types/dataset";
+import type { PublicDatasetMetaResponse } from "@/features/datasets/types/publicDataset";
 
-export const fetchDatasetMeta = async (
+export const fetchPublicDatasetMeta = async (
   datasetId: string,
-): Promise<DatasetMetaResponse> => {
-  const { data } = await apiClient.get(`/datasets/${datasetId}/meta/`);
+): Promise<PublicDatasetMetaResponse> => {
+  const { data } = await apiClient.get<PublicDatasetMetaResponse>(
+    `/datasets/public/${datasetId}/meta/`,
+  );
+
   return data;
 };
