@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchDatasetMeta } from "@/features/datasets/meta/api/fetchDatasetMeta";
-import type { DatasetMetaResponse } from "@/features/datasets/types/dataset";
+import { fetchPublicDatasetMeta } from "@/features/datasets/public/meta/api/fetchPublicDatasetMeta";
+import type { PublicDatasetMetaResponse } from "@/features/datasets/types/publicDataset";
 import { datasetKeys } from "@/features/datasets/queryKeys";
 
-export const useDatasetMeta = (datasetId: string) => {
-  return useQuery<DatasetMetaResponse>({
-    queryKey: datasetKeys.meta(datasetId),
-    queryFn: () => fetchDatasetMeta(datasetId),
+export const usePublicDatasetMeta = (datasetId: string) => {
+  return useQuery<PublicDatasetMetaResponse>({
+    queryKey: datasetKeys.publicMeta(datasetId),
+    queryFn: () => fetchPublicDatasetMeta(datasetId),
     staleTime: 1000 * 60 * 60,
   });
 };

@@ -17,4 +17,5 @@ export const datasetKeys = {
 
   publicEntityComparison: (id: string, metric: string) =>
     [...datasetKeys.all, "publicEntityComparison", id, metric] as const,
+  publicMeta: (id: string) => [...datasetKeys.all, "publicMeta", id] as const,
 };
