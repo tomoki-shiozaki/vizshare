@@ -51,11 +51,6 @@ export type TimeSeriesPoint = {
 
 export type DatasetDataPointsResponse = Record<string, TimeSeriesPoint[]>;
 
-export type MergedTimeSeriesPoint = {
-  time: string;
-  [entity: string]: number | null | string;
-};
-
 export type EntityComparisonPoint = { time: string } & Record<
   string,
   number | null
