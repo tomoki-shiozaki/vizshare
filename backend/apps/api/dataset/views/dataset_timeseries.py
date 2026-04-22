@@ -163,4 +163,5 @@ class PublicDatasetMetaAPIView(APIView):
             "metrics": sorted(qs.values_list("metric", flat=True).distinct()),
         }
 
-        return Response(data)
+        serializer = DatasetMetaSerializer(data)
+        return Response(serializer.data)
