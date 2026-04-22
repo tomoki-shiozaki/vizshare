@@ -10,6 +10,7 @@ from apps.api.dataset.services.entity_comparison_builder import (
     build_entity_comparison_data,
 )
 from apps.api.dataset.services.timeseries import build_time_series_data
+from apps.api.dataset.types.dataset_meta_types import DatasetMetaData
 from apps.api.dataset.types.entity_comparison_types import EntityComparisonResponse
 from apps.api.dataset.types.timeseries import TimeSeriesDataByEntity
 from apps.api.utils.schema import schema
@@ -151,6 +152,11 @@ class PublicDatasetMetaAPIView(APIView):
 
     permission_classes = [AllowAny]
 
+    @schema(
+        summary="Public Dataset のメタデータ取得",
+        tags=["Dataset"],
+        responses=DatasetMetaData,
+    )
     def get(self, request, pk: int):
         dataset = get_object_or_404(
             Dataset, pk=pk, is_public=True, status=Dataset.Status.PARSED
@@ -163,5 +169,4 @@ class PublicDatasetMetaAPIView(APIView):
             "metrics": sorted(qs.values_list("metric", flat=True).distinct()),
         }
 
-        serializer = DatasetMetaSerializer(data)
-        return Response(serializer.data)
+        return Response(data, status=status.HTTP_200_OK)
