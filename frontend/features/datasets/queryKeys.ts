@@ -15,6 +15,6 @@ export const datasetKeys = {
   publicDataPoints: (id: string) =>
     [...datasetKeys.all, "publicDataPoints", id] as const,
 
-  publicEntityComparison: (id: string) =>
-    [...datasetKeys.all, "publicEntityComparison", id] as const,
+  publicEntityComparison: (id: string, metric: string) =>
+    [...datasetKeys.all, "publicEntityComparison", id, metric] as const,
 };
