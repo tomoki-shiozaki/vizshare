@@ -77,43 +77,65 @@ export const DatasetLineChart = ({
   if (!data || entities.length === 0) return <p>データがありません</p>;
 
   return (
-    <div>
-      {/* Single Entity × Multiple Metrics */}
-      <SelectBox
-        id="entity-select"
-        label="Entity 選択"
-        options={options}
-        value={selectedEntity}
-        onChange={setSelectedEntity}
-      />
+    <div className="flex gap-6 items-start">
+      {/* 左：コントロール */}
+      <div className="w-64 shrink-0 space-y-4">
+        <SelectBox
+          id="entity-select"
+          label="Entity 選択"
+          options={options}
+          value={selectedEntity}
+          onChange={setSelectedEntity}
+        />
 
-      <ItemSelector
-        items={metrics}
-        selectedItems={selectedMetrics}
-        setSelectedItems={setSelectedMetrics}
-        label="Metrics"
-      />
+        <ItemSelector
+          items={metrics}
+          selectedItems={selectedMetrics}
+          setSelectedItems={setSelectedMetrics}
+          label="Metrics"
+        />
+      </div>
 
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="time" />
-          <YAxis width={60} />
-          <Tooltip />
-          <Legend />
-          {selectedMetrics.map((metric) => (
-            <Line
-              key={metric}
-              dataKey={metric}
-              stroke={getColor(metrics.indexOf(metric))}
-              type="monotone"
-            />
+      {/* 右：グラフ */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        <div className="flex-1 min-h-[300px]">
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis width={60} />
+              <Tooltip />
+              {/* 👇 デフォルトLegendを無効化 */}
+              <Legend content={() => null} />
+
+              {selectedMetrics.map((metric) => (
+                <Line
+                  key={metric}
+                  dataKey={metric}
+                  stroke={getColor(metrics.indexOf(metric))}
+                  type="monotone"
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* 👇 カスタムLegend */}
+        <div className="mt-2 max-h-24 overflow-y-auto border-t pt-2 text-xs flex flex-wrap gap-3">
+          {selectedMetrics.map((metric, idx) => (
+            <div key={metric} className="flex items-center gap-2">
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: getColor(idx) }}
+              />
+              <span className="truncate max-w-[120px]">{metric}</span>
+            </div>
           ))}
-        </LineChart>
-      </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 };
