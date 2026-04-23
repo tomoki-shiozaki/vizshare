@@ -8,7 +8,11 @@ from apps.api.dataset.views.dataset_read import (
     PublicDatasetListAPIView,
 )
 from apps.api.dataset.views.dataset_timeseries import (
+    DatasetEntityComparisonAPIView,
+    DatasetMetaAPIView,
     DatasetTimeSeriesAPIView,
+    PublicDatasetEntityComparisonAPIView,
+    PublicDatasetMetaAPIView,
     PublicDatasetTimeSeriesAPIView,
 )
 from apps.api.dataset.views.dataset_write import (
@@ -24,6 +28,12 @@ urlpatterns = [
     path("<int:pk>/", DatasetDetailAPIView.as_view(), name="detail"),
     path("<int:pk>/timeseries/", DatasetTimeSeriesAPIView.as_view(), name="timeseries"),
     path(
+        "<int:pk>/timeseries/entity/",
+        DatasetEntityComparisonAPIView.as_view(),
+        name="timeseries-entity",
+    ),
+    path("<int:pk>/meta/", DatasetMetaAPIView.as_view(), name="meta"),
+    path(
         "<int:pk>/visibility/",
         DatasetVisibilityUpdateAPIView.as_view(),
         name="visibility",
@@ -36,6 +46,16 @@ urlpatterns = [
         "public/<int:pk>/timeseries/",
         PublicDatasetTimeSeriesAPIView.as_view(),
         name="public-timeseries",
+    ),
+    path(
+        "public/<int:pk>/timeseries/entity/",
+        PublicDatasetEntityComparisonAPIView.as_view(),
+        name="public-timeseries-entity",
+    ),
+    path(
+        "public/<int:pk>/meta/",
+        PublicDatasetMetaAPIView.as_view(),
+        name="public-meta",
     ),
     path(
         "public/<int:pk>/download/",

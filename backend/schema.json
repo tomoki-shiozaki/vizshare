@@ -100,6 +100,47 @@
                 }
             }
         },
+        "/api/v1/datasets/{id}/meta/": {
+            "get": {
+                "operationId": "datasets_meta_retrieve",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasetMeta"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/{id}/timeseries/": {
             "get": {
                 "operationId": "datasets_timeseries_retrieve",
@@ -146,6 +187,53 @@
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/datasets/{id}/timeseries/entity/": {
+            "get": {
+                "operationId": "datasets_timeseries_entity_retrieve",
+                "description": "timeを軸にentityを横展開したRecharts用データ",
+                "summary": "ユーザー Dataset の entity比較データ取得",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "additionalProperties": {}
                                     }
                                 }
                             }
@@ -459,6 +547,50 @@
                 }
             }
         },
+        "/api/v1/datasets/public/{id}/meta/": {
+            "get": {
+                "operationId": "datasets_public_meta_retrieve",
+                "description": "公開Datasetのメタ情報取得（entities / metrics）",
+                "summary": "Public Dataset のメタデータ取得",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasetMeta"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/public/{id}/timeseries/": {
             "get": {
                 "operationId": "datasets_public_timeseries_retrieve",
@@ -506,6 +638,54 @@
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/datasets/public/{id}/timeseries/entity/": {
+            "get": {
+                "operationId": "datasets_public_timeseries_entity_retrieve",
+                "description": "timeを軸にentityを横展開したRecharts用データ",
+                "summary": "Public Dataset の entity比較データ取得",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "additionalProperties": {}
                                     }
                                 }
                             }
@@ -1301,6 +1481,27 @@
                     "parse_result",
                     "schema",
                     "status"
+                ]
+            },
+            "DatasetMeta": {
+                "type": "object",
+                "properties": {
+                    "entities": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "metrics": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "entities",
+                    "metrics"
                 ]
             },
             "DatasetSchema": {

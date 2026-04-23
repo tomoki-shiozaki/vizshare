@@ -51,10 +51,13 @@ export type TimeSeriesPoint = {
 
 export type DatasetDataPointsResponse = Record<string, TimeSeriesPoint[]>;
 
-export type MergedTimeSeriesPoint = {
-  time: string;
-  [entity: string]: number | null | string;
-};
+export type EntityComparisonPoint = { time: string } & Record<
+  string,
+  number | null
+>;
+
+export type DatasetMetaResponse =
+  paths["/api/v1/datasets/{id}/meta/"]["get"]["responses"][200]["content"]["application/json"];
 
 // =============================
 // Visibility
