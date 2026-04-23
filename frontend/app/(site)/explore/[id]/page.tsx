@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { PublicDatasetDetail } from "@/features/datasets/public/detail/components/PublicDatasetDetail";
 import { DatasetLineChart } from "@/features/datasets/components/charts/DatasetLineChart";
+import { PublicDatasetEntityComparisonChart } from "@/features/datasets/components/charts/PublicDatasetEntityComparisonChart";
 import { usePublicDatasetDataPoints } from "@/features/datasets/public/timeseries/hooks/usePublicDatasetDataPoints";
 
 export default function PublicDatasetPage() {
@@ -16,10 +17,13 @@ export default function PublicDatasetPage() {
       description="Dataset の詳細情報と各列の構造、時系列データの傾向を確認できます"
     >
       <PublicDatasetDetail id={id} />
+
       <DatasetLineChart
         datasetId={id}
         useDataPoints={usePublicDatasetDataPoints}
       />
+
+      <PublicDatasetEntityComparisonChart datasetId={id} />
     </PageLayout>
   );
 }
