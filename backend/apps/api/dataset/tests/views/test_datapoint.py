@@ -370,3 +370,106 @@ class TestPublicDatasetEntityComparisonAPIView:
         assert res.data == [
             {"time": "2026-03-13T00:00:00Z", "A": 1.0},
         ]
+
+
+@pytest.mark.django_db
+class TestPublicDatasetMetaAPIView:
+    def test_get_public_dataset_meta_success(
+        self,
+        api_client,
+        dataset_with_points,
+    ):
+        dataset_with_points.is_public = True
+        dataset_with_points.status = Dataset.Status.PARSED
+        dataset_with_points.save()
+
+        url = reverse("dataset:public-meta", args=[dataset_with_points.id])
+        res = api_client.get(url)
+
+        assert res.status_code == status.HTTP_200_OK
+        assert res.data["entities"] == ["A", "B"]
+        assert res.data["metrics"] == ["anomaly", "value"]
+
+    def test_get_public_dataset_meta_no_auth_required(
+        self,
+        api_client,
+        dataset_with_points,
+    ):
+        dataset_with_points.is_public = True
+        dataset_with_points.status = Dataset.Status.PARSED
+        dataset_with_points.save()
+
+        url = reverse("dataset:public-meta", args=[dataset_with_points.id])
+        res = api_client.get(url)
+
+        assert res.status_code == status.HTTP_200_OK
+
+    def test_get_public_dataset_meta_not_public(
+        self,
+        api_client,
+        dataset_with_points,
+    ):
+        dataset_with_points.is_public = False
+        dataset_with_points.status = Dataset.Status.PARSED
+        dataset_with_points.save()
+
+        url = reverse("dataset:public-meta", args=[dataset_with_points.id])
+        res = api_client.get(url)
+
+        assert res.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_get_public_dataset_meta_not_parsed(
+        self,
+        api_client,
+        dataset_with_points,
+    ):
+        dataset_with_points.is_public = True
+        dataset_with_points.status = Dataset.Status.UPLOADED
+        dataset_with_points.save()
+
+        url = reverse("dataset:public-meta", args=[dataset_with_points.id])
+        res = api_client.get(url)
+
+        assert res.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_get_public_dataset_meta_distinct_behavior(
+        self,
+        api_client,
+        dataset_with_points,
+    ):
+        dataset = dataset_with_points
+        dataset.is_public = True
+        dataset.status = Dataset.Status.PARSED
+        dataset.save()
+
+        DataPoint.objects.create(
+            dataset=dataset,
+            entity="A",
+            metric="value",
+            raw_time="2026-03-13T02:00:00Z",
+            value=3,
+            order_index=2,
+        )
+
+        url = reverse("dataset:public-meta", args=[dataset.id])
+        res = api_client.get(url)
+
+        assert res.status_code == status.HTTP_200_OK
+        assert res.data["entities"] == ["A", "B"]
+        assert set(res.data["metrics"]) == {"anomaly", "value"}
+
+    def test_get_public_dataset_meta_empty(
+        self,
+        api_client,
+        dataset,
+    ):
+        dataset.is_public = True
+        dataset.status = Dataset.Status.PARSED
+        dataset.save()
+
+        url = reverse("dataset:public-meta", args=[dataset.id])
+        res = api_client.get(url)
+
+        assert res.status_code == status.HTTP_200_OK
+        assert res.data["entities"] == []
+        assert res.data["metrics"] == []
