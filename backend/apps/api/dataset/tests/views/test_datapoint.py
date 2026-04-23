@@ -257,3 +257,116 @@ class TestPublicDatasetTimeSeriesAPIView:
         res = api_client.get(url)
 
         assert res.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+class TestPublicDatasetEntityComparisonAPIView:
+    def test_get_success(self, api_client, dataset):
+        dataset.is_public = True
+        dataset.status = Dataset.Status.PARSED
+        dataset.save()
+
+        DataPoint.objects.create(
+            dataset=dataset,
+            entity="A",
+            metric="value",
+            raw_time="2026-03-13T00:00:00Z",
+            time=parse_row_time("2026-03-13T00:00:00Z"),
+            value=1,
+            order_index=0,
+        )
+        DataPoint.objects.create(
+            dataset=dataset,
+            entity="B",
+            metric="value",
+            raw_time="2026-03-13T01:00:00Z",
+            time=parse_row_time("2026-03-13T01:00:00Z"),
+            value=2,
+            order_index=0,
+        )
+
+        url = reverse("dataset:public-timeseries-entity", args=[dataset.id])
+        res = api_client.get(url, {"metric": "value"})
+
+        assert res.status_code == 200
+        assert res.data == [
+            {"time": "2026-03-13T00:00:00Z", "A": 1.0},
+            {"time": "2026-03-13T01:00:00Z", "B": 2.0},
+        ]
+
+    def test_metric_required(self, api_client, dataset):
+        dataset.is_public = True
+        dataset.status = Dataset.Status.PARSED
+        dataset.save()
+
+        url = reverse("dataset:public-timeseries-entity", args=[dataset.id])
+        res = api_client.get(url)
+
+        assert res.status_code == 400
+        assert res.data["detail"] == "metric is required"
+
+    def test_non_public_dataset(self, api_client, dataset):
+        dataset.is_public = False
+        dataset.status = Dataset.Status.PARSED
+        dataset.save()
+
+        url = reverse("dataset:public-timeseries-entity", args=[dataset.id])
+        res = api_client.get(url, {"metric": "value"})
+
+        assert res.status_code == 404
+
+    def test_not_parsed_dataset(self, api_client, dataset):
+        dataset.is_public = True
+        dataset.status = Dataset.Status.PROCESSING  # PARSED以外
+        dataset.save()
+
+        url = reverse("dataset:public-timeseries-entity", args=[dataset.id])
+        res = api_client.get(url, {"metric": "value"})
+
+        assert res.status_code == 404
+
+    def test_empty_result(self, api_client, dataset):
+        dataset.is_public = True
+        dataset.status = Dataset.Status.PARSED
+        dataset.save()
+
+        url = reverse("dataset:public-timeseries-entity", args=[dataset.id])
+        res = api_client.get(url, {"metric": "value"})
+
+        assert res.status_code == 200
+        assert res.data == []
+
+    def test_metric_filtering(self, api_client, dataset):
+        dataset.is_public = True
+        dataset.status = Dataset.Status.PARSED
+        dataset.save()
+
+        # 対象
+        DataPoint.objects.create(
+            dataset=dataset,
+            entity="A",
+            metric="value",
+            raw_time="2026-03-13T00:00:00Z",
+            time=parse_row_time("2026-03-13T00:00:00Z"),
+            value=1,
+            order_index=0,
+        )
+
+        # 対象外
+        DataPoint.objects.create(
+            dataset=dataset,
+            entity="A",
+            metric="anomaly",
+            raw_time="2026-03-13T00:00:01Z",
+            time=parse_row_time("2026-03-13T00:00:01Z"),
+            value=0.1,
+            order_index=1,
+        )
+
+        url = reverse("dataset:public-timeseries-entity", args=[dataset.id])
+        res = api_client.get(url, {"metric": "value"})
+
+        assert res.status_code == 200
+        assert res.data == [
+            {"time": "2026-03-13T00:00:00Z", "A": 1.0},
+        ]
