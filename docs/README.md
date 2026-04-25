@@ -11,39 +11,34 @@ This directory contains design notes, specifications, and development documentat
   - [Time Series CSV Specification (v1)](./csv-timeseries-spec.md)
 - **Development setup**
   - [Local development setup](./development.md)
-- **Infrastructure & Terraform**
-  - (internal / personal notes)
 
 ---
 
 ## 1. Project Overview
 
 - **Project name:** VizShare
-- **Background:** The developer previously created [Climate Change App](https://github.com/tomoki-shiozaki/climate-change-app-v2), which visualizes temperature anomalies and CO2 emissions using graphs and maps. The temperature data used in the Climate Change App was prepared by the developer. One of the motivations for developing VizShare is to allow users to upload their own data, visualize it in graphs, and share it with others.
-- **Purpose:** The purposes of this app are:
-  1. To allow users to upload their own datasets and visualize them as charts.
+- **Background:** VizShare was inspired by a previous project that visualized climate data using charts and maps. It extends this concept by enabling users to upload and visualize their own datasets in a flexible and shareable format.
+- **Purpose:** The purposes of this application are:
+  1. To allow users to upload datasets and visualize them as charts.
   2. To enable users to share datasets and visualizations with others.
-  3. To support data exploration and discussion around shared datasets.
-- **MVP Implementation:**
-  - Uploading CSV datasets
-  - Parsing and validating time-series data
-  - Visualizing datasets as interactive charts
-  - Publishing datasets to a public gallery
+  3. To support exploration and discussion around shared data.
 
 ## 2. Requirements
 
-| ID  | Requirement    | Description                                                         | Priority | Notes                     |
-| --- | -------------- | ------------------------------------------------------------------- | -------- | ------------------------- |
-| R1  | Upload CSV     | Users can upload CSV files containing their own data                | High     | MVP                       |
-| R2  | Parse Data     | System parses CSV and extracts time, entity, and metric columns     | High     | MVP: only numeric metrics |
-| R3  | Visualize Data | Display data in graphs (line, bar, etc.)                            | High     | MVP: basic line chart     |
-| R4  | Share Data     | Users can publish datasets and visualizations to the public gallery | High     | MVP                       |
-| R5  | Comment        | Users can comment on shared visualizations                          | Medium   | Future feature            |
+| ID  | Requirement    | Description                                                         | Priority | Notes                |
+| --- | -------------- | ------------------------------------------------------------------- | -------- | -------------------- |
+| R1  | Upload CSV     | Users can upload CSV files containing their own data                | High     |                      |
+| R2  | Parse Data     | System parses CSV and extracts time, entity, and metric columns     | High     | Only numeric metrics |
+| R3  | Visualize Data | Display data in graphs (line, bar, etc.)                            | High     | Basic line charts    |
+| R4  | Share Data     | Users can publish datasets and visualizations to the public gallery | High     |                      |
+| R5  | Comment        | Users can comment on shared visualizations                          | Medium   | Future feature       |
+
+---
 
 ## 2.1 Use Case Diagram
 
 The following diagram illustrates the main user interactions in VizShare,
-including both MVP functionality and planned features.
+including dataset upload, visualization, and sharing.
 
 ![Use Case Diagram](./usecase/usecase/vizshare_use.svg)
 
@@ -60,6 +55,8 @@ The following diagram shows the main data models and their relationships in VizS
 - **DataPoint:** Stores individual metric values for each dataset, along with time and entity information. Each combination of dataset, entity, metric, and raw_time is unique.
 - **Dataset Status:** UPLOADED / PROCESSING / PARSED / FAILED
 - **JSON Fields:** `schema` and `parse_result` are stored as JSONFields.
+
+---
 
 ## 4. System Architecture
 
@@ -86,8 +83,10 @@ including the frontend, backend, database, storage, and deployment flow.
 5. Parsed data is stored in PostgreSQL.
 6. Uploaded CSV files are stored in Cloud Storage.
 
+---
+
 ## 5. Screen Flow Diagram
 
-The following diagram shows the main screen transitions in the VizShare MVP.
+The following diagram shows the main screen transitions in VizShare.
 
 ![Screen Flow Diagram](./screen_flow/screen_flow_diagram/screen_flow_vizshare.svg)

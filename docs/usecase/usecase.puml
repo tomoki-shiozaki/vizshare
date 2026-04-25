@@ -14,7 +14,6 @@ rectangle "Vizshare App" {
     (Share Data)
     (Browse Public Datasets)
     (View Shared Visualizations)
-    (Comment)
   }
 }
 
@@ -23,6 +22,5 @@ generalUser --> (Visualize Data)
 generalUser --> (Share Data)
 generalUser --> (Browse Public Datasets)
 generalUser --> (View Shared Visualizations)
-generalUser --> (Comment)
 
 @enduml
