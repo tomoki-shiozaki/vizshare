@@ -64,7 +64,7 @@ Interactive charts for exploring time-series data across entities and metrics.
 
 ### CSV Upload & Schema Detection
 
-<img src="docs/screenshots/csv-upload-ui3.png" width="600" />
+<img src="docs/screenshots/csv-upload-ui.png" width="600" />
 
 Parses CSV headers and identifies candidate time, entity, and metric columns, with basic automatic pre-selection based on common keywords.
 
