@@ -66,7 +66,7 @@ Interactive charts for exploring time-series data across entities and metrics.
 
 <img src="docs/screenshots/csv-upload-ui3.png" width="600" />
 
-Automatically detects time, entity, and metric columns from uploaded CSV files.
+Parses CSV headers and identifies candidate time, entity, and metric columns, with basic automatic pre-selection based on common keywords.
 
 ## Tech Stack
 
