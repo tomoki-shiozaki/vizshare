@@ -56,7 +56,17 @@ Feel free to explore the app using this account.
 
 ## Screenshots
 
-_(Screenshots will be added once the UI is more polished)_
+### Time-Series Visualization
+
+![time-series-visualization](docs/screenshots/time-series-visualization.png)
+
+Interactive charts for exploring time-series data across entities and metrics.
+
+### CSV Upload & Schema Detection
+
+![csv-upload-ui](docs/screenshots/csv-upload-ui.png)
+
+Automatically detects time, entity, and metric columns from uploaded CSV files.
 
 ## Tech Stack
 
