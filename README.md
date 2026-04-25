@@ -6,15 +6,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 VizShare is a web application that allows users to upload CSV datasets,
-visualize them as interactive charts, and share datasets through a
-public dataset gallery.
+visualize them as interactive charts, and share datasets through a public dataset gallery.
 
-The project focuses on time-series data and aims to make data sharing
-and visualization simple and reproducible.
+The application focuses on time-series data and provides a simple workflow for data visualization and sharing.
 
 ## Features
 
-### ✅ Implemented (MVP Core)
+### Core Features
 
 - Upload CSV files (time-series data)
 - Automatic parsing of uploaded data (schema detection, time handling)
@@ -22,26 +20,11 @@ and visualization simple and reproducible.
 - Browse and visualize public datasets
 - CSV download for shared datasets
 
-### 🚧 In Progress / Planned
-
-- Additional visualization features
-
-## Project Status
-
-VizShare is currently in early development (MVP stage).
-
-The core functionality — CSV upload, dataset parsing, visualization,
-and public dataset sharing — is implemented and working as a
-minimum viable product.
-
 ## Live Demo
 
-You can try the MVP of VizShare at:
+Try VizShare here:
 
 https://vizshare.vercel.app/
-
-⚠️ Note: VizShare is currently in early development (MVP stage).  
-Some features and UI elements are still under construction, so you may encounter minor inconsistencies.
 
 ### Demo Account
 
@@ -52,7 +35,7 @@ including CSV upload, visualization, and dataset sharing:
 | --------- | -------- |
 | demo_user | demo1234 |
 
-Feel free to explore the app using this account.
+You can use this account to explore the application.
 
 ## Screenshots
 
@@ -104,8 +87,6 @@ flowchart LR
 4. Datasets may be published to the public dataset gallery.
 5. Users explore datasets and visualize them as interactive charts.
 6. Original CSV files can be downloaded from dataset pages.
-
-> Note: Uploaded CSV files are stored in Google Cloud Storage to handle large datasets efficiently and enable easy sharing.
 
 ## Repository Structure
 
