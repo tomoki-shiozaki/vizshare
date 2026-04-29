@@ -110,6 +110,37 @@ WHERE grantee = 'app_user';
 
 ---
 
+## 8. 接続ユーザー（重要）
+
+この設定では、用途によってDB接続ユーザーを使い分ける。
+
+### ■ 管理・マイグレーション用（neondb_owner）
+
+```text
+postgresql://neondb_owner:<password>@<host>/neondb?sslmode=require&channel_binding=require
+```
+
+用途：
+
+- Django migration（makemigrations / migrate）
+- テーブル・スキーマ変更
+- 初期データ投入
+
+---
+
+### ■ アプリケーション用（app_user）
+
+```text
+postgresql://app_user:<password>@<host>/neondb?sslmode=require&channel_binding=require
+```
+
+用途：
+
+- API実行時のDBアクセス
+- 通常のCRUD操作
+
+---
+
 ## 補足
 
 - `ALTER DEFAULT PRIVILEGES` は「そのロール（ここでは neondb_owner）が今後作るオブジェクト」にのみ適用される
