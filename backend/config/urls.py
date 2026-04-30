@@ -18,15 +18,22 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from apps.accounts.views import CustomLoginView, CustomRegisterView
 from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/", include("apps.api.urls")),
-    path("api/v1/dj-rest-auth/", include("dj_rest_auth.urls")),
+    path("api/v1/dj-rest-auth/login/", CustomLoginView.as_view(), name="rest_login"),
+    path(
+        "api/v1/dj-rest-auth/registration/",
+        CustomRegisterView.as_view(),
+        name="rest_register",
+    ),
     path(
         "api/v1/dj-rest-auth/registration/", include("dj_rest_auth.registration.urls")
     ),
+    path("api/v1/dj-rest-auth/", include("dj_rest_auth.urls")),
 ]
 
 if settings.DEBUG:
