@@ -250,6 +250,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
+         * ログイン
          * @description Check the credentials and return the REST Token
          *     if the credentials are valid and authenticated.
          *     Calls Django Auth login method to register User ID
@@ -365,6 +366,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
+         * ユーザー登録
          * @description Registers a new user.
          *
          *     Accepts the following POST parameters: username, email, password1, password2.

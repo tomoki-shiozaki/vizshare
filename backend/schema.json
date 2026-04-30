@@ -699,6 +699,7 @@
             "post": {
                 "operationId": "dj_rest_auth_login_create",
                 "description": "Check the credentials and return the REST Token\nif the credentials are valid and authenticated.\nCalls Django Auth login method to register User ID\nin Django session framework\n\nAccept the following POST parameters: username, password\nReturn the REST Framework Token Object's key.",
+                "summary": "ログイン",
                 "tags": [
                     "dj-rest-auth"
                 ],
@@ -943,6 +944,7 @@
             "post": {
                 "operationId": "dj_rest_auth_registration_create",
                 "description": "Registers a new user.\n\nAccepts the following POST parameters: username, email, password1, password2.",
+                "summary": "ユーザー登録",
                 "tags": [
                     "dj-rest-auth"
                 ],
