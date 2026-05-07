@@ -163,7 +163,7 @@ class TestDatasetGetDownloadUrl:
             source_file=dummy_file,
             status=Dataset.Status.PARSED,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
         )
 
         # 非 production 環境では signed URL なし
