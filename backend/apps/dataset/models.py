@@ -56,11 +56,6 @@ class Dataset(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # 公開・非公開フラグ
-    is_public = models.BooleanField(
-        default=False, help_text="True の場合、誰でも閲覧可能"
-    )
-
     visibility = models.CharField(
         max_length=20,
         choices=Visibility.choices,
