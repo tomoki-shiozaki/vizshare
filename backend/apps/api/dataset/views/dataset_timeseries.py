@@ -103,7 +103,10 @@ class PublicDatasetTimeSeriesAPIView(APIView):
     )
     def get(self, request, pk: int):
         dataset = get_object_or_404(
-            Dataset, pk=pk, is_public=True, status=Dataset.Status.PARSED
+            Dataset,
+            pk=pk,
+            visibility=Dataset.Visibility.PUBLIC,
+            status=Dataset.Status.PARSED,
         )
         data_qs = dataset.data_points.all().order_by("entity", "time", "order_index")  # type: ignore
         result = build_time_series_data(data_qs)
@@ -126,7 +129,10 @@ class PublicDatasetEntityComparisonAPIView(APIView):
     )
     def get(self, request, pk: int):
         dataset = get_object_or_404(
-            Dataset, pk=pk, is_public=True, status=Dataset.Status.PARSED
+            Dataset,
+            pk=pk,
+            visibility=Dataset.Visibility.PUBLIC,
+            status=Dataset.Status.PARSED,
         )
 
         metric = request.query_params.get("metric")
@@ -158,7 +164,10 @@ class PublicDatasetMetaAPIView(APIView):
     )
     def get(self, request, pk: int):
         dataset = get_object_or_404(
-            Dataset, pk=pk, is_public=True, status=Dataset.Status.PARSED
+            Dataset,
+            pk=pk,
+            visibility=Dataset.Visibility.PUBLIC,
+            status=Dataset.Status.PARSED,
         )
 
         qs = dataset.data_points.all()  # type: ignore
