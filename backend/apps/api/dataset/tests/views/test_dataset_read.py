@@ -18,7 +18,7 @@ class TestPublicDatasetReadAPI:
             source_file=dummy_file,
             status=Dataset.Status.PARSED,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
         )
 
         # ❌ 非公開
@@ -28,7 +28,7 @@ class TestPublicDatasetReadAPI:
             source_file=dummy_file,
             status=Dataset.Status.PARSED,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=False,
+            visibility=Dataset.Visibility.PRIVATE,
         )
 
         # ❌ 公開だがprocessing
@@ -38,7 +38,7 @@ class TestPublicDatasetReadAPI:
             source_file=dummy_file,
             status=Dataset.Status.PROCESSING,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
         )
 
         response = api_client.get(reverse("dataset:public"))
@@ -69,7 +69,7 @@ class TestPublicDatasetDetailAPIView:
             source_file=dummy_file,
             status=Dataset.Status.PARSED,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
         )
 
         url = reverse("dataset:public-detail", args=[dataset.pk])
@@ -91,7 +91,7 @@ class TestPublicDatasetDetailAPIView:
             source_file=dummy_file,
             status=Dataset.Status.PARSED,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=False,
+            visibility=Dataset.Visibility.PRIVATE,
         )
 
         url = reverse("dataset:public-detail", args=[dataset.pk])
@@ -109,7 +109,7 @@ class TestPublicDatasetDetailAPIView:
             source_file=dummy_file,
             status=Dataset.Status.PROCESSING,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
         )
 
         url = reverse("dataset:public-detail", args=[dataset.pk])
@@ -134,7 +134,7 @@ class TestPublicDatasetDownloadAPIView:
             source_file=dummy_file,
             status=Dataset.Status.PARSED,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
         )
 
         url = reverse("dataset:public-download", args=[dataset.pk])
@@ -154,7 +154,7 @@ class TestPublicDatasetDownloadAPIView:
             source_file=dummy_file,
             status=Dataset.Status.PARSED,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=False,
+            visibility=Dataset.Visibility.PRIVATE,
         )
 
         url = reverse("dataset:public-download", args=[dataset.pk])
@@ -171,7 +171,7 @@ class TestPublicDatasetDownloadAPIView:
             source_file=dummy_file,
             status=Dataset.Status.PROCESSING,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
         )
 
         url = reverse("dataset:public-download", args=[dataset.pk])
