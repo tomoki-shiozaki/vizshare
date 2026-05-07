@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 
 class Dataset(models.Model):
@@ -10,15 +11,36 @@ class Dataset(models.Model):
         PARSED = "parsed", _("解析完了")
         FAILED = "failed", _("失敗")
 
+    class Visibility(models.TextChoices):
+        PRIVATE = "private", _("非公開")
+        UNLISTED = "unlisted", _("限定公開")
+        PUBLIC = "public", _("公開")
+
+    # ログインユーザー（任意）
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="datasets",
+        null=True,
+        blank=True,
     )
+
+    # 匿名ユーザー識別（ログインなし用）
+    anonymous_id = models.UUIDField(
+        editable=False,
+        db_index=True,
+        null=True,
+        blank=True,
+    )
+
     name = models.CharField(max_length=255)
+
     source_file = models.FileField(upload_to="datasets/source/")
+
     status = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.UPLOADED
+        max_length=20,
+        choices=Status.choices,
+        default=Status.UPLOADED,
     )
 
     # ユーザーが指定した列情報（JSON）
@@ -33,10 +55,30 @@ class Dataset(models.Model):
     parse_result = models.JSONField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
     # 公開・非公開フラグ
     is_public = models.BooleanField(
         default=False, help_text="True の場合、誰でも閲覧可能"
     )
+
+    visibility = models.CharField(
+        max_length=20,
+        choices=Visibility.choices,
+        default=Visibility.PRIVATE,
+    )
+
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="匿名データの有効期限（任意）",
+    )
+
+    def clean(self):
+        if not self.owner and not self.anonymous_id:
+            raise ValidationError("owner or anonymous_id is required")
+
+        if self.owner and self.anonymous_id:
+            raise ValidationError("cannot have both owner and anonymous_id")
 
     # --- 状態管理メソッド ---
     def mark_processing(self) -> bool:
