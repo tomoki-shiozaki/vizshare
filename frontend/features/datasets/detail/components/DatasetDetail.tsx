@@ -67,11 +67,11 @@ export function DatasetDetail({ id }: Props) {
           status={dataset.status}
           message={dataset.parse_result?.message}
         />
-        <DatasetVisibilityBadge isPublic={dataset.is_public} />
+        <DatasetVisibilityBadge visibility={dataset.visibility} />
 
         <DatasetVisibilityToggle
           datasetId={String(dataset.id)}
-          isPublic={dataset.is_public}
+          visibility={dataset.visibility}
         />
       </div>
 
