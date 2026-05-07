@@ -38,7 +38,7 @@ export function DatasetListItem({ dataset }: Props) {
 
       <div className="ml-3 flex items-center gap-2 flex-shrink-0">
         <DatasetBadge status={dataset.status} />
-        <DatasetVisibilityBadge isPublic={dataset.is_public} />
+        <DatasetVisibilityBadge visibility={dataset.visibility} />
       </div>
     </li>
   );
