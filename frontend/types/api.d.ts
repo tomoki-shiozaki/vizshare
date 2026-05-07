@@ -546,8 +546,7 @@ export interface components {
             readonly created_at: string;
             schema: components["schemas"]["DatasetSchema"];
             parse_result?: components["schemas"]["ParseResult"] | null;
-            /** @description True の場合、誰でも閲覧可能 */
-            readonly is_public: boolean;
+            readonly visibility: components["schemas"]["VisibilityEnum"];
         };
         DatasetList: {
             readonly id: number;
@@ -557,8 +556,7 @@ export interface components {
             readonly created_at: string;
             readonly schema: unknown;
             readonly parse_result: unknown;
-            /** @description True の場合、誰でも閲覧可能 */
-            readonly is_public: boolean;
+            readonly visibility: components["schemas"]["VisibilityEnum"];
         };
         DatasetMeta: {
             entities: string[];
@@ -570,8 +568,7 @@ export interface components {
             metrics: string[];
         };
         DatasetVisibility: {
-            /** @description True の場合、誰でも閲覧可能 */
-            is_public?: boolean;
+            visibility?: components["schemas"]["VisibilityEnum"];
         };
         /** @description Serializer for JWT authentication. */
         JWT: {
@@ -637,8 +634,7 @@ export interface components {
             token: string;
         };
         PatchedDatasetVisibility: {
-            /** @description True の場合、誰でも閲覧可能 */
-            is_public?: boolean;
+            visibility?: components["schemas"]["VisibilityEnum"];
         };
         /** @description User model w/o password */
         PatchedUserDetails: {
@@ -728,6 +724,13 @@ export interface components {
         VerifyEmail: {
             key: string;
         };
+        /**
+         * @description * `private` - 非公開
+         *     * `unlisted` - 限定公開
+         *     * `public` - 公開
+         * @enum {string}
+         */
+        VisibilityEnum: "private" | "unlisted" | "public";
     };
     responses: never;
     parameters: never;
