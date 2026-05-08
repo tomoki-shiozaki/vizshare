@@ -68,6 +68,23 @@ class Dataset(models.Model):
         help_text="匿名データの有効期限（任意）",
     )
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=(
+                    (
+                        models.Q(owner__isnull=False)
+                        & models.Q(anonymous_id__isnull=True)
+                    )
+                    | (
+                        models.Q(owner__isnull=True)
+                        & models.Q(anonymous_id__isnull=False)
+                    )
+                ),
+                name="dataset_owner_xor_anonymous",
+            )
+        ]
+
     def clean(self):
         if not self.owner and not self.anonymous_id:
             raise ValidationError("owner or anonymous_id is required")
