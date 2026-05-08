@@ -46,7 +46,7 @@ class PublicDatasetListAPIView(generics.ListAPIView):
     def get_queryset(self):
         return (
             Dataset.objects.filter(
-                is_public=True,
+                visibility=Dataset.Visibility.PUBLIC,
                 status=Dataset.Status.PARSED,
             )
             .select_related("owner")
@@ -63,7 +63,10 @@ class PublicDatasetDetailAPIView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return Dataset.objects.filter(is_public=True, status=Dataset.Status.PARSED)
+        return Dataset.objects.filter(
+            visibility=Dataset.Visibility.PUBLIC,
+            status=Dataset.Status.PARSED,
+        )
 
 
 class PublicDatasetDownloadAPIView(generics.GenericAPIView):
@@ -77,7 +80,7 @@ class PublicDatasetDownloadAPIView(generics.GenericAPIView):
         dataset = get_object_or_404(
             Dataset,
             pk=pk,
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
             status=Dataset.Status.PARSED,
         )
 

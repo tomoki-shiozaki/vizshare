@@ -56,4 +56,4 @@ class DatasetVisibilitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Dataset
-        fields = ["is_public"]
+        fields = ["visibility"]

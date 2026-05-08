@@ -1,5 +1,8 @@
+import uuid
+
 import pytest
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError
 from django.test import override_settings
@@ -40,6 +43,63 @@ def dataset(db, user):
 
 @pytest.mark.django_db
 class TestDatasetModel:
+    # ============================
+    # visibility
+    # ============================
+
+    def test_visibility_default_private(self, dataset):
+        """visibility の default は PRIVATE"""
+        assert dataset.visibility == Dataset.Visibility.PRIVATE
+
+    # ============================
+    # clean()
+    # ============================
+
+    def test_clean_accepts_owner_only(self, user):
+        """owner のみなら OK"""
+        dataset = Dataset(
+            owner=user,
+            name="test",
+            source_file="dummy.csv",
+            schema={"time": "Year", "metrics": ["value"]},
+        )
+
+        dataset.clean()  # 例外なし
+
+    def test_clean_accepts_anonymous_id_only(self):
+        """anonymous_id のみなら OK"""
+        dataset = Dataset(
+            anonymous_id=uuid.uuid4(),
+            name="test",
+            source_file="dummy.csv",
+            schema={"time": "Year", "metrics": ["value"]},
+        )
+
+        dataset.clean()  # 例外なし
+
+    def test_clean_rejects_without_owner_and_anonymous_id(self):
+        """owner と anonymous_id が両方ない場合は NG"""
+        dataset = Dataset(
+            name="test",
+            source_file="dummy.csv",
+            schema={"time": "Year", "metrics": ["value"]},
+        )
+
+        with pytest.raises(ValidationError):
+            dataset.clean()
+
+    def test_clean_rejects_both_owner_and_anonymous_id(self, user):
+        """owner と anonymous_id を両方持つのは NG"""
+        dataset = Dataset(
+            owner=user,
+            anonymous_id=uuid.uuid4(),
+            name="test",
+            source_file="dummy.csv",
+            schema={"time": "Year", "metrics": ["value"]},
+        )
+
+        with pytest.raises(ValidationError):
+            dataset.clean()
 
     def test_mark_processing_from_uploaded(self, dataset):
         """UPLOADED → PROCESSING へ遷移できる"""
@@ -163,7 +223,7 @@ class TestDatasetGetDownloadUrl:
             source_file=dummy_file,
             status=Dataset.Status.PARSED,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
         )
 
         # 非 production 環境では signed URL なし

@@ -213,7 +213,7 @@ class TestPublicDatasetTimeSeriesAPIView:
             owner=user,
             name="public parsed dataset",
             status=Dataset.Status.PARSED,
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
             schema={"time": "time_col", "metrics": ["value"]},
         )
         DataPoint.objects.create(
@@ -236,7 +236,7 @@ class TestPublicDatasetTimeSeriesAPIView:
             owner=user,
             name="private dataset",
             status=Dataset.Status.PARSED,
-            is_public=False,
+            visibility=Dataset.Visibility.PRIVATE,
             schema={"time": "time_col", "metrics": ["value"]},
         )
         url = reverse("dataset:public-timeseries", args=[dataset.pk])
@@ -250,7 +250,7 @@ class TestPublicDatasetTimeSeriesAPIView:
             owner=user,
             name="processing dataset",
             status=Dataset.Status.PROCESSING,
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
             schema={"time": "time_col", "metrics": ["value"]},
         )
         url = reverse("dataset:public-timeseries", args=[dataset.pk])
@@ -262,7 +262,7 @@ class TestPublicDatasetTimeSeriesAPIView:
 @pytest.mark.django_db
 class TestPublicDatasetEntityComparisonAPIView:
     def test_get_success(self, api_client, dataset):
-        dataset.is_public = True
+        dataset.visibility = Dataset.Visibility.PUBLIC
         dataset.status = Dataset.Status.PARSED
         dataset.save()
 
@@ -295,7 +295,7 @@ class TestPublicDatasetEntityComparisonAPIView:
         ]
 
     def test_metric_required(self, api_client, dataset):
-        dataset.is_public = True
+        dataset.visibility = Dataset.Visibility.PUBLIC
         dataset.status = Dataset.Status.PARSED
         dataset.save()
 
@@ -306,7 +306,7 @@ class TestPublicDatasetEntityComparisonAPIView:
         assert res.data["detail"] == "metric is required"
 
     def test_non_public_dataset(self, api_client, dataset):
-        dataset.is_public = False
+        dataset.visibility = Dataset.Visibility.PRIVATE
         dataset.status = Dataset.Status.PARSED
         dataset.save()
 
@@ -316,7 +316,7 @@ class TestPublicDatasetEntityComparisonAPIView:
         assert res.status_code == 404
 
     def test_not_parsed_dataset(self, api_client, dataset):
-        dataset.is_public = True
+        dataset.visibility = Dataset.Visibility.PUBLIC
         dataset.status = Dataset.Status.PROCESSING  # PARSED以外
         dataset.save()
 
@@ -326,7 +326,7 @@ class TestPublicDatasetEntityComparisonAPIView:
         assert res.status_code == 404
 
     def test_empty_result(self, api_client, dataset):
-        dataset.is_public = True
+        dataset.visibility = Dataset.Visibility.PUBLIC
         dataset.status = Dataset.Status.PARSED
         dataset.save()
 
@@ -337,7 +337,7 @@ class TestPublicDatasetEntityComparisonAPIView:
         assert res.data == []
 
     def test_metric_filtering(self, api_client, dataset):
-        dataset.is_public = True
+        dataset.visibility = Dataset.Visibility.PUBLIC
         dataset.status = Dataset.Status.PARSED
         dataset.save()
 
@@ -379,7 +379,7 @@ class TestPublicDatasetMetaAPIView:
         api_client,
         dataset_with_points,
     ):
-        dataset_with_points.is_public = True
+        dataset_with_points.visibility = Dataset.Visibility.PUBLIC
         dataset_with_points.status = Dataset.Status.PARSED
         dataset_with_points.save()
 
@@ -395,7 +395,7 @@ class TestPublicDatasetMetaAPIView:
         api_client,
         dataset_with_points,
     ):
-        dataset_with_points.is_public = True
+        dataset_with_points.visibility = Dataset.Visibility.PUBLIC
         dataset_with_points.status = Dataset.Status.PARSED
         dataset_with_points.save()
 
@@ -409,7 +409,7 @@ class TestPublicDatasetMetaAPIView:
         api_client,
         dataset_with_points,
     ):
-        dataset_with_points.is_public = False
+        dataset_with_points.visibility = Dataset.Visibility.PRIVATE
         dataset_with_points.status = Dataset.Status.PARSED
         dataset_with_points.save()
 
@@ -423,7 +423,7 @@ class TestPublicDatasetMetaAPIView:
         api_client,
         dataset_with_points,
     ):
-        dataset_with_points.is_public = True
+        dataset_with_points.visibility = Dataset.Visibility.PUBLIC
         dataset_with_points.status = Dataset.Status.UPLOADED
         dataset_with_points.save()
 
@@ -438,7 +438,7 @@ class TestPublicDatasetMetaAPIView:
         dataset_with_points,
     ):
         dataset = dataset_with_points
-        dataset.is_public = True
+        dataset.visibility = Dataset.Visibility.PUBLIC
         dataset.status = Dataset.Status.PARSED
         dataset.save()
 
@@ -463,7 +463,7 @@ class TestPublicDatasetMetaAPIView:
         api_client,
         dataset,
     ):
-        dataset.is_public = True
+        dataset.visibility = Dataset.Visibility.PUBLIC
         dataset.status = Dataset.Status.PARSED
         dataset.save()
 

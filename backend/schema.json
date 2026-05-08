@@ -1423,19 +1423,22 @@
                         ],
                         "nullable": true
                     },
-                    "is_public": {
-                        "type": "boolean",
-                        "readOnly": true,
-                        "description": "True の場合、誰でも閲覧可能"
+                    "visibility": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/VisibilityEnum"
+                            }
+                        ],
+                        "readOnly": true
                     }
                 },
                 "required": [
                     "created_at",
                     "id",
-                    "is_public",
                     "name",
                     "schema",
-                    "status"
+                    "status",
+                    "visibility"
                 ]
             },
             "DatasetList": {
@@ -1469,20 +1472,23 @@
                         "readOnly": true,
                         "nullable": true
                     },
-                    "is_public": {
-                        "type": "boolean",
-                        "readOnly": true,
-                        "description": "True の場合、誰でも閲覧可能"
+                    "visibility": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/VisibilityEnum"
+                            }
+                        ],
+                        "readOnly": true
                     }
                 },
                 "required": [
                     "created_at",
                     "id",
-                    "is_public",
                     "name",
                     "parse_result",
                     "schema",
-                    "status"
+                    "status",
+                    "visibility"
                 ]
             },
             "DatasetMeta": {
@@ -1531,9 +1537,8 @@
             "DatasetVisibility": {
                 "type": "object",
                 "properties": {
-                    "is_public": {
-                        "type": "boolean",
-                        "description": "True の場合、誰でも閲覧可能"
+                    "visibility": {
+                        "$ref": "#/components/schemas/VisibilityEnum"
                     }
                 }
             },
@@ -1710,9 +1715,8 @@
             "PatchedDatasetVisibility": {
                 "type": "object",
                 "properties": {
-                    "is_public": {
-                        "type": "boolean",
-                        "description": "True の場合、誰でも閲覧可能"
+                    "visibility": {
+                        "$ref": "#/components/schemas/VisibilityEnum"
                     }
                 }
             },
@@ -1954,6 +1958,15 @@
                 "required": [
                     "key"
                 ]
+            },
+            "VisibilityEnum": {
+                "enum": [
+                    "private",
+                    "unlisted",
+                    "public"
+                ],
+                "type": "string",
+                "description": "* `private` - 非公開\n* `unlisted` - 限定公開\n* `public` - 公開"
             }
         },
         "securitySchemes": {

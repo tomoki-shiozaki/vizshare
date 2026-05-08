@@ -18,7 +18,7 @@ class TestPublicDatasetDetailSerializer:
             source_file=dummy_file,
             status=Dataset.Status.PARSED,
             schema={"time": "year", "metrics": ["value"]},
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
         )
 
         serializer = PublicDatasetDetailSerializer(dataset)
