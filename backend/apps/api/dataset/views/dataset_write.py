@@ -1,5 +1,5 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from apps.api.dataset.serializers.dataset_write import (
     DatasetCreateSerializer,
@@ -7,6 +7,7 @@ from apps.api.dataset.serializers.dataset_write import (
 )
 from apps.dataset.models import Dataset
 from apps.dataset.services.dataset_service import create_dataset
+from apps.core.services.anonymous import get_or_create_anonymous_id
 
 
 class DatasetCreateAPIView(generics.CreateAPIView):
@@ -40,3 +41,40 @@ class DatasetVisibilityUpdateAPIView(generics.UpdateAPIView):
 
     def get_queryset(self):
         return Dataset.objects.filter(owner=self.request.user)
+
+
+class DatasetAnonymousCreateAPIView(generics.CreateAPIView):
+    queryset = Dataset.objects.all()
+    serializer_class = DatasetCreateSerializer
+    permission_classes = [AllowAny]  # or throttle強め
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+
+        if getattr(self, "_created_anonymous", False):
+            response.set_cookie(
+                "anonymous_id",
+                self.anonymous_id,
+                max_age=60 * 60 * 24 * 365,
+                httponly=False,
+                samesite="Lax",
+            )
+
+        return response
+
+    def perform_create(self, serializer):
+        data = serializer.validated_data
+
+        anonymous_id, created = get_or_create_anonymous_id(self.request)
+
+        self.anonymous_id = anonymous_id
+        self._created_anonymous = created
+
+        dataset = create_dataset(
+            anonymous_id=anonymous_id,
+            name=data["name"],
+            source_file=data["source_file"],
+            schema=data["schema"],
+        )
+
+        serializer.instance = dataset
