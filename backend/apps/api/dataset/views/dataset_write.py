@@ -7,6 +7,7 @@ from apps.api.dataset.serializers.dataset_write import (
     DatasetVisibilitySerializer,
 )
 from apps.core.services.anonymous import get_or_create_anonymous_id
+from apps.core.services.cookies import set_anonymous_cookie
 from apps.dataset.models import Dataset
 from apps.dataset.services.dataset_service import create_dataset
 
@@ -57,16 +58,9 @@ class DatasetAnonymousCreateAPIView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
 
-        if getattr(self, "_created_anonymous", False):
-            response.set_cookie(
-                "anonymous_id",
-                self.anonymous_id,
-                max_age=60 * 60 * 24 * 365,
-                httponly=True,
-                samesite="Lax",
-            )
-
-        return response
+        return set_anonymous_cookie(
+            response, self.anonymous_id, self._created_anonymous
+        )
 
     def perform_create(self, serializer):
         data = serializer.validated_data
