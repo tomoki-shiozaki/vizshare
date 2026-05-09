@@ -62,7 +62,7 @@ class DatasetAnonymousCreateAPIView(generics.CreateAPIView):
                 "anonymous_id",
                 self.anonymous_id,
                 max_age=60 * 60 * 24 * 365,
-                httponly=False,
+                httponly=True,
                 samesite="Lax",
             )
 
