@@ -1,13 +1,14 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.throttling import AnonRateThrottle
 
 from apps.api.dataset.serializers.dataset_write import (
     DatasetCreateSerializer,
     DatasetVisibilitySerializer,
 )
+from apps.core.services.anonymous import get_or_create_anonymous_id
 from apps.dataset.models import Dataset
 from apps.dataset.services.dataset_service import create_dataset
-from apps.core.services.anonymous import get_or_create_anonymous_id
 
 
 class DatasetCreateAPIView(generics.CreateAPIView):
@@ -43,10 +44,15 @@ class DatasetVisibilityUpdateAPIView(generics.UpdateAPIView):
         return Dataset.objects.filter(owner=self.request.user)
 
 
+class AnonymousUploadThrottle(AnonRateThrottle):
+    rate = "10/hour"
+
+
 class DatasetAnonymousCreateAPIView(generics.CreateAPIView):
     queryset = Dataset.objects.all()
     serializer_class = DatasetCreateSerializer
     permission_classes = [AllowAny]  # or throttle強め
+    throttle_classes = [AnonymousUploadThrottle]
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
