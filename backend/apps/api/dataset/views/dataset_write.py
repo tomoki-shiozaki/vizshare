@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.throttling import AnonRateThrottle
 
 from apps.api.dataset.serializers.dataset_write import (
+    AnonymousDatasetCreateSerializer,
     DatasetCreateSerializer,
     DatasetVisibilitySerializer,
 )
@@ -51,7 +52,7 @@ class AnonymousUploadThrottle(AnonRateThrottle):
 
 class DatasetAnonymousCreateAPIView(generics.CreateAPIView):
     queryset = Dataset.objects.all()
-    serializer_class = DatasetCreateSerializer
+    serializer_class = AnonymousDatasetCreateSerializer
     permission_classes = [AllowAny]  # or throttle強め
     throttle_classes = [AnonymousUploadThrottle]
 
