@@ -7,6 +7,9 @@ import type { components, paths } from "@/types/api";
 export type DatasetUploadResponse =
   paths["/api/v1/datasets/create/"]["post"]["responses"][201]["content"]["application/json"];
 
+export type AnonymousDatasetUploadResponse =
+  paths["/api/v1/datasets/anonymous/create/"]["post"]["responses"][201]["content"]["application/json"];
+
 export type DatasetUploadSchema = {
   time: string;
   entity?: string;
