@@ -101,6 +101,26 @@ class TestDatasetModel:
         with pytest.raises(ValidationError):
             dataset.clean()
 
+    def test_constraint_rejects_both_owner_and_anonymous_id(self, user):
+        """DB制約: owner と anonymous_id の両方は不可"""
+        with pytest.raises(IntegrityError):
+            Dataset.objects.create(
+                owner=user,
+                anonymous_id=uuid.uuid4(),
+                name="test",
+                source_file="dummy.csv",
+                schema={"time": "Year", "metrics": ["value"]},
+            )
+
+    def test_constraint_rejects_without_owner_and_anonymous_id(self):
+        """DB制約: owner と anonymous_id の両方なしは不可"""
+        with pytest.raises(IntegrityError):
+            Dataset.objects.create(
+                name="test",
+                source_file="dummy.csv",
+                schema={"time": "Year", "metrics": ["value"]},
+            )
+
     def test_mark_processing_from_uploaded(self, dataset):
         """UPLOADED → PROCESSING へ遷移できる"""
         result = dataset.mark_processing()
