@@ -16,6 +16,7 @@ from apps.api.dataset.views.dataset_timeseries import (
     PublicDatasetTimeSeriesAPIView,
 )
 from apps.api.dataset.views.dataset_write import (
+    DatasetAnonymousCreateAPIView,
     DatasetCreateAPIView,
     DatasetVisibilityUpdateAPIView,
 )
@@ -25,6 +26,11 @@ app_name = "dataset"
 urlpatterns = [
     path("", DatasetListAPIView.as_view(), name="list"),
     path("create/", DatasetCreateAPIView.as_view(), name="create"),
+    path(
+        "anonymous/create/",
+        DatasetAnonymousCreateAPIView.as_view(),
+        name="anonymous-create",
+    ),
     path("<int:pk>/", DatasetDetailAPIView.as_view(), name="detail"),
     path("<int:pk>/timeseries/", DatasetTimeSeriesAPIView.as_view(), name="timeseries"),
     path(

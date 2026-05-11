@@ -5,24 +5,43 @@ from apps.dataset.services.csv_validation import validate_csv_against_schema
 from apps.dataset.services.enqueue import enqueue_parse_dataset
 
 
-def create_dataset(owner, name, source_file, schema) -> Dataset:
+def create_dataset(
+    *,
+    owner=None,
+    anonymous_id=None,
+    name: str,
+    source_file,
+    schema: dict,
+) -> Dataset:
     """
     Dataset を作成するサービス関数。
+
     - CSV × schema の整合性チェック
+    - owner / anonymous_id の排他制御
     - データベース保存
-    - 保存後に非同期ジョブ呼び出し
+    - 非同期ジョブ投入
     """
+
+    # --- owner / anonymous_id の排他チェック ---
+    if bool(owner) == bool(anonymous_id):
+        raise ValidationError("Exactly one of owner or anonymous_id must be provided.")
+
+    # --- CSV validation ---
     try:
         validate_csv_against_schema(source_file, schema)
     except ValueError as e:
         raise ValidationError(str(e))
 
+    # --- create dataset ---
     dataset = Dataset.objects.create(
         owner=owner,
+        anonymous_id=anonymous_id,
         name=name,
         source_file=source_file,
         schema=schema,
     )
 
+    # --- async processing ---
     enqueue_parse_dataset(dataset.id)  # type: ignore
+
     return dataset

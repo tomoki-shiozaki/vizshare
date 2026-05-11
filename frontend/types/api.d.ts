@@ -112,6 +112,22 @@ export interface paths {
         patch: operations["datasets_visibility_partial_update"];
         trace?: never;
     };
+    "/api/v1/datasets/anonymous/create/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["datasets_anonymous_create_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/create/": {
         parameters: {
             query?: never;
@@ -527,14 +543,21 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AnonymousDatasetCreate: {
+            readonly id: number;
+            name: string;
+            /** Format: uri */
+            source_file: string;
+            schema: unknown;
+        };
         DatasetCreate: {
             readonly id: number;
             name: string;
             /** Format: uri */
             source_file: string;
+            schema: unknown;
             readonly owner: number;
             readonly status: string;
-            schema: unknown;
             /** Format: date-time */
             readonly created_at: string;
         };
@@ -904,6 +927,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DatasetVisibility"];
+                };
+            };
+        };
+    };
+    datasets_anonymous_create_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnonymousDatasetCreate"];
+                "application/x-www-form-urlencoded": components["schemas"]["AnonymousDatasetCreate"];
+                "multipart/form-data": components["schemas"]["AnonymousDatasetCreate"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnonymousDatasetCreate"];
                 };
             };
         };

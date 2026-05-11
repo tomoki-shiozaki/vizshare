@@ -363,6 +363,58 @@
                 }
             }
         },
+        "/api/v1/datasets/anonymous/create/": {
+            "post": {
+                "operationId": "datasets_anonymous_create_create",
+                "tags": [
+                    "datasets"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AnonymousDatasetCreate"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AnonymousDatasetCreate"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AnonymousDatasetCreate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AnonymousDatasetCreate"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/create/": {
             "post": {
                 "operationId": "datasets_create_create",
@@ -1348,6 +1400,30 @@
     },
     "components": {
         "schemas": {
+            "AnonymousDatasetCreate": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "source_file": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "schema": {}
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "schema",
+                    "source_file"
+                ]
+            },
             "DatasetCreate": {
                 "type": "object",
                 "properties": {
@@ -1363,6 +1439,7 @@
                         "type": "string",
                         "format": "uri"
                     },
+                    "schema": {},
                     "owner": {
                         "type": "integer",
                         "readOnly": true
@@ -1371,7 +1448,6 @@
                         "type": "string",
                         "readOnly": true
                     },
-                    "schema": {},
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
