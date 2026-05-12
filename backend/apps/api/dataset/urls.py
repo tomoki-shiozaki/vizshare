@@ -1,6 +1,7 @@
 from django.urls import path
 
 from apps.api.dataset.views.dataset_read import (
+    AnonymousDatasetDetailAPIView,
     DatasetDetailAPIView,
     DatasetListAPIView,
     PublicDatasetDetailAPIView,
@@ -32,6 +33,11 @@ urlpatterns = [
         name="anonymous-create",
     ),
     path("<int:pk>/", DatasetDetailAPIView.as_view(), name="detail"),
+    path(
+        "anonymous/<int:pk>/",
+        AnonymousDatasetDetailAPIView.as_view(),
+        name="anonymous-detail",
+    ),
     path("<int:pk>/timeseries/", DatasetTimeSeriesAPIView.as_view(), name="timeseries"),
     path(
         "<int:pk>/timeseries/entity/",
