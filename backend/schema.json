@@ -363,6 +363,48 @@
                 }
             }
         },
+        "/api/v1/datasets/anonymous/{id}/": {
+            "get": {
+                "operationId": "datasets_anonymous_retrieve",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AnonymousDatasetDetail"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/anonymous/create/": {
             "post": {
                 "operationId": "datasets_anonymous_create_create",
@@ -1422,6 +1464,53 @@
                     "name",
                     "schema",
                     "source_file"
+                ]
+            },
+            "AnonymousDatasetDetail": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/StatusEnum"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "schema": {
+                        "$ref": "#/components/schemas/DatasetSchema"
+                    },
+                    "parse_result": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/ParseResult"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "visibility": {
+                        "$ref": "#/components/schemas/VisibilityEnum"
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "匿名データの有効期限（任意）"
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "id",
+                    "name",
+                    "schema"
                 ]
             },
             "DatasetCreate": {
