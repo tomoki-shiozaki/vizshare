@@ -24,7 +24,7 @@ export function AnonymousDatasetDetail({ id }: Props) {
     isLoading,
     error,
   } = useQuery({
-    queryKey: datasetKeys.detail(id),
+    queryKey: datasetKeys.anonymousDetail(id),
     queryFn: () => fetchAnonymousDatasetDetail(id),
     enabled: !!id,
   });

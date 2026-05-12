@@ -7,15 +7,22 @@ export const datasetKeys = {
 
   entityComparison: (id: string, metric: string) =>
     [...datasetKeys.all, "entityComparison", id, metric] as const,
+
   meta: (id: string) => [...datasetKeys.all, "meta", id] as const,
 
   publicList: () => [...datasetKeys.all, "public"] as const,
+
   publicDetail: (id: string) =>
     [...datasetKeys.all, "publicDetail", id] as const,
+
   publicDataPoints: (id: string) =>
     [...datasetKeys.all, "publicDataPoints", id] as const,
 
   publicEntityComparison: (id: string, metric: string) =>
     [...datasetKeys.all, "publicEntityComparison", id, metric] as const,
+
   publicMeta: (id: string) => [...datasetKeys.all, "publicMeta", id] as const,
+
+  anonymousDetail: (id: string) =>
+    [...datasetKeys.all, "anonymousDetail", id] as const,
 };
