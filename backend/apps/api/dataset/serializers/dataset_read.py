@@ -56,6 +56,24 @@ class DatasetDetailSerializer(serializers.ModelSerializer):
         ]
 
 
+class AnonymousDatasetDetailSerializer(serializers.ModelSerializer):
+    schema = DatasetSchemaSerializer()
+    parse_result = ParseResultSerializer(required=False, allow_null=True)
+
+    class Meta:
+        model = Dataset
+        fields = [
+            "id",
+            "name",
+            "status",
+            "created_at",
+            "schema",
+            "parse_result",
+            "visibility",
+            "expires_at",
+        ]
+
+
 class PublicDatasetSerializer(serializers.ModelSerializer):
     owner = serializers.CharField(source="owner.username")
 
