@@ -35,6 +35,9 @@ export type DatasetListResponse =
 export type DatasetDetailResponse =
   paths["/api/v1/datasets/{id}/"]["get"]["responses"][200]["content"]["application/json"];
 
+export type AnonymousDatasetDetailResponse =
+  paths["/api/v1/datasets/anonymous/{id}/"]["get"]["responses"][200]["content"]["application/json"];
+
 // =============================
 // Common
 // =============================

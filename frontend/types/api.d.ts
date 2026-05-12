@@ -569,12 +569,12 @@ export interface components {
         AnonymousDatasetDetail: {
             readonly id: number;
             name: string;
-            status?: components["schemas"]["StatusEnum"];
+            readonly status: components["schemas"]["StatusEnum"];
             /** Format: date-time */
             readonly created_at: string;
             schema: components["schemas"]["DatasetSchema"];
             parse_result?: components["schemas"]["ParseResult"] | null;
-            visibility?: components["schemas"]["VisibilityEnum"];
+            readonly visibility: components["schemas"]["VisibilityEnum"];
             /**
              * Format: date-time
              * @description 匿名データの有効期限（任意）
