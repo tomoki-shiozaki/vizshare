@@ -112,6 +112,22 @@ export interface paths {
         patch: operations["datasets_visibility_partial_update"];
         trace?: never;
     };
+    "/api/v1/datasets/anonymous/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["datasets_anonymous_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/anonymous/create/": {
         parameters: {
             query?: never;
@@ -550,6 +566,21 @@ export interface components {
             source_file: string;
             schema: unknown;
         };
+        AnonymousDatasetDetail: {
+            readonly id: number;
+            name: string;
+            status?: components["schemas"]["StatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+            schema: components["schemas"]["DatasetSchema"];
+            parse_result?: components["schemas"]["ParseResult"] | null;
+            visibility?: components["schemas"]["VisibilityEnum"];
+            /**
+             * Format: date-time
+             * @description 匿名データの有効期限（任意）
+             */
+            expires_at?: string | null;
+        };
         DatasetCreate: {
             readonly id: number;
             name: string;
@@ -927,6 +958,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DatasetVisibility"];
+                };
+            };
+        };
+    };
+    datasets_anonymous_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnonymousDatasetDetail"];
                 };
             };
         };

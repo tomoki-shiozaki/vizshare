@@ -3,11 +3,13 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from apps.api.dataset.serializers.dataset_read import (
+    AnonymousDatasetDetailSerializer,
     DatasetDetailSerializer,
     DatasetListSerializer,
     PublicDatasetDetailSerializer,
     PublicDatasetSerializer,
 )
+from apps.core.services.anonymous import get_anonymous_id
 from apps.dataset.models import Dataset
 
 
@@ -33,6 +35,21 @@ class DatasetDetailAPIView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Dataset.objects.filter(owner=self.request.user)
+
+
+class AnonymousDatasetDetailAPIView(generics.RetrieveAPIView):
+    serializer_class = AnonymousDatasetDetailSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        anonymous_id = get_anonymous_id(self.request)
+
+        if not anonymous_id:
+            return Dataset.objects.none()
+
+        return Dataset.objects.filter(
+            anonymous_id=anonymous_id,
+        )
 
 
 class PublicDatasetListAPIView(generics.ListAPIView):
