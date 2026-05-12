@@ -57,8 +57,22 @@ class DatasetDetailSerializer(serializers.ModelSerializer):
 
 
 class AnonymousDatasetDetailSerializer(serializers.ModelSerializer):
+    status = serializers.ChoiceField(
+        choices=Dataset.Status.choices,
+        read_only=True,
+    )
+
+    visibility = serializers.ChoiceField(
+        choices=Dataset.Visibility.choices,
+        read_only=True,
+    )
+
     schema = DatasetSchemaSerializer()
-    parse_result = ParseResultSerializer(required=False, allow_null=True)
+
+    parse_result = ParseResultSerializer(
+        required=False,
+        allow_null=True,
+    )
 
     class Meta:
         model = Dataset

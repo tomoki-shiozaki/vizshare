@@ -1478,7 +1478,12 @@
                         "maxLength": 255
                     },
                     "status": {
-                        "$ref": "#/components/schemas/StatusEnum"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/StatusEnum"
+                            }
+                        ],
+                        "readOnly": true
                     },
                     "created_at": {
                         "type": "string",
@@ -1497,7 +1502,12 @@
                         "nullable": true
                     },
                     "visibility": {
-                        "$ref": "#/components/schemas/VisibilityEnum"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/VisibilityEnum"
+                            }
+                        ],
+                        "readOnly": true
                     },
                     "expires_at": {
                         "type": "string",
@@ -1510,7 +1520,9 @@
                     "created_at",
                     "id",
                     "name",
-                    "schema"
+                    "schema",
+                    "status",
+                    "visibility"
                 ]
             },
             "DatasetCreate": {
