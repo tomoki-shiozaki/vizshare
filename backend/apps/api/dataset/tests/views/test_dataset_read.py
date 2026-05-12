@@ -1,9 +1,91 @@
+import uuid
+
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django.urls import reverse
 
 from apps.dataset.models import Dataset
+
+
+@pytest.mark.django_db
+class TestAnonymousDatasetDetailAPIView:
+    def test_anonymous_dataset_detail_success(self, api_client):
+        anonymous_id = uuid.uuid4()
+
+        dataset = Dataset.objects.create(
+            name="Anonymous Dataset",
+            anonymous_id=anonymous_id,
+            schema={
+                "time": "timestamp",
+                "metrics": ["value"],
+            },
+        )
+
+        api_client.cookies["anonymous_id"] = str(anonymous_id)
+
+        url = reverse(
+            "dataset:anonymous-detail",
+            kwargs={"pk": dataset.pk},
+        )
+
+        response = api_client.get(url)
+
+        assert response.status_code == 200
+        assert response.data["id"] == dataset.pk
+        assert response.data["name"] == "Anonymous Dataset"
+
+    def test_without_cookie_returns_404(self, api_client):
+        dataset = Dataset.objects.create(
+            name="Anonymous Dataset",
+            anonymous_id=uuid.uuid4(),
+            schema={
+                "time": "timestamp",
+                "metrics": ["value"],
+            },
+        )
+
+        url = reverse(
+            "dataset:anonymous-detail",
+            kwargs={"pk": dataset.pk},
+        )
+
+        response = api_client.get(url)
+
+        assert response.status_code == 404
+
+    def test_other_anonymous_cookie_returns_404(self, api_client):
+        dataset = Dataset.objects.create(
+            name="Anonymous Dataset",
+            anonymous_id=uuid.uuid4(),
+            schema={
+                "time": "timestamp",
+                "metrics": ["value"],
+            },
+        )
+
+        api_client.cookies["anonymous_id"] = str(uuid.uuid4())
+
+        url = reverse(
+            "dataset:anonymous-detail",
+            kwargs={"pk": dataset.pk},
+        )
+
+        response = api_client.get(url)
+
+        assert response.status_code == 404
+
+    def test_nonexistent_dataset_returns_404(self, api_client):
+        api_client.cookies["anonymous_id"] = str(uuid.uuid4())
+
+        url = reverse(
+            "dataset:anonymous-detail",
+            kwargs={"pk": 999999},
+        )
+
+        response = api_client.get(url)
+
+        assert response.status_code == 404
 
 
 @pytest.mark.django_db
