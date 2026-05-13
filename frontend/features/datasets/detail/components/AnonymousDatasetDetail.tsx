@@ -15,18 +15,18 @@ import { DatasetVisibilityBadge } from "@/features/datasets/components/DatasetVi
 import { datasetKeys } from "@/features/datasets/queryKeys";
 
 type Props = {
-  id: string;
+  publicId: string;
 };
 
-export function AnonymousDatasetDetail({ id }: Props) {
+export function AnonymousDatasetDetail({ publicId }: Props) {
   const {
     data: dataset,
     isLoading,
     error,
   } = useQuery({
-    queryKey: datasetKeys.anonymousDetail(id),
-    queryFn: () => fetchAnonymousDatasetDetail(id),
-    enabled: !!id,
+    queryKey: datasetKeys.anonymousDetail(publicId),
+    queryFn: () => fetchAnonymousDatasetDetail(publicId),
+    enabled: !!publicId,
   });
 
   if (isLoading) {

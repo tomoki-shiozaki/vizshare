@@ -157,8 +157,8 @@ class TestDatasetAnonymousCreateAPIView:
 
         assert response.status_code == status.HTTP_201_CREATED  # type: ignore
 
-        dataset_id = response.data["id"]  # type: ignore
-        dataset = Dataset.objects.get(pk=dataset_id)
+        dataset_public_id = response.data["public_id"]  # type: ignore
+        dataset = Dataset.objects.get(public_id=dataset_public_id)
 
         assert dataset.owner is None
         assert dataset.anonymous_id is not None
@@ -211,8 +211,8 @@ class TestDatasetAnonymousCreateAPIView:
 
         assert response.status_code == status.HTTP_201_CREATED  # type: ignore
 
-        dataset_id = response.data["id"]  # type: ignore
-        dataset = Dataset.objects.get(pk=dataset_id)
+        dataset_public_id = response.data["public_id"]  # type: ignore
+        dataset = Dataset.objects.get(public_id=dataset_public_id)
 
         assert str(dataset.anonymous_id) == existing_id
 

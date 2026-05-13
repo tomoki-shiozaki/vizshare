@@ -363,15 +363,16 @@
                 }
             }
         },
-        "/api/v1/datasets/anonymous/{id}/": {
+        "/api/v1/datasets/anonymous/{public_id}/": {
             "get": {
                 "operationId": "datasets_anonymous_retrieve",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "id",
+                        "name": "public_id",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         },
                         "required": true
                     }
@@ -1445,10 +1446,6 @@
             "AnonymousDatasetCreate": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
                     "name": {
                         "type": "string",
                         "maxLength": 255
@@ -1457,11 +1454,16 @@
                         "type": "string",
                         "format": "uri"
                     },
-                    "schema": {}
+                    "schema": {},
+                    "public_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    }
                 },
                 "required": [
-                    "id",
                     "name",
+                    "public_id",
                     "schema",
                     "source_file"
                 ]
@@ -1469,8 +1471,9 @@
             "AnonymousDatasetDetail": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "integer",
+                    "public_id": {
+                        "type": "string",
+                        "format": "uuid",
                         "readOnly": true
                     },
                     "name": {
@@ -1518,8 +1521,8 @@
                 },
                 "required": [
                     "created_at",
-                    "id",
                     "name",
+                    "public_id",
                     "schema",
                     "status",
                     "visibility"
@@ -1528,10 +1531,6 @@
             "DatasetCreate": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
                     "name": {
                         "type": "string",
                         "maxLength": 255
@@ -1541,6 +1540,15 @@
                         "format": "uri"
                     },
                     "schema": {},
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "public_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
                     "owner": {
                         "type": "integer",
                         "readOnly": true
@@ -1560,6 +1568,7 @@
                     "id",
                     "name",
                     "owner",
+                    "public_id",
                     "schema",
                     "source_file",
                     "status"

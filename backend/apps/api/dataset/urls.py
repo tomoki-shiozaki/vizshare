@@ -34,7 +34,7 @@ urlpatterns = [
     ),
     path("<int:pk>/", DatasetDetailAPIView.as_view(), name="detail"),
     path(
-        "anonymous/<int:pk>/",
+        "anonymous/<uuid:public_id>/",
         AnonymousDatasetDetailAPIView.as_view(),
         name="anonymous-detail",
     ),

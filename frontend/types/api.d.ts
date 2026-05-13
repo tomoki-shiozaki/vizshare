@@ -112,7 +112,7 @@ export interface paths {
         patch: operations["datasets_visibility_partial_update"];
         trace?: never;
     };
-    "/api/v1/datasets/anonymous/{id}/": {
+    "/api/v1/datasets/anonymous/{public_id}/": {
         parameters: {
             query?: never;
             header?: never;
@@ -560,14 +560,16 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         AnonymousDatasetCreate: {
-            readonly id: number;
             name: string;
             /** Format: uri */
             source_file: string;
             schema: unknown;
+            /** Format: uuid */
+            readonly public_id: string;
         };
         AnonymousDatasetDetail: {
-            readonly id: number;
+            /** Format: uuid */
+            readonly public_id: string;
             name: string;
             readonly status: components["schemas"]["StatusEnum"];
             /** Format: date-time */
@@ -582,11 +584,13 @@ export interface components {
             expires_at?: string | null;
         };
         DatasetCreate: {
-            readonly id: number;
             name: string;
             /** Format: uri */
             source_file: string;
             schema: unknown;
+            readonly id: number;
+            /** Format: uuid */
+            readonly public_id: string;
             readonly owner: number;
             readonly status: string;
             /** Format: date-time */
@@ -967,7 +971,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                public_id: string;
             };
             cookie?: never;
         };

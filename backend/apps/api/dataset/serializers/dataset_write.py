@@ -7,7 +7,6 @@ class BaseDatasetCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dataset
         fields = [
-            "id",
             "name",
             "source_file",
             "schema",
@@ -52,6 +51,8 @@ class DatasetCreateSerializer(BaseDatasetCreateSerializer):
 
     class Meta(BaseDatasetCreateSerializer.Meta):
         fields = BaseDatasetCreateSerializer.Meta.fields + [
+            "id",
+            "public_id",
             "owner",
             "status",
             "created_at",
@@ -67,4 +68,6 @@ class DatasetVisibilitySerializer(serializers.ModelSerializer):
 
 class AnonymousDatasetCreateSerializer(BaseDatasetCreateSerializer):
     class Meta(BaseDatasetCreateSerializer.Meta):
-        fields = BaseDatasetCreateSerializer.Meta.fields
+        fields = BaseDatasetCreateSerializer.Meta.fields + [
+            "public_id",
+        ]

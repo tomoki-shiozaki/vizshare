@@ -26,13 +26,13 @@ class TestAnonymousDatasetDetailAPIView:
 
         url = reverse(
             "dataset:anonymous-detail",
-            kwargs={"pk": dataset.pk},
+            kwargs={"public_id": dataset.public_id},
         )
 
         response = api_client.get(url)
 
         assert response.status_code == 200
-        assert response.data["id"] == dataset.pk
+        assert response.data["public_id"] == str(dataset.public_id)
         assert response.data["name"] == "Anonymous Dataset"
 
     def test_without_cookie_returns_404(self, api_client):
@@ -47,7 +47,7 @@ class TestAnonymousDatasetDetailAPIView:
 
         url = reverse(
             "dataset:anonymous-detail",
-            kwargs={"pk": dataset.pk},
+            kwargs={"public_id": dataset.public_id},
         )
 
         response = api_client.get(url)
@@ -68,7 +68,7 @@ class TestAnonymousDatasetDetailAPIView:
 
         url = reverse(
             "dataset:anonymous-detail",
-            kwargs={"pk": dataset.pk},
+            kwargs={"public_id": dataset.public_id},
         )
 
         response = api_client.get(url)
@@ -80,7 +80,7 @@ class TestAnonymousDatasetDetailAPIView:
 
         url = reverse(
             "dataset:anonymous-detail",
-            kwargs={"pk": 999999},
+            kwargs={"public_id": uuid.uuid4()},
         )
 
         response = api_client.get(url)
