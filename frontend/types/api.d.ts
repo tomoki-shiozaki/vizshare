@@ -112,7 +112,7 @@ export interface paths {
         patch: operations["datasets_visibility_partial_update"];
         trace?: never;
     };
-    "/api/v1/datasets/anonymous/{id}/": {
+    "/api/v1/datasets/anonymous/{public_id}/": {
         parameters: {
             query?: never;
             header?: never;
@@ -567,7 +567,8 @@ export interface components {
             schema: unknown;
         };
         AnonymousDatasetDetail: {
-            readonly id: number;
+            /** Format: uuid */
+            readonly public_id: string;
             name: string;
             readonly status: components["schemas"]["StatusEnum"];
             /** Format: date-time */
@@ -967,7 +968,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                public_id: string;
             };
             cookie?: never;
         };
