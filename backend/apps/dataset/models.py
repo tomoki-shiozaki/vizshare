@@ -19,8 +19,9 @@ class Dataset(models.Model):
         PUBLIC = "public", _("公開")
 
     public_id = models.UUIDField(
-        null=True,
-        blank=True,
+        null=False,
+        blank=False,
+        unique=True,
         editable=False,
         db_index=True,
     )
