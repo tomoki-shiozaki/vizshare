@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
@@ -15,6 +17,13 @@ class Dataset(models.Model):
         PRIVATE = "private", _("非公開")
         UNLISTED = "unlisted", _("限定公開")
         PUBLIC = "public", _("公開")
+
+    public_id = models.UUIDField(
+        null=True,
+        blank=True,
+        editable=False,
+        db_index=True,
+    )
 
     # ログインユーザー（任意）
     owner = models.ForeignKey(
