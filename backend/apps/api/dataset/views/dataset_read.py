@@ -40,6 +40,7 @@ class DatasetDetailAPIView(generics.RetrieveAPIView):
 class AnonymousDatasetDetailAPIView(generics.RetrieveAPIView):
     serializer_class = AnonymousDatasetDetailSerializer
     permission_classes = [AllowAny]
+    lookup_field = "public_id"
 
     def get_queryset(self):
         anonymous_id = get_anonymous_id(self.request)

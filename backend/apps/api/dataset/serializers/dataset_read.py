@@ -77,7 +77,7 @@ class AnonymousDatasetDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dataset
         fields = [
-            "id",
+            "public_id",
             "name",
             "status",
             "created_at",
