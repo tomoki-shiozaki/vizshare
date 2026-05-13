@@ -560,11 +560,12 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         AnonymousDatasetCreate: {
-            readonly id: number;
             name: string;
             /** Format: uri */
             source_file: string;
             schema: unknown;
+            /** Format: uuid */
+            readonly public_id: string;
         };
         AnonymousDatasetDetail: {
             /** Format: uuid */
@@ -583,11 +584,13 @@ export interface components {
             expires_at?: string | null;
         };
         DatasetCreate: {
-            readonly id: number;
             name: string;
             /** Format: uri */
             source_file: string;
             schema: unknown;
+            readonly id: number;
+            /** Format: uuid */
+            readonly public_id: string;
             readonly owner: number;
             readonly status: string;
             /** Format: date-time */

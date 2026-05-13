@@ -1446,10 +1446,6 @@
             "AnonymousDatasetCreate": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
                     "name": {
                         "type": "string",
                         "maxLength": 255
@@ -1458,11 +1454,16 @@
                         "type": "string",
                         "format": "uri"
                     },
-                    "schema": {}
+                    "schema": {},
+                    "public_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    }
                 },
                 "required": [
-                    "id",
                     "name",
+                    "public_id",
                     "schema",
                     "source_file"
                 ]
@@ -1530,10 +1531,6 @@
             "DatasetCreate": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
                     "name": {
                         "type": "string",
                         "maxLength": 255
@@ -1543,6 +1540,15 @@
                         "format": "uri"
                     },
                     "schema": {},
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "public_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
                     "owner": {
                         "type": "integer",
                         "readOnly": true
@@ -1562,6 +1568,7 @@
                     "id",
                     "name",
                     "owner",
+                    "public_id",
                     "schema",
                     "source_file",
                     "status"

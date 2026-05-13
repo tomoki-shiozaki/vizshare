@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { useMutation } from "@tanstack/react-query";
 
@@ -15,6 +16,8 @@ import { useCsvFile } from "@/features/datasets/create/hooks/useCsvFile";
 import { uploadAnonymousDataset } from "@/features/datasets/create/api/uploadDataset";
 
 export function AnonymousDatasetUploadForm() {
+  const router = useRouter();
+
   const {
     file,
     headers,
@@ -42,9 +45,7 @@ export function AnonymousDatasetUploadForm() {
         text: `アップロード成功: ${data.name}`,
       });
 
-      // TODO:
-      // router.push(`/datasets/${data.id}`)
-      // などへ遷移してもよい
+      router.push(`/anonymous/${data.public_id}`);
     },
 
     onError: (error: unknown) => {
