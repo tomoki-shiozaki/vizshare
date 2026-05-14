@@ -25,6 +25,19 @@ class DatasetListAPIView(generics.ListAPIView):
         return Dataset.objects.filter(owner=self.request.user).order_by("-created_at")
 
 
+class AnonymousDatasetListAPIView(generics.ListAPIView):
+    serializer_class = DatasetListSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        anonymous_id = get_anonymous_id(self.request)
+
+        if not anonymous_id:
+            return Dataset.objects.none()
+
+        return Dataset.objects.filter(anonymous_id=anonymous_id).order_by("-created_at")
+
+
 class DatasetDetailAPIView(generics.RetrieveAPIView):
     """
     Dataset の詳細情報を返す API

@@ -2,6 +2,7 @@ from django.urls import path
 
 from apps.api.dataset.views.dataset_read import (
     AnonymousDatasetDetailAPIView,
+    AnonymousDatasetListAPIView,
     DatasetDetailAPIView,
     DatasetListAPIView,
     PublicDatasetDetailAPIView,
@@ -26,6 +27,11 @@ app_name = "dataset"
 
 urlpatterns = [
     path("", DatasetListAPIView.as_view(), name="list"),
+    path(
+        "anonymous/",
+        AnonymousDatasetListAPIView.as_view(),
+        name="anonymous-list",
+    ),
     path("create/", DatasetCreateAPIView.as_view(), name="create"),
     path(
         "anonymous/create/",
