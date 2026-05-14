@@ -112,6 +112,22 @@ export interface paths {
         patch: operations["datasets_visibility_partial_update"];
         trace?: never;
     };
+    "/api/v1/datasets/anonymous/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["datasets_anonymous_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/anonymous/{public_id}/": {
         parameters: {
             query?: never;
@@ -583,6 +599,14 @@ export interface components {
              */
             expires_at?: string | null;
         };
+        AnonymousDatasetList: {
+            /** Format: uuid */
+            readonly public_id: string;
+            readonly name: string;
+            readonly status: components["schemas"]["StatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+        };
         DatasetCreate: {
             name: string;
             /** Format: uri */
@@ -639,6 +663,21 @@ export interface components {
             /** Format: email */
             email?: string;
             password: string;
+        };
+        PaginatedAnonymousDatasetListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=400&limit=100
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=200&limit=100
+             */
+            previous?: string | null;
+            results: components["schemas"]["AnonymousDatasetList"][];
         };
         PaginatedDatasetListList: {
             /** @example 123 */
@@ -962,6 +1001,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DatasetVisibility"];
+                };
+            };
+        };
+    };
+    datasets_anonymous_list: {
+        parameters: {
+            query?: {
+                /** @description Number of results to return per page. */
+                limit?: number;
+                /** @description The initial index from which to return the results. */
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAnonymousDatasetListList"];
                 };
             };
         };
