@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from apps.api.dataset.serializers.dataset_read import (
     AnonymousDatasetDetailSerializer,
+    AnonymousDatasetListSerializer,
     DatasetDetailSerializer,
     DatasetListSerializer,
     PublicDatasetDetailSerializer,
@@ -26,7 +27,7 @@ class DatasetListAPIView(generics.ListAPIView):
 
 
 class AnonymousDatasetListAPIView(generics.ListAPIView):
-    serializer_class = DatasetListSerializer
+    serializer_class = AnonymousDatasetListSerializer
     permission_classes = [AllowAny]
 
     def get_queryset(self):

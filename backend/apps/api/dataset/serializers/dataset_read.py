@@ -30,6 +30,20 @@ class DatasetListSerializer(serializers.ModelSerializer):
         ]
 
 
+class AnonymousDatasetListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dataset
+
+        fields = [
+            "public_id",
+            "name",
+            "status",
+            "created_at",
+        ]
+
+        read_only_fields = fields
+
+
 class DatasetDetailSerializer(serializers.ModelSerializer):
     schema = DatasetSchemaSerializer()
     parse_result = ParseResultSerializer(required=False, allow_null=True)
