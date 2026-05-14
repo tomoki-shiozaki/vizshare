@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cookies } from "next/headers";
+
 import type { AnonymousDatasetListResponse } from "@/features/datasets/types/dataset";
 
 const BASE_URL = process.env.API_URL;
@@ -23,9 +25,15 @@ export async function fetchAnonymousDatasetListServer(
     offset: String(offset),
   });
 
+  const cookieStore = await cookies();
+
   const res = await fetch(
     `${BASE_URL}/datasets/anonymous/?${searchParams.toString()}`,
     {
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+
       next: {
         revalidate: 60,
       },
