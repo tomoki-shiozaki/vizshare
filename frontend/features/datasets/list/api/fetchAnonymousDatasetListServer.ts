@@ -34,9 +34,7 @@ export async function fetchAnonymousDatasetListServer(
         Cookie: cookieStore.toString(),
       },
 
-      next: {
-        revalidate: 60,
-      },
+      cache: "no-store",
     },
   );
 
