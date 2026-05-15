@@ -1,6 +1,6 @@
 import pytest
 
-from apps.dataset.services.tasks_runner import parse_dataset_sync
+from apps.dataset.services.orchestration.tasks_runner import parse_dataset_sync
 
 
 class TestParseDatasetSync:
@@ -15,13 +15,13 @@ class TestParseDatasetSync:
 
         # tasks_runner 内で使われている Dataset.objects.get をモック
         mocker.patch(
-            "apps.dataset.services.tasks_runner.Dataset.objects.get",
+            "apps.dataset.services.orchestration.tasks_runner.Dataset.objects.get",
             return_value=dataset,
         )
 
         # tasks_runner 内で使われている parse_dataset_csv をモック
         parse_csv_mock = mocker.patch(
-            "apps.dataset.services.tasks_runner.parse_dataset_csv"
+            "apps.dataset.services.orchestration.tasks_runner.parse_dataset_csv"
         )
 
         parse_dataset_sync(dataset_id=1)
@@ -39,12 +39,12 @@ class TestParseDatasetSync:
         dataset.mark_processing.return_value = True
 
         mocker.patch(
-            "apps.dataset.services.tasks_runner.Dataset.objects.get",
+            "apps.dataset.services.orchestration.tasks_runner.Dataset.objects.get",
             return_value=dataset,
         )
 
         parse_csv_mock = mocker.patch(
-            "apps.dataset.services.tasks_runner.parse_dataset_csv",
+            "apps.dataset.services.orchestration.tasks_runner.parse_dataset_csv",
             return_value=10,
         )
 
@@ -62,12 +62,12 @@ class TestParseDatasetSync:
         dataset.mark_processing.return_value = True
 
         mocker.patch(
-            "apps.dataset.services.tasks_runner.Dataset.objects.get",
+            "apps.dataset.services.orchestration.tasks_runner.Dataset.objects.get",
             return_value=dataset,
         )
 
         mocker.patch(
-            "apps.dataset.services.tasks_runner.parse_dataset_csv",
+            "apps.dataset.services.orchestration.tasks_runner.parse_dataset_csv",
             side_effect=Exception("boom"),
         )
 
