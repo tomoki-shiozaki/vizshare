@@ -3,7 +3,7 @@ import io
 import pytest
 from rest_framework.exceptions import ValidationError
 
-from apps.dataset.services.csv_validation import (
+from apps.dataset.services.ingestion.csv_validation import (
     read_csv_header,
     validate_csv_against_schema,
 )
@@ -116,7 +116,7 @@ def test_validate_csv_header_error(mocker):
     f = make_csv_file("dummy")
 
     mocker.patch(
-        "apps.dataset.services.csv_validation.read_csv_header",
+        "apps.dataset.services.ingestion.csv_validation.read_csv_header",
         side_effect=ValueError("CSV読み込み失敗"),
     )
 
