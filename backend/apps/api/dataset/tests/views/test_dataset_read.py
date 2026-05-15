@@ -9,6 +9,87 @@ from apps.dataset.models import Dataset
 
 
 @pytest.mark.django_db
+class TestAnonymousDatasetListAPIView:
+    def test_returns_only_current_anonymous_user_datasets(
+        self,
+        anonymous_api_client,
+        anonymous_dataset,
+        another_anonymous_dataset,
+    ):
+        url = reverse("dataset:anonymous-list")
+
+        response = anonymous_api_client.get(url)
+
+        assert response.status_code == 200
+        assert response.data["count"] == 1
+
+        returned_dataset = response.data["results"][0]
+
+        assert returned_dataset["public_id"] == str(anonymous_dataset.public_id)
+        assert returned_dataset["name"] == anonymous_dataset.name
+
+    def test_returns_empty_list_without_cookie(
+        self,
+        api_client,
+        anonymous_dataset,
+    ):
+        url = reverse("dataset:anonymous-list")
+
+        response = api_client.get(url)
+
+        assert response.status_code == 200
+        assert response.data["count"] == 0
+        assert response.data["results"] == []
+
+    def test_returns_empty_list_when_no_matching_anonymous_id(
+        self,
+        anonymous_api_client,
+        another_anonymous_dataset,
+    ):
+        url = reverse("dataset:anonymous-list")
+
+        response = anonymous_api_client.get(url)
+
+        assert response.status_code == 200
+        assert response.data["count"] == 0
+        assert response.data["results"] == []
+
+    def test_returns_datasets_ordered_by_created_at_desc(
+        self,
+        anonymous_api_client,
+        anonymous_id,
+    ):
+        older_dataset = Dataset.objects.create(
+            name="Older Dataset",
+            anonymous_id=anonymous_id,
+            schema={
+                "time": "timestamp",
+                "metrics": ["value"],
+            },
+        )
+
+        newer_dataset = Dataset.objects.create(
+            name="Newer Dataset",
+            anonymous_id=anonymous_id,
+            schema={
+                "time": "timestamp",
+                "metrics": ["value"],
+            },
+        )
+
+        url = reverse("dataset:anonymous-list")
+
+        response = anonymous_api_client.get(url)
+
+        assert response.status_code == 200
+
+        results = response.data["results"]
+
+        assert results[0]["public_id"] == str(newer_dataset.public_id)
+        assert results[1]["public_id"] == str(older_dataset.public_id)
+
+
+@pytest.mark.django_db
 class TestAnonymousDatasetDetailAPIView:
     def test_anonymous_dataset_detail_success(self, api_client):
         anonymous_id = uuid.uuid4()

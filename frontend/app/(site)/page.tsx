@@ -11,8 +11,17 @@ import { AnonymousDatasetUploadForm } from "@/features/datasets/create/component
 
 import { fetchPublicDatasetListServer } from "@/features/datasets/public/list/api/fetchPublicDatasetServer";
 
+import { fetchAnonymousDatasetListServer } from "@/features/datasets/list/api/fetchAnonymousDatasetListServer";
+
+import { AnonymousDatasetPreviewList } from "@/features/datasets/home/components/AnonymousDatasetPreviewList";
+
 export default async function HomePage() {
   const data = await fetchPublicDatasetListServer();
+
+  const anonymousData = await fetchAnonymousDatasetListServer({
+    limit: 5,
+    offset: 0,
+  });
 
   return (
     <HomeLayout
@@ -37,6 +46,8 @@ export default async function HomePage() {
           </div>
 
           <AnonymousDatasetUploadForm />
+
+          <AnonymousDatasetPreviewList data={anonymousData} />
         </section>
 
         {/* Navigation */}
@@ -81,9 +92,9 @@ export default async function HomePage() {
 
           <div
             className="
-            flex gap-4 overflow-x-auto
-            snap-x snap-mandatory pb-2
-          "
+              flex gap-4 overflow-x-auto
+              snap-x snap-mandatory pb-2
+            "
           >
             {data.results.map((dataset) => (
               <Link
@@ -93,9 +104,9 @@ export default async function HomePage() {
               >
                 <Card
                   className="
-                  h-full hover:bg-muted
-                  transition overflow-hidden
-                "
+                    h-full hover:bg-muted
+                    transition overflow-hidden
+                  "
                 >
                   <CardHeader>
                     <CardTitle className="text-base truncate">

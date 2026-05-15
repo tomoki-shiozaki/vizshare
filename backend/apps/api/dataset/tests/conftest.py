@@ -43,3 +43,33 @@ def dataset_with_points(dataset):
         order_index=0,
     )
     return dataset
+
+
+@pytest.fixture
+def anonymous_dataset(anonymous_id):
+    return Dataset.objects.create(
+        name="Anonymous Dataset",
+        anonymous_id=anonymous_id,
+        schema={
+            "time": "timestamp",
+            "metrics": ["value"],
+        },
+    )
+
+
+@pytest.fixture
+def another_anonymous_dataset(another_anonymous_id):
+    return Dataset.objects.create(
+        name="Another Anonymous Dataset",
+        anonymous_id=another_anonymous_id,
+        schema={
+            "time": "timestamp",
+            "metrics": ["value"],
+        },
+    )
+
+
+@pytest.fixture
+def anonymous_api_client(api_client, anonymous_id):
+    api_client.cookies["anonymous_id"] = str(anonymous_id)
+    return api_client

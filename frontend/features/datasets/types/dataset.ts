@@ -28,6 +28,9 @@ export type UploadVars = {
 export type DatasetListResponse =
   paths["/api/v1/datasets/"]["get"]["responses"][200]["content"]["application/json"];
 
+export type AnonymousDatasetListResponse =
+  paths["/api/v1/datasets/anonymous/"]["get"]["responses"][200]["content"]["application/json"];
+
 // =============================
 // Detail
 // =============================
