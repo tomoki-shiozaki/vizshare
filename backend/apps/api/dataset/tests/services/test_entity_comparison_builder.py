@@ -4,7 +4,7 @@ from apps.api.dataset.services.entity_comparison_builder import (
     build_entity_comparison_data,
 )
 from apps.dataset.models import DataPoint
-from apps.dataset.services.csv_parser import parse_row_time
+from apps.dataset.services.ingestion.csv_parser import parse_row_time
 
 
 @pytest.mark.django_db

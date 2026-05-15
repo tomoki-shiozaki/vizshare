@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from apps.dataset.models import DataPoint, Dataset
-from apps.dataset.services.csv_parser import parse_row_time
+from apps.dataset.services.ingestion.csv_parser import parse_row_time
 
 
 @pytest.mark.django_db

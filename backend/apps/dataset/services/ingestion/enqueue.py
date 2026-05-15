@@ -1,4 +1,4 @@
-from apps.dataset.services.tasks_runner import parse_dataset_sync
+from apps.dataset.services.orchestration.tasks_runner import parse_dataset_sync
 
 
 def enqueue_parse_dataset(dataset_id: int):

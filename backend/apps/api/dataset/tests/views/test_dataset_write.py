@@ -18,10 +18,10 @@ class TestDatasetCreateAPIView:
 
         # 非同期ジョブ呼び出しをモック
         mock_enqueue = mocker.patch(
-            "apps.dataset.services.dataset_service.enqueue_parse_dataset"
+            "apps.dataset.services.application.build_dataset.enqueue_parse_dataset"
         )
         mock_validate = mocker.patch(
-            "apps.dataset.services.dataset_service.validate_csv_against_schema"
+            "apps.dataset.services.application.build_dataset.validate_csv_against_schema"
         )
 
         # アップロードする CSV
@@ -52,7 +52,7 @@ class TestDatasetCreateAPIView:
 
         # CSV バリデーションが ValueError を出すようにモック
         mocker.patch(
-            "apps.dataset.services.dataset_service.validate_csv_against_schema",
+            "apps.dataset.services.application.build_dataset.validate_csv_against_schema",
             side_effect=ValueError("CSV読み込み失敗"),
         )
 
@@ -128,11 +128,11 @@ class TestDatasetAnonymousCreateAPIView:
         api_client: APIClient,
     ):
         mock_enqueue = mocker.patch(
-            "apps.dataset.services.dataset_service.enqueue_parse_dataset"
+            "apps.dataset.services.application.build_dataset.enqueue_parse_dataset"
         )
 
         mock_validate = mocker.patch(
-            "apps.dataset.services.dataset_service.validate_csv_against_schema"
+            "apps.dataset.services.application.build_dataset.validate_csv_against_schema"
         )
 
         csv_file = ContentFile(
@@ -179,10 +179,12 @@ class TestDatasetAnonymousCreateAPIView:
         mocker,
         api_client: APIClient,
     ):
-        mocker.patch("apps.dataset.services.dataset_service.enqueue_parse_dataset")
+        mocker.patch(
+            "apps.dataset.services.application.build_dataset.enqueue_parse_dataset"
+        )
 
         mocker.patch(
-            "apps.dataset.services.dataset_service.validate_csv_against_schema"
+            "apps.dataset.services.application.build_dataset.validate_csv_against_schema"
         )
 
         existing_id = str(uuid.uuid4())
@@ -225,7 +227,7 @@ class TestDatasetAnonymousCreateAPIView:
         api_client: APIClient,
     ):
         mocker.patch(
-            "apps.dataset.services.dataset_service.validate_csv_against_schema",
+            "apps.dataset.services.application.build_dataset.validate_csv_against_schema",
             side_effect=ValueError("CSV読み込み失敗"),
         )
 

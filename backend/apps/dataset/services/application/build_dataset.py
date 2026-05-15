@@ -1,8 +1,8 @@
 from rest_framework.exceptions import ValidationError
 
 from apps.dataset.models import Dataset
-from apps.dataset.services.csv_validation import validate_csv_against_schema
-from apps.dataset.services.enqueue import enqueue_parse_dataset
+from apps.dataset.services.ingestion.csv_validation import validate_csv_against_schema
+from apps.dataset.services.ingestion.enqueue import enqueue_parse_dataset
 
 
 def create_dataset(
