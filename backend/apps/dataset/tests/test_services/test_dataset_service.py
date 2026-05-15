@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 from rest_framework.exceptions import ValidationError
 
 from apps.dataset.models import Dataset
-from apps.dataset.services.dataset_service import create_dataset
+from apps.dataset.services.application.build_dataset import create_dataset
 
 
 @pytest.mark.django_db

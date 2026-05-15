@@ -10,7 +10,7 @@ from apps.api.dataset.serializers.dataset_write import (
 from apps.core.services.anonymous import get_or_create_anonymous_id
 from apps.core.services.cookies import set_anonymous_cookie
 from apps.dataset.models import Dataset
-from apps.dataset.services.dataset_service import create_dataset
+from apps.dataset.services.application.build_dataset import create_dataset
 
 
 class DatasetCreateAPIView(generics.CreateAPIView):
