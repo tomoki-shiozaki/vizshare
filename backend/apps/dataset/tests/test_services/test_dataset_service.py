@@ -32,11 +32,11 @@ class TestCreateDatasetService:
         schema,
     ):
         mock_validate = mocker.patch(
-            "apps.dataset.services.dataset_service.validate_csv_against_schema"
+            "apps.dataset.services.application.build_dataset.validate_csv_against_schema"
         )
 
         mock_enqueue = mocker.patch(
-            "apps.dataset.services.dataset_service.enqueue_parse_dataset"
+            "apps.dataset.services.application.build_dataset.enqueue_parse_dataset"
         )
 
         dataset = create_dataset(
@@ -63,11 +63,11 @@ class TestCreateDatasetService:
         schema,
     ):
         mock_validate = mocker.patch(
-            "apps.dataset.services.dataset_service.validate_csv_against_schema"
+            "apps.dataset.services.application.build_dataset.validate_csv_against_schema"
         )
 
         mock_enqueue = mocker.patch(
-            "apps.dataset.services.dataset_service.enqueue_parse_dataset"
+            "apps.dataset.services.application.build_dataset.enqueue_parse_dataset"
         )
 
         anonymous_id = uuid.uuid4()
@@ -96,7 +96,7 @@ class TestCreateDatasetService:
         schema,
     ):
         mocker.patch(
-            "apps.dataset.services.dataset_service.validate_csv_against_schema",
+            "apps.dataset.services.application.build_dataset.validate_csv_against_schema",
             side_effect=ValueError("CSV読み込み失敗"),
         )
 
@@ -121,7 +121,7 @@ class TestCreateDatasetService:
         schema,
     ):
         mocker.patch(
-            "apps.dataset.services.dataset_service.validate_csv_against_schema"
+            "apps.dataset.services.application.build_dataset.validate_csv_against_schema"
         )
 
         error_message = "Exactly one of owner or anonymous_id must be provided."
