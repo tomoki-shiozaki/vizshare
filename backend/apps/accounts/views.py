@@ -19,6 +19,11 @@ class RegisterThrottle(AnonRateThrottle):
     rate = "5/min"
 
 
+# =========================
+# LOGIN
+# =========================
+
+
 class CustomLoginView(LoginView):
     throttle_classes = [LoginThrottle]
 
@@ -29,8 +34,8 @@ class CustomLoginView(LoginView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
-    def get_response(self):
-        response = super().get_response()
+    def login(self):
+        super().login()
 
         anonymous_id = get_anonymous_id(self.request)
 
@@ -40,9 +45,17 @@ class CustomLoginView(LoginView):
                 user=self.user,
             )
 
-            response.delete_cookie(ANONYMOUS_ID_COOKIE_NAME)
+    def get_response(self):
+        response = super().get_response()
+
+        response.delete_cookie(ANONYMOUS_ID_COOKIE_NAME)
 
         return response
+
+
+# =========================
+# REGISTER
+# =========================
 
 
 class CustomRegisterView(RegisterView):
@@ -55,17 +68,15 @@ class CustomRegisterView(RegisterView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
-    def get_response(self):
-        response = super().get_response()  # type: ignore[attr-defined]
+    def perform_create(self, serializer):
+        user = super().perform_create(serializer)
 
         anonymous_id = get_anonymous_id(self.request)
 
         if anonymous_id:
             transfer_anonymous_datasets_to_user(
                 anonymous_id=anonymous_id,
-                user=self.user,  # type: ignore[attr-defined]
+                user=user,
             )
 
-            response.delete_cookie(ANONYMOUS_ID_COOKIE_NAME)
-
-        return response
+        return user
