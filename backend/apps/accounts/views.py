@@ -1,8 +1,13 @@
-from dj_rest_auth.views import LoginView
 from dj_rest_auth.registration.views import RegisterView
 from dj_rest_auth.serializers import JWTSerializer
+from dj_rest_auth.views import LoginView
 from rest_framework.throttling import AnonRateThrottle
 
+from apps.core.constants import ANONYMOUS_ID_COOKIE_NAME
+from apps.core.services.anonymous import get_anonymous_id
+from apps.dataset.services.application.transfer_dataset_ownership import (
+    transfer_anonymous_datasets_to_user,
+)
 from utils.schema import schema
 
 
@@ -24,6 +29,21 @@ class CustomLoginView(LoginView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
+    def get_response(self):
+        response = super().get_response()
+
+        anonymous_id = get_anonymous_id(self.request)
+
+        if anonymous_id:
+            transfer_anonymous_datasets_to_user(
+                anonymous_id=anonymous_id,
+                user=self.user,
+            )
+
+            response.delete_cookie(ANONYMOUS_ID_COOKIE_NAME)
+
+        return response
+
 
 class CustomRegisterView(RegisterView):
     throttle_classes = [RegisterThrottle]
@@ -34,3 +54,18 @@ class CustomRegisterView(RegisterView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+    def get_response(self):
+        response = super().get_response()  # type: ignore[attr-defined]
+
+        anonymous_id = get_anonymous_id(self.request)
+
+        if anonymous_id:
+            transfer_anonymous_datasets_to_user(
+                anonymous_id=anonymous_id,
+                user=self.user,  # type: ignore[attr-defined]
+            )
+
+            response.delete_cookie(ANONYMOUS_ID_COOKIE_NAME)
+
+        return response
