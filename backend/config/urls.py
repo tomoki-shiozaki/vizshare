@@ -18,8 +18,9 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from apps.accounts.views import CustomLoginView, CustomRegisterView
 from django.urls import include, path
+
+from apps.accounts.views import CustomLoginView, CustomRegisterView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
