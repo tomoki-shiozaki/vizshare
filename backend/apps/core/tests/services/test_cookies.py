@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 
+from apps.core.constants import ANONYMOUS_ID_COOKIE_NAME
 from apps.core.services.cookies import set_anonymous_cookie
 
 
@@ -17,7 +18,7 @@ class TestSetAnonymousCookie:
             created=True,
         )
 
-        cookie = response.cookies["anonymous_id"]
+        cookie = response.cookies[ANONYMOUS_ID_COOKIE_NAME]
 
         assert cookie.value == "anon-123"
         assert cookie["max-age"] == 3600
@@ -33,4 +34,4 @@ class TestSetAnonymousCookie:
             created=False,
         )
 
-        assert "anonymous_id" not in response.cookies
+        assert ANONYMOUS_ID_COOKIE_NAME not in response.cookies

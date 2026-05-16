@@ -4,6 +4,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
+from apps.core.constants import ANONYMOUS_ID_COOKIE_NAME
 from apps.dataset.models import DataPoint, Dataset
 from apps.dataset.services.ingestion.csv_parser import parse_row_time
 
@@ -43,7 +44,7 @@ def api_client():
 
 @pytest.fixture
 def anonymous_api_client(api_client, anonymous_id):
-    api_client.cookies["anonymous_id"] = str(anonymous_id)
+    api_client.cookies[ANONYMOUS_ID_COOKIE_NAME] = str(anonymous_id)
     return api_client
 
 
