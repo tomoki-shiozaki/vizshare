@@ -1,5 +1,9 @@
+from uuid import UUID
+
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import status
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -90,6 +94,47 @@ class DatasetMetaAPIView(GenericAPIView):
 
         serializer = self.get_serializer(instance=data)
         return Response(serializer.data)
+
+
+class AnonymousDatasetTimeSeriesAPIView(APIView):
+    """
+    anonymous_id に紐づく Dataset の時系列データを取得
+    Recharts 形式で返す
+    """
+
+    @schema(
+        summary="匿名ユーザー Dataset の時系列データ取得",
+        description="anonymous_id に紐づく Dataset の DataPoint を entity ごとに整理して返す",
+        tags=["Dataset"],
+        responses=TimeSeriesDataByEntity,
+    )
+    def get(self, request, pk: int):
+        anonymous_id = request.COOKIES.get("anonymous_id")
+
+        if not anonymous_id:
+            raise PermissionDenied("anonymous_id is required")
+
+        try:
+            anonymous_uuid = UUID(anonymous_id)
+        except ValueError:
+            raise PermissionDenied("invalid anonymous_id")
+
+        dataset = get_object_or_404(
+            Dataset,
+            pk=pk,
+            anonymous_id=anonymous_uuid,
+        )
+
+        # 期限チェック（ここかなり重要）
+        if dataset.expires_at and dataset.expires_at < timezone.now():
+            raise NotFound("dataset expired")
+
+        # DataPoint取得
+        data_qs = dataset.data_points.all().order_by("entity", "time", "order_index")  # type: ignore
+
+        result = build_time_series_data(data_qs)
+
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class PublicDatasetTimeSeriesAPIView(APIView):
