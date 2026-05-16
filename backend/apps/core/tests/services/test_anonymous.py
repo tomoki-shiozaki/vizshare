@@ -2,6 +2,7 @@ import uuid
 
 from django.test import RequestFactory
 
+from apps.core.constants import ANONYMOUS_ID_COOKIE_NAME
 from apps.core.services.anonymous import get_or_create_anonymous_id
 
 
@@ -11,7 +12,7 @@ class TestGetOrCreateAnonymousId:
 
     def test_returns_existing_anonymous_id_from_cookie(self):
         request = self.factory.get("/")
-        request.COOKIES["anonymous_id"] = "existing-anon-id"
+        request.COOKIES[ANONYMOUS_ID_COOKIE_NAME] = "existing-anon-id"
 
         anonymous_id, created = get_or_create_anonymous_id(request)
 

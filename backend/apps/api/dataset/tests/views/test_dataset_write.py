@@ -7,6 +7,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from apps.core.constants import ANONYMOUS_ID_COOKIE_NAME
 from apps.dataset.models import Dataset
 
 
@@ -165,9 +166,9 @@ class TestDatasetAnonymousCreateAPIView:
         assert dataset.name == "Anonymous Dataset"
 
         # cookie がセットされる
-        assert "anonymous_id" in response.cookies  # type: ignore
+        assert ANONYMOUS_ID_COOKIE_NAME in response.cookies  # type: ignore
 
-        cookie = response.cookies["anonymous_id"]  # type: ignore
+        cookie = response.cookies[ANONYMOUS_ID_COOKIE_NAME]  # type: ignore
 
         assert cookie.value == str(dataset.anonymous_id)
 
@@ -189,7 +190,7 @@ class TestDatasetAnonymousCreateAPIView:
 
         existing_id = str(uuid.uuid4())
 
-        api_client.cookies["anonymous_id"] = existing_id
+        api_client.cookies[ANONYMOUS_ID_COOKIE_NAME] = existing_id
 
         csv_file = ContentFile(
             b"time,metric1\n1,10\n",
@@ -219,7 +220,7 @@ class TestDatasetAnonymousCreateAPIView:
         assert str(dataset.anonymous_id) == existing_id
 
         # 既存 cookie の場合は再設定しない
-        assert "anonymous_id" not in response.cookies  # type: ignore
+        assert ANONYMOUS_ID_COOKIE_NAME not in response.cookies  # type: ignore
 
     def test_anonymous_dataset_upload_validation_error(
         self,

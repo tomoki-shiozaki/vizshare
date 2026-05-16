@@ -5,6 +5,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django.urls import reverse
 
+from apps.core.constants import ANONYMOUS_ID_COOKIE_NAME
 from apps.dataset.models import Dataset
 
 
@@ -103,7 +104,7 @@ class TestAnonymousDatasetDetailAPIView:
             },
         )
 
-        api_client.cookies["anonymous_id"] = str(anonymous_id)
+        api_client.cookies[ANONYMOUS_ID_COOKIE_NAME] = str(anonymous_id)
 
         url = reverse(
             "dataset:anonymous-detail",
@@ -145,7 +146,7 @@ class TestAnonymousDatasetDetailAPIView:
             },
         )
 
-        api_client.cookies["anonymous_id"] = str(uuid.uuid4())
+        api_client.cookies[ANONYMOUS_ID_COOKIE_NAME] = str(uuid.uuid4())
 
         url = reverse(
             "dataset:anonymous-detail",
@@ -157,7 +158,7 @@ class TestAnonymousDatasetDetailAPIView:
         assert response.status_code == 404
 
     def test_nonexistent_dataset_returns_404(self, api_client):
-        api_client.cookies["anonymous_id"] = str(uuid.uuid4())
+        api_client.cookies[ANONYMOUS_ID_COOKIE_NAME] = str(uuid.uuid4())
 
         url = reverse(
             "dataset:anonymous-detail",
