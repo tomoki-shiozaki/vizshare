@@ -34,6 +34,15 @@ class CustomLoginView(LoginView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
 
+        self._after_login(request, response)
+
+        return response
+
+    def _after_login(self, request, response):
+        self._handle_post_login(request)
+        self._clear_anonymous_cookie(response)
+
+    def _handle_post_login(self, request):
         anonymous_id = get_anonymous_id(request)
 
         if anonymous_id:
@@ -42,8 +51,8 @@ class CustomLoginView(LoginView):
                 user=request.user,
             )
 
+    def _clear_anonymous_cookie(self, response):
         response.delete_cookie(ANONYMOUS_ID_COOKIE_NAME)
-        return response
 
 
 # =========================
@@ -60,16 +69,3 @@ class CustomRegisterView(RegisterView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
-
-    def perform_create(self, serializer):
-        user = super().perform_create(serializer)
-
-        anonymous_id = get_anonymous_id(self.request)
-
-        if anonymous_id:
-            transfer_anonymous_datasets_to_user(
-                anonymous_id=anonymous_id,
-                user=user,
-            )
-
-        return user
