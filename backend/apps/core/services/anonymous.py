@@ -1,8 +1,10 @@
 import uuid
 
+from apps.core.constants import ANONYMOUS_ID_COOKIE_NAME
+
 
 def get_anonymous_id(request) -> str | None:
-    return request.COOKIES.get("anonymous_id")
+    return request.COOKIES.get(ANONYMOUS_ID_COOKIE_NAME)
 
 
 def get_or_create_anonymous_id(request) -> tuple[str, bool]:
