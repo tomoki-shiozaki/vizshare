@@ -32,24 +32,17 @@ class CustomLoginView(LoginView):
         responses=JWTSerializer,
     )
     def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+        response = super().post(request, *args, **kwargs)
 
-    def login(self):
-        super().login()
-
-        anonymous_id = get_anonymous_id(self.request)
+        anonymous_id = get_anonymous_id(request)
 
         if anonymous_id:
             transfer_anonymous_datasets_to_user(
                 anonymous_id=anonymous_id,
-                user=self.user,
+                user=request.user,
             )
 
-    def get_response(self):
-        response = super().get_response()
-
         response.delete_cookie(ANONYMOUS_ID_COOKIE_NAME)
-
         return response
 
 

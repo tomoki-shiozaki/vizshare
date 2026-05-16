@@ -25,7 +25,11 @@ from apps.accounts.views import CustomLoginView, CustomRegisterView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/", include("apps.api.urls")),
-    path("api/v1/dj-rest-auth/login/", CustomLoginView.as_view(), name="rest_login"),
+    path(
+        "api/v1/dj-rest-auth/login/",
+        CustomLoginView.as_view(),
+        name="custom_rest_login",
+    ),
     path(
         "api/v1/dj-rest-auth/registration/",
         CustomRegisterView.as_view(),
