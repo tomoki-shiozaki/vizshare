@@ -143,6 +143,12 @@ class Dataset(models.Model):
         storage = self.source_file.storage
         return storage.url(self.source_file.name)
 
+    def delete(self, *args, **kwargs):
+        if self.source_file:
+            self.source_file.delete(save=False)
+
+        super().delete(*args, **kwargs)
+
 
 class DataPoint(models.Model):
     DEFAULT_ENTITY = "__default__"
