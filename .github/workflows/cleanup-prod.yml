@@ -1,4 +1,4 @@
-name: Cleanup Staging Expired Datasets
+name: Cleanup Production Expired Datasets
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: cleanup-staging
+  group: cleanup-production
   cancel-in-progress: false
 
 jobs:
@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SECRET_KEY: ${{ secrets.SECRET_KEY_DEVELOP }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL_DEVELOP }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       DEBUG: "False"
 
     steps:
