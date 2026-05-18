@@ -1,7 +1,9 @@
 import uuid
+from datetime import timedelta
 
 import pytest
 from django.core.files.base import ContentFile
+from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from apps.dataset.models import Dataset
@@ -50,18 +52,22 @@ class TestCreateDatasetService:
 
         assert dataset.owner == user
         assert dataset.anonymous_id is None
+        assert dataset.expires_at is None
         assert dataset.name == "Test Dataset"
 
         mock_validate.assert_called_once_with(source_file, schema)
 
-        mock_enqueue.assert_called_once_with(dataset.id)  # type: ignore
+        mock_enqueue.assert_called_once_with(dataset.id)  # type: ignore[arg-type]
 
     def test_create_dataset_with_anonymous_id(
         self,
         mocker,
+        settings,
         source_file,
         schema,
     ):
+        settings.ANONYMOUS_DATASET_TTL_DAYS = 7
+
         mock_validate = mocker.patch(
             "apps.dataset.services.application.build_dataset.validate_csv_against_schema"
         )
@@ -72,6 +78,8 @@ class TestCreateDatasetService:
 
         anonymous_id = uuid.uuid4()
 
+        before_create = timezone.now()
+
         dataset = create_dataset(
             anonymous_id=anonymous_id,
             name="Anonymous Dataset",
@@ -79,15 +87,24 @@ class TestCreateDatasetService:
             schema=schema,
         )
 
+        after_create = timezone.now()
+
         assert Dataset.objects.filter(pk=dataset.pk).exists()
 
         assert dataset.owner is None
         assert dataset.anonymous_id == anonymous_id
         assert dataset.name == "Anonymous Dataset"
 
+        assert dataset.expires_at is not None
+
+        expected_min = before_create + timedelta(days=7)
+        expected_max = after_create + timedelta(days=7)
+
+        assert expected_min <= dataset.expires_at <= expected_max
+
         mock_validate.assert_called_once_with(source_file, schema)
 
-        mock_enqueue.assert_called_once_with(dataset.id)  # type: ignore
+        mock_enqueue.assert_called_once_with(dataset.id)  # type: ignore[arg-type]
 
     def test_create_dataset_validation_error(
         self,

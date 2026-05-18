@@ -347,3 +347,5 @@ LOGGING = {
 # ================================
 # App-specific settings
 # ================================
+
+ANONYMOUS_DATASET_TTL_DAYS = 7

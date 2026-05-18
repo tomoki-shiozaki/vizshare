@@ -1,3 +1,5 @@
+import uuid
+
 from django.http import HttpResponse
 
 from apps.core.constants import ANONYMOUS_ID_COOKIE_NAME
@@ -10,27 +12,31 @@ class TestSetAnonymousCookie:
         settings.COOKIE_SAMESITE = "Lax"
         settings.COOKIE_SECURE = True
 
+        anonymous_id = uuid.uuid4()
+
         response = HttpResponse()
 
         response = set_anonymous_cookie(
             response=response,
-            anonymous_id="anon-123",
+            anonymous_id=anonymous_id,
             created=True,
         )
 
         cookie = response.cookies[ANONYMOUS_ID_COOKIE_NAME]
 
-        assert cookie.value == "anon-123"
+        assert cookie.value == str(anonymous_id)
         assert cookie["max-age"] == 3600
         assert cookie["samesite"] == "Lax"
         assert cookie["secure"]
 
     def test_does_not_set_cookie_when_not_created(self):
+        anonymous_id = uuid.uuid4()
+
         response = HttpResponse()
 
         response = set_anonymous_cookie(
             response=response,
-            anonymous_id="anon-123",
+            anonymous_id=anonymous_id,
             created=False,
         )
 

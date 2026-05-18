@@ -1,3 +1,7 @@
+from datetime import timedelta
+
+from django.conf import settings
+from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from apps.dataset.models import Dataset
@@ -16,13 +20,15 @@ def create_dataset(
     """
     Dataset を作成するサービス関数。
 
-    - CSV × schema の整合性チェック
+    Responsibilities:
     - owner / anonymous_id の排他制御
-    - データベース保存
-    - 非同期ジョブ投入
+    - CSV validation
+    - expires_at の設定
+    - Dataset 作成
+    - 非同期解析ジョブ投入
     """
 
-    # --- owner / anonymous_id の排他チェック ---
+    # --- owner / anonymous_id validation ---
     if bool(owner) == bool(anonymous_id):
         raise ValidationError("Exactly one of owner or anonymous_id must be provided.")
 
@@ -32,6 +38,14 @@ def create_dataset(
     except ValueError as e:
         raise ValidationError(str(e))
 
+    # --- expiration policy ---
+    expires_at = None
+
+    if anonymous_id is not None:
+        expires_at = timezone.now() + timedelta(
+            days=settings.ANONYMOUS_DATASET_TTL_DAYS
+        )
+
     # --- create dataset ---
     dataset = Dataset.objects.create(
         owner=owner,
@@ -39,9 +53,10 @@ def create_dataset(
         name=name,
         source_file=source_file,
         schema=schema,
+        expires_at=expires_at,
     )
 
     # --- async processing ---
-    enqueue_parse_dataset(dataset.id)  # type: ignore
+    enqueue_parse_dataset(dataset.id)  # type: ignore[arg-type]
 
     return dataset
