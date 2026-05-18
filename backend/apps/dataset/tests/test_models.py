@@ -1,3 +1,4 @@
+import os
 import uuid
 
 import pytest
@@ -230,6 +231,42 @@ class TestDatasetModel:
         dataset.delete()
 
         assert DataPoint.objects.count() == 0
+
+
+@pytest.mark.django_db
+class TestDatasetDelete:
+
+    def test_delete_removes_source_file(self, user, tmp_path, settings):
+        """
+        Dataset.delete() で source_file も削除される
+        """
+
+        settings.MEDIA_ROOT = tmp_path
+
+        dummy_file = SimpleUploadedFile(
+            "test.csv",
+            b"col1,col2\n1,2",
+        )
+
+        dataset = Dataset.objects.create(
+            owner=user,
+            name="dataset",
+            source_file=dummy_file,
+            schema={"time": "year", "metrics": ["value"]},
+        )
+
+        file_path = dataset.source_file.path
+
+        # ファイル存在確認
+        assert os.path.exists(file_path)
+
+        dataset.delete()
+
+        # ファイルも消えている
+        assert not os.path.exists(file_path)
+
+        # DBレコードも消えている
+        assert Dataset.objects.count() == 0
 
 
 @pytest.mark.django_db
