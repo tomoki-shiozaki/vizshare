@@ -2,6 +2,7 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 
+from apps.core.constants import ANONYMOUS_ID_COOKIE_NAME
 from apps.dataset.models import DataPoint, Dataset
 from apps.dataset.services.ingestion.csv_parser import parse_row_time
 
@@ -203,6 +204,122 @@ class TestDatasetMetaAPIView:
         assert res.status_code == 200
         assert res.data["entities"] == []
         assert res.data["metrics"] == []
+
+
+@pytest.mark.django_db
+class TestAnonymousDatasetTimeSeriesAPIView:
+
+    def test_returns_structured_data(
+        self,
+        anonymous_api_client,
+        anonymous_dataset,
+    ):
+
+        DataPoint.objects.create(
+            dataset=anonymous_dataset,
+            entity="A",
+            metric="value",
+            raw_time="2026-03-13T00:00:00Z",
+            time=parse_row_time("2026-03-13T00:00:00Z"),
+            value=1,
+            order_index=0,
+        )
+
+        DataPoint.objects.create(
+            dataset=anonymous_dataset,
+            entity="A",
+            metric="anomaly",
+            raw_time="2026-03-13T00:00:00Z",
+            time=parse_row_time("2026-03-13T00:00:00Z"),
+            value=0.1,
+            order_index=1,
+        )
+
+        DataPoint.objects.create(
+            dataset=anonymous_dataset,
+            entity="B",
+            metric="value",
+            raw_time="2026-03-13T01:00:00Z",
+            time=parse_row_time("2026-03-13T01:00:00Z"),
+            value=2,
+            order_index=0,
+        )
+
+        url = reverse(
+            "dataset:anonymous-timeseries",
+            kwargs={"public_id": anonymous_dataset.public_id},
+        )
+
+        res = anonymous_api_client.get(url)
+
+        assert res.status_code == 200
+
+    def test_returns_404_for_other_anonymous_user(
+        self,
+        anonymous_api_client,
+        another_anonymous_dataset,
+    ):
+        """他のanonymousユーザーはアクセス不可"""
+
+        url = reverse(
+            "dataset:anonymous-timeseries",
+            kwargs={"public_id": another_anonymous_dataset.public_id},
+        )
+
+        res = anonymous_api_client.get(url)
+
+        assert res.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_empty_dataset_returns_empty_dict(
+        self,
+        anonymous_api_client,
+        anonymous_dataset,
+    ):
+        """データがない場合は空dict"""
+
+        url = reverse(
+            "dataset:anonymous-timeseries",
+            kwargs={"public_id": anonymous_dataset.public_id},
+        )
+
+        res = anonymous_api_client.get(url)
+
+        assert res.status_code == status.HTTP_200_OK
+        assert res.data == {}
+
+    def test_missing_cookie_returns_403(
+        self,
+        api_client,
+        anonymous_dataset,
+    ):
+        """cookieなしは拒否"""
+
+        url = reverse(
+            "dataset:anonymous-timeseries",
+            kwargs={"public_id": anonymous_dataset.public_id},
+        )
+
+        res = api_client.get(url)
+
+        assert res.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_invalid_cookie_returns_403(
+        self,
+        api_client,
+        anonymous_dataset,
+    ):
+        """不正UUID cookieは拒否"""
+
+        api_client.cookies[ANONYMOUS_ID_COOKIE_NAME] = "invalid-uuid"
+
+        url = reverse(
+            "dataset:anonymous-timeseries",
+            kwargs={"public_id": anonymous_dataset.public_id},
+        )
+
+        res = api_client.get(url)
+
+        assert res.status_code == status.HTTP_403_FORBIDDEN
 
 
 @pytest.mark.django_db
