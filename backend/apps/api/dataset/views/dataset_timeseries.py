@@ -109,7 +109,7 @@ class AnonymousDatasetTimeSeriesAPIView(APIView):
         tags=["Dataset"],
         responses=TimeSeriesDataByEntity,
     )
-    def get(self, request, pk: int):
+    def get(self, request, public_id):
         anonymous_id = request.COOKIES.get("anonymous_id")
 
         if not anonymous_id:
@@ -122,7 +122,7 @@ class AnonymousDatasetTimeSeriesAPIView(APIView):
 
         dataset = get_object_or_404(
             Dataset,
-            pk=pk,
+            public_id=public_id,
             anonymous_id=anonymous_uuid,
         )
 
