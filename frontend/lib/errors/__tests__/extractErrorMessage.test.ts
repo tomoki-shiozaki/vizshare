@@ -3,10 +3,9 @@ import { AxiosHeaders } from "axios";
 import { extractErrorMessage } from "@/lib/errors/extractErrorMessage";
 
 describe("extractErrorMessage", () => {
-  // テスト用のベースエラーを作成（Partial で簡略化）
   const baseError: Partial<AxiosErrorWithResponse> = {
     config: {
-      headers: new AxiosHeaders(), // AxiosHeaders を使って型を満たす
+      headers: new AxiosHeaders(),
       _retry: false,
     },
     isAxiosError: true,
@@ -33,27 +32,13 @@ describe("extractErrorMessage", () => {
     } as unknown as AxiosErrorWithResponse;
 
     expect(extractErrorMessage(error)).toBe(
-      "サーバーで問題が発生しました。時間を置いて再度お試しください。"
+      "サーバー内部エラーが発生しました。",
     );
-  });
-
-  it("dataが文字列の場合", () => {
-    const error = {
-      ...baseError,
-      message: "ignored",
-      response: {
-        status: 400,
-        data: "エラーです",
-      },
-    } as unknown as AxiosErrorWithResponse;
-
-    expect(extractErrorMessage(error)).toBe("エラーです");
   });
 
   it("data.detailがある場合", () => {
     const error = {
       ...baseError,
-      message: "ignored",
       response: {
         status: 400,
         data: { detail: "詳細エラー" },
@@ -66,7 +51,6 @@ describe("extractErrorMessage", () => {
   it("data.non_field_errorsがある場合", () => {
     const error = {
       ...baseError,
-      message: "ignored",
       response: {
         status: 400,
         data: { non_field_errors: ["非フィールドエラー"] },
@@ -79,7 +63,6 @@ describe("extractErrorMessage", () => {
   it("その他のフィールドの配列や文字列がある場合", () => {
     const error1 = {
       ...baseError,
-      message: "ignored",
       response: {
         status: 400,
         data: { username: ["ユーザー名エラー"] },
@@ -90,7 +73,6 @@ describe("extractErrorMessage", () => {
 
     const error2 = {
       ...baseError,
-      message: "ignored",
       response: {
         status: 400,
         data: { email: "メールエラー" },
@@ -100,27 +82,22 @@ describe("extractErrorMessage", () => {
     expect(extractErrorMessage(error2)).toBe("メールエラー");
   });
 
-  it("どれにも当てはまらない場合、error.messageを返す", () => {
+  it("dataが文字列の場合はfallbackになる", () => {
     const error = {
       ...baseError,
-      message: "不明なエラー",
       response: {
         status: 400,
-        data: {},
+        data: "エラーです",
       },
     } as unknown as AxiosErrorWithResponse;
 
-    expect(extractErrorMessage(error)).toBe("不明なエラー");
+    expect(extractErrorMessage(error)).toBe("エラーが発生しました。");
   });
 
-  it("どれにも当てはまらずerror.messageもない場合、デフォルト文字列を返す", () => {
+  it("どれにも当てはまらない場合はfallbackを返す", () => {
     const error = {
-      config: {
-        headers: new AxiosHeaders(),
-        _retry: false,
-      },
-      isAxiosError: true,
-      name: "AxiosError",
+      ...baseError,
+      message: "不明なエラー",
       response: {
         status: 400,
         data: {},
