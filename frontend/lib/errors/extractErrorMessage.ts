@@ -6,25 +6,28 @@ const isApiErrorResponse = (data: unknown): data is ApiErrorResponse =>
 
 export const extractErrorMessage = (error: AxiosErrorWithResponse): string => {
   const status = error.response?.status;
-  const data = error.response?.data;
+  const data: unknown = error.response?.data;
 
-  // ネットワークエラーやサーバー応答なし
-  if (!data) {
-    if (!error.response) return "サーバーに接続できませんでした。";
-    if (status && status >= 500 && status < 600) {
-      return "サーバーで問題が発生しました。時間を置いて再度お試しください。";
-    }
-    // 想定外のケースに備えた保険として
-    return error.message || "不明なエラーが発生しました。";
+  // response自体がない（ネットワーク断など）
+  if (!error.response) {
+    return "サーバーに接続できませんでした。";
   }
 
-  // 文字列の場合
-  if (typeof data === "string") return data;
+  // 5xx は詳細を見せない
+  if (status && status >= 500 && status < 600) {
+    return "サーバー内部エラーが発生しました。";
+  }
 
-  // オブジェクトの場合
+  // DRF系 JSON error
   if (isApiErrorResponse(data)) {
-    if (data.detail) return data.detail;
-    if (data.non_field_errors && data.non_field_errors.length > 0) {
+    if (typeof data.detail === "string") {
+      return data.detail;
+    }
+
+    if (
+      Array.isArray(data.non_field_errors) &&
+      data.non_field_errors.length > 0
+    ) {
       return data.non_field_errors[0];
     }
 
@@ -36,10 +39,13 @@ export const extractErrorMessage = (error: AxiosErrorWithResponse): string => {
       ) {
         return value[0];
       }
-      if (typeof value === "string") return value;
+
+      if (typeof value === "string") {
+        return value;
+      }
     }
   }
 
-  // どれにも当てはまらなかった場合の保険
-  return error.message || "エラーが発生しました。";
+  // fallback
+  return "エラーが発生しました。";
 };
