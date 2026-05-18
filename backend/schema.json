@@ -458,6 +458,63 @@
                 }
             }
         },
+        "/api/v1/datasets/anonymous/{public_id}/timeseries/": {
+            "get": {
+                "operationId": "datasets_anonymous_timeseries_retrieve",
+                "description": "anonymous_id に紐づく Dataset の DataPoint を entity ごとに整理して返す",
+                "summary": "匿名ユーザー Dataset の時系列データ取得",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "public_id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "description": "1つの時刻における metric データ",
+                                            "properties": {
+                                                "time": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/anonymous/create/": {
             "post": {
                 "operationId": "datasets_anonymous_create_create",
