@@ -102,6 +102,8 @@ class AnonymousDatasetTimeSeriesAPIView(APIView):
     Recharts 形式で返す
     """
 
+    permission_classes = [AllowAny]
+
     @schema(
         summary="匿名ユーザー Dataset の時系列データ取得",
         description="anonymous_id に紐づく Dataset の DataPoint を entity ごとに整理して返す",
