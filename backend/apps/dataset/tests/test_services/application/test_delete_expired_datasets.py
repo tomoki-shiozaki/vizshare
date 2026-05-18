@@ -1,6 +1,8 @@
+import os
 from datetime import timedelta
 
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
 from apps.dataset.models import Dataset
@@ -92,3 +94,41 @@ class TestDeleteExpiredAnonymousDatasets:
         assert deleted_count == 1
 
         assert Dataset.objects.count() == 0
+
+    def test_delete_expired_dataset_removes_source_file(
+        self,
+        anonymous_id,
+        tmp_path,
+        settings,
+    ):
+        """
+        cleanup時にsource_fileも削除される
+        """
+
+        settings.MEDIA_ROOT = tmp_path
+
+        dummy_file = SimpleUploadedFile(
+            "test.csv",
+            b"col1,col2\n1,2",
+        )
+
+        dataset = Dataset.objects.create(
+            name="expired",
+            anonymous_id=anonymous_id,
+            source_file=dummy_file,
+            expires_at=timezone.now() - timedelta(days=1),
+            schema={
+                "time": "timestamp",
+                "metrics": ["value"],
+            },
+        )
+
+        file_path = dataset.source_file.path
+
+        assert os.path.exists(file_path)
+
+        deleted_count = delete_expired_anonymous_datasets()
+
+        assert deleted_count == 1
+
+        assert not os.path.exists(file_path)
