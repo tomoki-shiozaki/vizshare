@@ -125,10 +125,6 @@ class AnonymousDatasetTimeSeriesAPIView(APIView):
             anonymous_id=anonymous_uuid,
         )
 
-        # 期限チェック（ここかなり重要）
-        if dataset.expires_at and dataset.expires_at < timezone.now():
-            raise NotFound("dataset expired")
-
         # DataPoint取得
         data_qs = dataset.data_points.all().order_by("entity", "time", "order_index")  # type: ignore
 
