@@ -16,6 +16,7 @@ from apps.api.dataset.services.timeseries import build_time_series_data
 from apps.api.dataset.types.entity_comparison_types import EntityComparisonResponse
 from apps.api.dataset.types.timeseries import TimeSeriesDataByEntity
 from apps.api.utils.schema import schema
+from apps.core.services.anonymous import get_anonymous_id
 from apps.dataset.models import Dataset
 
 # ===============================
@@ -110,20 +111,15 @@ class AnonymousDatasetTimeSeriesAPIView(APIView):
         responses=TimeSeriesDataByEntity,
     )
     def get(self, request, public_id):
-        anonymous_id = request.COOKIES.get("anonymous_id")
+        anonymous_id = get_anonymous_id(request)
 
         if not anonymous_id:
             raise PermissionDenied("anonymous_id is required")
 
-        try:
-            anonymous_uuid = UUID(anonymous_id)
-        except ValueError:
-            raise PermissionDenied("invalid anonymous_id")
-
         dataset = get_object_or_404(
             Dataset,
             public_id=public_id,
-            anonymous_id=anonymous_uuid,
+            anonymous_id=anonymous_id,
         )
 
         # DataPoint取得
