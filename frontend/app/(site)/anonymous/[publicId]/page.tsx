@@ -4,6 +4,8 @@ import { useParams } from "next/navigation";
 
 import { PageLayout } from "@/components/layout";
 import { AnonymousDatasetDetail } from "@/features/datasets/detail/components/AnonymousDatasetDetail";
+import { DatasetLineChart } from "@/features/datasets/components/charts/DatasetLineChart";
+import { useAnonymousDatasetDataPoints } from "@/features/datasets/timeseries/hooks/useAnonymousDatasetDataPoints";
 
 export default function AnonymousDatasetDetailPage() {
   const { publicId } = useParams<{ publicId: string }>();
@@ -16,6 +18,11 @@ export default function AnonymousDatasetDetailPage() {
       description="アップロードした Dataset の詳細情報を確認できます"
     >
       <AnonymousDatasetDetail publicId={publicId} />
+
+      <DatasetLineChart
+        datasetId={publicId}
+        useDataPoints={useAnonymousDatasetDataPoints}
+      />
     </PageLayout>
   );
 }
