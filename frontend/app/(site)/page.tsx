@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 
 import { HomeLayout } from "@/components/layout/HomeLayout";
 
@@ -16,12 +17,22 @@ import { fetchAnonymousDatasetListServer } from "@/features/datasets/list/api/fe
 import { AnonymousDatasetPreviewList } from "@/features/datasets/home/components/AnonymousDatasetPreviewList";
 
 export default async function HomePage() {
+  const cookieStore = await cookies();
+
+  // access token の存在だけ軽く確認
+  const accessToken = cookieStore.get("my-app-auth");
+
+  const isLoggedIn = !!accessToken;
+
   const data = await fetchPublicDatasetListServer();
 
-  const anonymousData = await fetchAnonymousDatasetListServer({
-    limit: 5,
-    offset: 0,
-  });
+  // 未ログイン時だけ匿名データを取得
+  const anonymousData = !isLoggedIn
+    ? await fetchAnonymousDatasetListServer({
+        limit: 5,
+        offset: 0,
+      })
+    : null;
 
   return (
     <HomeLayout
@@ -32,50 +43,107 @@ export default async function HomePage() {
       "
     >
       <div className="space-y-14">
-        {/* Hero */}
+        {/* =========================
+            Hero
+        ========================= */}
         <section className="space-y-6">
           <div className="max-w-3xl space-y-4">
             <h2 className="text-3xl font-bold tracking-tight">
-              CSVをアップロードして、 すぐにグラフ化
+              {isLoggedIn
+                ? "データセットを管理・可視化"
+                : "CSVをアップロードして、すぐにグラフ化"}
             </h2>
 
             <p className="text-muted-foreground">
-              ログイン不要で試せます。 Time series データをアップロードすると、
-              自動でグラフとして可視化できます。
+              {isLoggedIn
+                ? "アップロードした Dataset を管理し、グラフとして可視化できます。"
+                : "ログイン不要で試せます。Time series データをアップロードすると、自動でグラフとして可視化できます。"}
             </p>
           </div>
 
-          <AnonymousDatasetUploadForm />
+          {/* =========================
+              未ログイン: 匿名アップロード
+          ========================= */}
+          {!isLoggedIn && (
+            <>
+              <AnonymousDatasetUploadForm />
 
-          <AnonymousDatasetPreviewList data={anonymousData} />
+              {anonymousData && (
+                <AnonymousDatasetPreviewList data={anonymousData} />
+              )}
+            </>
+          )}
+
+          {/* =========================
+              ログイン済み: Dashboard導線
+          ========================= */}
+          {isLoggedIn && (
+            <div className="grid gap-6 md:grid-cols-2">
+              <CardLink href="/datasets">
+                <h2 className="text-xl font-semibold text-blue-600 mb-2">
+                  My Datasets
+                </h2>
+
+                <p className="text-gray-500 text-sm">
+                  自分のデータセットを管理します。
+                </p>
+              </CardLink>
+
+              <CardLink href="/explore">
+                <h2 className="text-xl font-semibold text-blue-600 mb-2">
+                  Public Datasets
+                </h2>
+
+                <p className="text-gray-500 text-sm">
+                  公開されているデータセットを閲覧できます。
+                </p>
+              </CardLink>
+            </div>
+          )}
         </section>
 
-        {/* Navigation */}
-        <section>
-          <div className="grid gap-6 md:grid-cols-2">
-            <CardLink href="/datasets">
-              <h2 className="text-xl font-semibold text-blue-600 mb-2">
-                My Datasets
-              </h2>
+        {/* =========================
+            未ログイン向け Navigation
+        ========================= */}
+        {!isLoggedIn && (
+          <section>
+            <div className="grid gap-6 md:grid-cols-3">
+              <CardLink href="/login">
+                <h2 className="text-xl font-semibold text-blue-600 mb-2">
+                  Login
+                </h2>
 
-              <p className="text-gray-500 text-sm">
-                ログインしてデータセットを管理します。
-              </p>
-            </CardLink>
+                <p className="text-gray-500 text-sm">
+                  ログインしてデータセットを管理できます。
+                </p>
+              </CardLink>
 
-            <CardLink href="/explore">
-              <h2 className="text-xl font-semibold text-blue-600 mb-2">
-                Public Datasets
-              </h2>
+              <CardLink href="/signup">
+                <h2 className="text-xl font-semibold text-blue-600 mb-2">
+                  Signup
+                </h2>
 
-              <p className="text-gray-500 text-sm">
-                公開されているデータセットを閲覧できます。
-              </p>
-            </CardLink>
-          </div>
-        </section>
+                <p className="text-gray-500 text-sm">
+                  アカウントを作成して継続利用できます。
+                </p>
+              </CardLink>
 
-        {/* Latest public datasets */}
+              <CardLink href="/explore">
+                <h2 className="text-xl font-semibold text-blue-600 mb-2">
+                  Public Datasets
+                </h2>
+
+                <p className="text-gray-500 text-sm">
+                  公開データセットを閲覧できます。
+                </p>
+              </CardLink>
+            </div>
+          </section>
+        )}
+
+        {/* =========================
+            Latest Public Datasets
+        ========================= */}
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-blue-600">
