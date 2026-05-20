@@ -40,4 +40,7 @@ export const datasetKeys = {
       publicId,
       metric,
     ] as const,
+
+  anonymousMeta: (publicId: string) =>
+    [...datasetKeys.all, "anonymousMeta", publicId] as const,
 };
