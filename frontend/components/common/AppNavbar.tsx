@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+
 import { useAuthContext } from "@/features/auth/context/useAuthContext";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { Button } from "@/components/ui/button";
 
 /* ======================
@@ -20,6 +23,7 @@ const mainLinks = [
   { to: "/datasets", label: "データセット管理" },
   { to: "/explore", label: "公開データ" },
 ];
+
 const dropdownLinks = [
   { to: "/about", label: "このサイトについて" },
   { to: "/docs/csv-format", label: "CSVフォーマット" },
@@ -54,7 +58,7 @@ function NavbarLink({ to, active, children }: NavbarLinkProps) {
 ====================== */
 type AuthNavProps = {
   currentUsername: string | null;
-  logout: () => void;
+  logout: () => Promise<void>;
 };
 
 const AuthNav: React.FC<AuthNavProps> = ({ currentUsername, logout }) => {
@@ -62,11 +66,18 @@ const AuthNav: React.FC<AuthNavProps> = ({ currentUsername, logout }) => {
     return (
       <div className="flex items-center gap-2">
         <span className="text-sm text-white">{currentUsername} さん</span>
+
         <Button
           variant="ghost"
           size="sm"
-          className="text-white/80 hover:text-white hover:bg-white/10"
-          onClick={logout}
+          className="
+            text-white/80
+            hover:text-white
+            hover:bg-white/10
+          "
+          onClick={() => {
+            void logout();
+          }}
         >
           ログアウト
         </Button>
@@ -77,6 +88,7 @@ const AuthNav: React.FC<AuthNavProps> = ({ currentUsername, logout }) => {
   return (
     <div className="flex gap-2">
       <NavbarLink to="/login">ログイン</NavbarLink>
+
       <NavbarLink to="/signup">新規登録</NavbarLink>
     </div>
   );
@@ -87,8 +99,18 @@ const AuthNav: React.FC<AuthNavProps> = ({ currentUsername, logout }) => {
 ====================== */
 export const AppNavbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
+
   const { currentUsername, logout } = useAuthContext();
+
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = async () => {
+    await logout();
+
+    // Server Components を再取得
+    router.refresh();
+  };
 
   return (
     <nav className="bg-blue-500 text-white relative z-50">
@@ -98,29 +120,47 @@ export const AppNavbar = () => {
           flex flex-col md:flex-row
           md:items-center md:justify-between
           px-4 py-2
-      "
+        "
       >
         {/* 上段：ロゴ + ハンバーガー */}
-        <div className="flex items-center justify-between w-full md:w-auto md:mr-6">
+        <div
+          className="
+            flex items-center justify-between
+            w-full md:w-auto md:mr-6
+          "
+        >
           <Link href="/" className="text-lg font-bold whitespace-nowrap">
             Vizshare
           </Link>
 
           <button
-            className="md:hidden p-2 rounded hover:bg-white/10"
+            className="
+              md:hidden
+              p-2 rounded
+              hover:bg-white/10
+            "
             onClick={() => setIsOpen((v) => !v)}
           >
             <span className="sr-only">メニュー切替</span>☰
           </button>
         </div>
+
         {/* 下段：ナビ + 認証 */}
         <div
-          className={`w-full md:flex md:items-center md:gap-4 mt-2 md:mt-0 ${
-            isOpen ? "block" : "hidden"
-          }`}
+          className={`
+            w-full
+            md:flex md:items-center md:gap-4
+            mt-2 md:mt-0
+            ${isOpen ? "block" : "hidden"}
+          `}
         >
           {/* 左：ナビゲーション */}
-          <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+          <div
+            className="
+              flex flex-col md:flex-row
+              md:items-center md:gap-4
+            "
+          >
             {mainLinks.map((link) => (
               <NavbarLink
                 key={link.to}
@@ -164,6 +204,7 @@ export const AppNavbar = () => {
               >
                 {dropdownLinks.map((link) => {
                   const isActive = pathname === link.to;
+
                   return (
                     <DropdownMenuItem asChild key={link.to}>
                       <Link
@@ -183,7 +224,7 @@ export const AppNavbar = () => {
 
           {/* 右：認証 */}
           <div className="mt-2 md:mt-0 md:ml-auto">
-            <AuthNav currentUsername={currentUsername} logout={logout} />
+            <AuthNav currentUsername={currentUsername} logout={handleLogout} />
           </div>
         </div>
       </div>
