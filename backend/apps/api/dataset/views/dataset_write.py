@@ -53,14 +53,16 @@ class AnonymousUploadThrottle(AnonRateThrottle):
 class DatasetAnonymousCreateAPIView(generics.CreateAPIView):
     queryset = Dataset.objects.all()
     serializer_class = AnonymousDatasetCreateSerializer
-    permission_classes = [AllowAny]  # or throttle強め
+    permission_classes = [AllowAny]
     throttle_classes = [AnonymousUploadThrottle]
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
 
         return set_anonymous_cookie(
-            response, self.anonymous_id, self._created_anonymous
+            response,
+            self.anonymous_id,
+            self._created_anonymous,
         )
 
     def perform_create(self, serializer):
@@ -76,6 +78,7 @@ class DatasetAnonymousCreateAPIView(generics.CreateAPIView):
             name=data["name"],
             source_file=data["source_file"],
             schema=data["schema"],
+            visibility=Dataset.Visibility.UNLISTED,
         )
 
         serializer.instance = dataset

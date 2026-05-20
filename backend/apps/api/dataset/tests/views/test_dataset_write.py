@@ -165,6 +165,10 @@ class TestDatasetAnonymousCreateAPIView:
         assert dataset.anonymous_id is not None
         assert dataset.name == "Anonymous Dataset"
 
+        # --- 追加 ---
+        assert dataset.visibility == Dataset.Visibility.UNLISTED
+        assert dataset.expires_at is not None
+
         # cookie がセットされる
         assert ANONYMOUS_ID_COOKIE_NAME in response.cookies  # type: ignore
 
@@ -218,6 +222,10 @@ class TestDatasetAnonymousCreateAPIView:
         dataset = Dataset.objects.get(public_id=dataset_public_id)
 
         assert str(dataset.anonymous_id) == existing_id
+
+        # --- 追加 ---
+        assert dataset.visibility == Dataset.Visibility.UNLISTED
+        assert dataset.expires_at is not None
 
         # 既存 cookie の場合は再設定しない
         assert ANONYMOUS_ID_COOKIE_NAME not in response.cookies  # type: ignore
