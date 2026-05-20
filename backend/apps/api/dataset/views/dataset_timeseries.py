@@ -130,6 +130,48 @@ class AnonymousDatasetTimeSeriesAPIView(APIView):
         return Response(result, status=status.HTTP_200_OK)
 
 
+class AnonymousDatasetEntityComparisonAPIView(APIView):
+    """
+    anonymous_id に紐づく Dataset の entity 比較用時系列データ（wide形式）
+    Recharts でそのまま使える形
+    """
+
+    permission_classes = [AllowAny]
+
+    @schema(
+        summary="匿名ユーザー Dataset の entity比較データ取得",
+        description="timeを軸にentityを横展開したRecharts用データ",
+        tags=["Dataset"],
+        responses=EntityComparisonResponse,
+    )
+    def get(self, request, public_id: str):
+        anonymous_id = get_anonymous_id(request)
+
+        if not anonymous_id:
+            raise PermissionDenied("anonymous_id is required")
+
+        dataset = get_object_or_404(
+            Dataset,
+            public_id=public_id,
+            anonymous_id=anonymous_id,
+        )
+
+        metric = request.query_params.get("metric")
+        if not metric:
+            return Response(
+                {"detail": "metric is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        data_qs = dataset.data_points.filter(metric=metric).order_by(  # type: ignore
+            "time", "entity", "order_index"
+        )
+
+        result = build_entity_comparison_data(data_qs)
+
+        return Response(result, status=status.HTTP_200_OK)
+
+
 class PublicDatasetTimeSeriesAPIView(APIView):
     permission_classes = [AllowAny]
 
