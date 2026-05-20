@@ -21,6 +21,13 @@ export function AnonymousDatasetPreviewList({
         <h2 className="text-xl font-semibold text-blue-600">
           Recent Anonymous Uploads
         </h2>
+
+        <Link
+          href="/anonymous"
+          className="text-sm text-blue-600 hover:underline"
+        >
+          View all →
+        </Link>
       </div>
 
       <div
