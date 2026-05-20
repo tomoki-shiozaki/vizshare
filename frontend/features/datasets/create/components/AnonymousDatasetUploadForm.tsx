@@ -45,7 +45,7 @@ export function AnonymousDatasetUploadForm() {
         text: `アップロード成功: ${data.name}`,
       });
 
-      router.push(`/anonymous/${data.public_id}`);
+      router.push(`/datasets/anonymous/${data.public_id}`);
     },
 
     onError: (error: unknown) => {
