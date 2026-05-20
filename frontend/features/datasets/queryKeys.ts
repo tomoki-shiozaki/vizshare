@@ -2,7 +2,9 @@ export const datasetKeys = {
   all: ["datasets"] as const,
 
   list: () => [...datasetKeys.all] as const,
+
   detail: (id: string) => [...datasetKeys.all, "detail", id] as const,
+
   dataPoints: (id: string) => [...datasetKeys.all, "dataPoints", id] as const,
 
   entityComparison: (id: string, metric: string) =>
@@ -22,6 +24,8 @@ export const datasetKeys = {
     [...datasetKeys.all, "publicEntityComparison", id, metric] as const,
 
   publicMeta: (id: string) => [...datasetKeys.all, "publicMeta", id] as const,
+
+  anonymousList: () => [...datasetKeys.all, "anonymous"] as const,
 
   anonymousDetail: (publicId: string) =>
     [...datasetKeys.all, "anonymousDetail", publicId] as const,
