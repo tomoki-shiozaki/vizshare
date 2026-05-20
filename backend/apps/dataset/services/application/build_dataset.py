@@ -5,7 +5,9 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from apps.dataset.models import Dataset
-from apps.dataset.services.ingestion.csv_validation import validate_csv_against_schema
+from apps.dataset.services.ingestion.csv_validation import (
+    validate_csv_against_schema,
+)
 from apps.dataset.services.ingestion.enqueue import enqueue_parse_dataset
 
 
@@ -16,6 +18,7 @@ def create_dataset(
     name: str,
     source_file,
     schema: dict,
+    visibility: str = Dataset.Visibility.PRIVATE,
 ) -> Dataset:
     """
     Dataset を作成するサービス関数。
@@ -53,6 +56,7 @@ def create_dataset(
         name=name,
         source_file=source_file,
         schema=schema,
+        visibility=visibility,
         expires_at=expires_at,
     )
 
