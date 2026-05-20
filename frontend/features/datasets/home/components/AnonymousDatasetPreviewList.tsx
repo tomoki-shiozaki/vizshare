@@ -23,7 +23,7 @@ export function AnonymousDatasetPreviewList({
         </h2>
 
         <Link
-          href="/anonymous"
+          href="/datasets/anonymous"
           className="text-sm text-blue-600 hover:underline"
         >
           View all →
@@ -39,7 +39,7 @@ export function AnonymousDatasetPreviewList({
         {data.results.map((dataset) => (
           <Link
             key={dataset.public_id}
-            href={`/anonymous/${dataset.public_id}`}
+            href={`/datasets/anonymous/${dataset.public_id}`}
             className="min-w-[220px] snap-start"
           >
             <Card
