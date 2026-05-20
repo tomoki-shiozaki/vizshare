@@ -6,6 +6,7 @@ import { PageLayout } from "@/components/layout";
 import { AnonymousDatasetDetail } from "@/features/datasets/detail/components/AnonymousDatasetDetail";
 import { DatasetLineChart } from "@/features/datasets/components/charts/DatasetLineChart";
 import { useAnonymousDatasetDataPoints } from "@/features/datasets/timeseries/hooks/useAnonymousDatasetDataPoints";
+import { AnonymousDatasetEntityComparisonChart } from "@/features/datasets/components/charts/AnonymousDatasetEntityComparisonChart";
 
 export default function AnonymousDatasetDetailPage() {
   const { publicId } = useParams<{ publicId: string }>();
@@ -23,6 +24,8 @@ export default function AnonymousDatasetDetailPage() {
         datasetId={publicId}
         useDataPoints={useAnonymousDatasetDataPoints}
       />
+
+      <AnonymousDatasetEntityComparisonChart publicId={publicId} />
     </PageLayout>
   );
 }
