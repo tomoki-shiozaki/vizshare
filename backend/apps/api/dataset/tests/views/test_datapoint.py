@@ -433,6 +433,105 @@ class TestAnonymousDatasetEntityComparisonAPIView:
 
 
 @pytest.mark.django_db
+class TestAnonymousDatasetMetaAPIView:
+    def test_get_meta_success(self, anonymous_api_client, anonymous_dataset):
+        DataPoint.objects.create(
+            dataset=anonymous_dataset,
+            entity="A",
+            metric="value",
+            raw_time="2026-03-13T00:00:00Z",
+            value=1,
+            order_index=0,
+        )
+        DataPoint.objects.create(
+            dataset=anonymous_dataset,
+            entity="B",
+            metric="anomaly",
+            raw_time="2026-03-13T01:00:00Z",
+            value=0.5,
+            order_index=1,
+        )
+
+        url = reverse(
+            "dataset:anonymous-meta",
+            args=[anonymous_dataset.public_id],
+        )
+        res = anonymous_api_client.get(url)
+
+        assert res.status_code == 200
+        assert res.data["entities"] == ["A", "B"]
+        assert set(res.data["metrics"]) == {"value", "anomaly"}
+
+    def test_missing_anonymous_id(self, api_client, anonymous_dataset):
+        url = reverse(
+            "dataset:anonymous-meta",
+            args=[anonymous_dataset.public_id],
+        )
+        res = api_client.get(url)
+
+        assert res.status_code == 403
+        assert "anonymous_id" in res.data["detail"]
+
+    def test_invalid_public_id(self, anonymous_api_client, another_anonymous_dataset):
+        url = reverse(
+            "dataset:anonymous-meta",
+            args=[another_anonymous_dataset.public_id],
+        )
+        res = anonymous_api_client.get(url)
+
+        assert res.status_code == 404
+
+    def test_distinct_behavior(self, anonymous_api_client, anonymous_dataset):
+        DataPoint.objects.create(
+            dataset=anonymous_dataset,
+            entity="A",
+            metric="value",
+            raw_time="2026-03-13T00:00:00Z",
+            value=1,
+            order_index=0,
+        )
+
+        DataPoint.objects.create(
+            dataset=anonymous_dataset,
+            entity="B",
+            metric="value",
+            raw_time="2026-03-13T01:00:00Z",
+            value=2,
+            order_index=1,
+        )
+
+        DataPoint.objects.create(
+            dataset=anonymous_dataset,
+            entity="A",
+            metric="value",
+            raw_time="2026-03-13T02:00:00Z",
+            value=3,
+            order_index=2,
+        )
+
+        url = reverse(
+            "dataset:anonymous-meta",
+            args=[anonymous_dataset.public_id],
+        )
+        res = anonymous_api_client.get(url)
+
+        assert res.status_code == 200
+        assert res.data["entities"] == ["A", "B"]
+        assert set(res.data["metrics"]) == {"value"}
+
+    def test_empty_dataset(self, anonymous_api_client, anonymous_dataset):
+        url = reverse(
+            "dataset:anonymous-meta",
+            args=[anonymous_dataset.public_id],
+        )
+        res = anonymous_api_client.get(url)
+
+        assert res.status_code == 200
+        assert res.data["entities"] == []
+        assert res.data["metrics"] == []
+
+
+@pytest.mark.django_db
 class TestPublicDatasetTimeSeriesAPIView:
     def test_returns_structured_data(self, api_client, user):
         """公開かつ解析済みの Dataset の時系列が取得できる"""
