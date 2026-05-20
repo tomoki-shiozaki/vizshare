@@ -55,6 +55,9 @@ class TestCreateDatasetService:
         assert dataset.expires_at is None
         assert dataset.name == "Test Dataset"
 
+        # --- visibility default ---
+        assert dataset.visibility == Dataset.Visibility.PRIVATE
+
         mock_validate.assert_called_once_with(source_file, schema)
 
         mock_enqueue.assert_called_once_with(dataset.id)  # type: ignore[arg-type]
@@ -85,6 +88,7 @@ class TestCreateDatasetService:
             name="Anonymous Dataset",
             source_file=source_file,
             schema=schema,
+            visibility=Dataset.Visibility.UNLISTED,
         )
 
         after_create = timezone.now()
@@ -95,6 +99,10 @@ class TestCreateDatasetService:
         assert dataset.anonymous_id == anonymous_id
         assert dataset.name == "Anonymous Dataset"
 
+        # --- visibility ---
+        assert dataset.visibility == Dataset.Visibility.UNLISTED
+
+        # --- expiration ---
         assert dataset.expires_at is not None
 
         expected_min = before_create + timedelta(days=7)
