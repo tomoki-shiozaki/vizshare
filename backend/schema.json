@@ -458,6 +458,51 @@
                 }
             }
         },
+        "/api/v1/datasets/anonymous/{public_id}/meta/": {
+            "get": {
+                "operationId": "datasets_anonymous_meta_retrieve",
+                "description": "entities / metrics の一覧を返す",
+                "summary": "匿名ユーザー Dataset メタ情報取得",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "public_id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasetMeta"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/anonymous/{public_id}/timeseries/": {
             "get": {
                 "operationId": "datasets_anonymous_timeseries_retrieve",
@@ -506,6 +551,55 @@
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/datasets/anonymous/{public_id}/timeseries/entity/": {
+            "get": {
+                "operationId": "datasets_anonymous_timeseries_entity_retrieve",
+                "description": "timeを軸にentityを横展開したRecharts用データ",
+                "summary": "匿名ユーザー Dataset の entity比較データ取得",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "public_id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "additionalProperties": {}
                                     }
                                 }
                             }

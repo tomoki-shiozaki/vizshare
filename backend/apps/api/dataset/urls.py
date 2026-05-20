@@ -10,6 +10,8 @@ from apps.api.dataset.views.dataset_read import (
     PublicDatasetListAPIView,
 )
 from apps.api.dataset.views.dataset_timeseries import (
+    AnonymousDatasetEntityComparisonAPIView,
+    AnonymousDatasetMetaAPIView,
     AnonymousDatasetTimeSeriesAPIView,
     DatasetEntityComparisonAPIView,
     DatasetMetaAPIView,
@@ -56,7 +58,17 @@ urlpatterns = [
         DatasetEntityComparisonAPIView.as_view(),
         name="timeseries-entity",
     ),
+    path(
+        "anonymous/<uuid:public_id>/timeseries/entity/",
+        AnonymousDatasetEntityComparisonAPIView.as_view(),
+        name="anonymous-timeseries-entity",
+    ),
     path("<int:pk>/meta/", DatasetMetaAPIView.as_view(), name="meta"),
+    path(
+        "anonymous/<uuid:public_id>/meta/",
+        AnonymousDatasetMetaAPIView.as_view(),
+        name="anonymous-meta",
+    ),
     path(
         "<int:pk>/visibility/",
         DatasetVisibilityUpdateAPIView.as_view(),

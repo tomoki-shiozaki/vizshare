@@ -144,6 +144,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/datasets/anonymous/{public_id}/meta/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 匿名ユーザー Dataset メタ情報取得
+         * @description entities / metrics の一覧を返す
+         */
+        get: operations["datasets_anonymous_meta_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/anonymous/{public_id}/timeseries/": {
         parameters: {
             query?: never;
@@ -156,6 +176,26 @@ export interface paths {
          * @description anonymous_id に紐づく Dataset の DataPoint を entity ごとに整理して返す
          */
         get: operations["datasets_anonymous_timeseries_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/anonymous/{public_id}/timeseries/entity/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 匿名ユーザー Dataset の entity比較データ取得
+         * @description timeを軸にentityを横展開したRecharts用データ
+         */
+        get: operations["datasets_anonymous_timeseries_entity_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1070,6 +1110,27 @@ export interface operations {
             };
         };
     };
+    datasets_anonymous_meta_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                public_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetMeta"];
+                };
+            };
+        };
+    };
     datasets_anonymous_timeseries_retrieve: {
         parameters: {
             query?: never;
@@ -1091,6 +1152,29 @@ export interface operations {
                             time?: string;
                         }[];
                     };
+                };
+            };
+        };
+    };
+    datasets_anonymous_timeseries_entity_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                public_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
                 };
             };
         };
