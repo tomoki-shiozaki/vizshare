@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Loading } from "@/components/common";
 import { useAnonymousDatasetEntityComparison } from "@/features/datasets/timeseries/hooks/useAnonymousDatasetEntityComparison";
 import { useAnonymousDatasetMeta } from "@/features/datasets/meta/hooks/useAnonymousDatasetMeta";
@@ -27,14 +27,15 @@ export const AnonymousDatasetEntityComparisonChart = ({ publicId }: Props) => {
   // ---- metric（derived）----
   const actualMetric = selectedMetric || metrics[0] || "";
 
-  // ---- 初期選択（derived）----
-  const initialSelectedEntities = useMemo(() => {
-    return entities.slice(0, 3);
+  // ---- 初期選択 ----
+  useEffect(() => {
+    if (entities.length === 0) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedEntities((prev) => {
+      if (prev.length > 0) return prev;
+      return entities.slice(0, 3);
+    });
   }, [entities]);
-
-  // ---- 実際に使う選択値 ----
-  const effectiveSelectedEntities =
-    selectedEntities.length > 0 ? selectedEntities : initialSelectedEntities;
 
   // ---- data ----
   const {
@@ -53,7 +54,7 @@ export const AnonymousDatasetEntityComparisonChart = ({ publicId }: Props) => {
       entities={entities}
       metrics={metrics}
       data={data}
-      selectedEntities={effectiveSelectedEntities}
+      selectedEntities={selectedEntities}
       setSelectedEntities={setSelectedEntities}
       selectedMetric={selectedMetric}
       setSelectedMetric={setSelectedMetric}
