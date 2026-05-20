@@ -23,7 +23,7 @@ export function AnonymousDatasetListItem({ dataset }: Props) {
       <div className="flex-1 min-w-0">
         {clickable ? (
           <Link
-            href={`/anonymous/${dataset.public_id}`}
+            href={`/datasets/anonymous/${dataset.public_id}`}
             className="font-medium text-blue-600 hover:underline truncate block"
           >
             {dataset.name}
