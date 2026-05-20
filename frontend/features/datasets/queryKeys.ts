@@ -32,4 +32,12 @@ export const datasetKeys = {
 
   anonymousDataPoints: (publicId: string) =>
     [...datasetKeys.all, "anonymousDataPoints", publicId] as const,
+
+  anonymousEntityComparison: (publicId: string, metric: string) =>
+    [
+      ...datasetKeys.all,
+      "anonymousEntityComparison",
+      publicId,
+      metric,
+    ] as const,
 };
