@@ -6,7 +6,7 @@ export const fetchAnonymousDatasetEntityComparison = async (
   metric: string,
 ): Promise<EntityComparisonPoint[]> => {
   const { data } = await apiClient.get<EntityComparisonPoint[]>(
-    `/datasets/${publicId}/timeseries/entity/`,
+    `/datasets/anonymous/${publicId}/timeseries/entity/`,
     {
       params: { metric },
     },
