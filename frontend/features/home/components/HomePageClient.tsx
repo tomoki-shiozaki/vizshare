@@ -1,26 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { useAuthContext } from "@/features/auth/context";
 
 import { HomeLayout } from "@/components/layout/HomeLayout";
 
-import { Card } from "@/components/ui/card";
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { CardLink } from "@/components/common/CardLink";
 
 import { AnonymousDatasetUploadForm } from "@/features/datasets/create/components/AnonymousDatasetUploadForm";
 
-import { fetchAnonymousDatasetList } from "@/features/datasets/list/api/fetchAnonymousDatasetList";
-
 import { AnonymousDatasetPreviewList } from "@/features/datasets/home/components/AnonymousDatasetPreviewList";
 
 import type { PaginatedPublicDatasetListResponse } from "@/features/datasets/types/publicDataset";
-
-import type { AnonymousDatasetListResponse } from "@/features/datasets/types/dataset";
 
 type HomePageClientProps = {
   publicData: PaginatedPublicDatasetListResponse;
@@ -30,38 +24,6 @@ export function HomePageClient({ publicData }: HomePageClientProps) {
   const { currentUsername } = useAuthContext();
 
   const isLoggedIn = !!currentUsername;
-
-  const [anonymousData, setAnonymousData] =
-    useState<AnonymousDatasetListResponse | null>(null);
-
-  const [anonymousLoading, setAnonymousLoading] = useState(false);
-
-  useEffect(() => {
-    // ログイン中なら匿名データは不要
-    if (isLoggedIn) {
-      setAnonymousData(null);
-      return;
-    }
-
-    const fetchData = async () => {
-      try {
-        setAnonymousLoading(true);
-
-        const data = await fetchAnonymousDatasetList({
-          limit: 5,
-          offset: 0,
-        });
-
-        setAnonymousData(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setAnonymousLoading(false);
-      }
-    };
-
-    void fetchData();
-  }, [isLoggedIn]);
 
   return (
     <HomeLayout
@@ -94,13 +56,11 @@ export function HomePageClient({ publicData }: HomePageClientProps) {
               未ログイン: 匿名アップロード
           ========================= */}
           {!isLoggedIn && (
-            <>
+            <div className="space-y-6">
               <AnonymousDatasetUploadForm />
 
-              {!anonymousLoading && anonymousData && (
-                <AnonymousDatasetPreviewList data={anonymousData} />
-              )}
-            </>
+              <AnonymousDatasetPreviewList />
+            </div>
           )}
 
           {/* =========================
