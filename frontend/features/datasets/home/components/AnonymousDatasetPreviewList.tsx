@@ -1,16 +1,35 @@
+"use client";
+
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import type { AnonymousDatasetListResponse } from "@/features/datasets/types/dataset";
+import { fetchAnonymousDatasetList } from "@/features/datasets/list/api/fetchAnonymousDatasetList";
 
-interface AnonymousDatasetPreviewListProps {
-  data: AnonymousDatasetListResponse;
-}
+import { datasetKeys } from "@/features/datasets/queryKeys";
 
-export function AnonymousDatasetPreviewList({
-  data,
-}: AnonymousDatasetPreviewListProps) {
+export function AnonymousDatasetPreviewList() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: datasetKeys.anonymousList({
+      limit: 5,
+      offset: 0,
+    }),
+    queryFn: () =>
+      fetchAnonymousDatasetList({
+        limit: 5,
+        offset: 0,
+      }),
+  });
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error || !data) {
+    return null;
+  }
+
   if (data.results.length === 0) {
     return null;
   }
