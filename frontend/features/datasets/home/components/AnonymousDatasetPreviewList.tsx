@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 
+import { Loading } from "@/components/common";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { fetchAnonymousDatasetList } from "@/features/datasets/list/api/fetchAnonymousDatasetList";
@@ -23,14 +27,20 @@ export function AnonymousDatasetPreviewList() {
   });
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <Loading message="Anonymous datasets を読み込み中..." />;
   }
 
-  if (error || !data) {
-    return null;
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Anonymous datasets の取得に失敗しました</AlertTitle>
+
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    );
   }
 
-  if (data.results.length === 0) {
+  if (!data || data.results.length === 0) {
     return null;
   }
 
