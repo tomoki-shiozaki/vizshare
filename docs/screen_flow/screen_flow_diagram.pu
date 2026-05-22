@@ -18,19 +18,21 @@ end legend
 ' Public Site
 ' =========================
 
-state "Home Screen\n(Entry point & navigation)" as home #LightBlue
+state "Home Screen\n(Upload CSV files & browse recent public and anonymous datasets)" as home #LightBlue
 
 state "Explore Screen\n(Browse public datasets)" as explore #LightBlue
 
-state "Public Dataset Detail\n(View graphs & dataset details)" as publicDatasetView #LightYellow
+state "Public Dataset Detail\n(View graphs, dataset details & download CSV files)" as publicDatasetView #LightYellow
 
-state "Anonymous Datasets\n(Browse anonymously shared datasets)" as anonymousDatasets #LightBlue
+state "Anonymous Datasets\n(Browse datasets uploaded anonymously)" as anonymousDatasets #LightBlue
 
-state "Anonymous Dataset Detail\n(View shared dataset details)" as anonymousDatasetView #LightYellow
+state "Anonymous Dataset Detail\n(View graphs & dataset details)" as anonymousDatasetView #LightYellow
 
 
-home --> explore : Browse datasets
-home --> anonymousDatasets : Browse anonymous datasets
+home --> explore
+
+home --> anonymousDatasets
+
 
 explore --> publicDatasetView : Select dataset
 
@@ -43,25 +45,27 @@ anonymousDatasets --> anonymousDatasetView : Select dataset
 
 state "Login Screen\n(User authentication)" as login #LightBlue
 
-state "Signup Screen\n(Create new account)" as signup #LightBlue
 
-home --> login : Login
-home --> signup : Signup
-
-login --> signup : Create account
-signup --> login : Already have account
+home --> login
 
 
 ' =========================
 ' Private Area
 ' =========================
 
-state "Dataset Management\n(Manage personal datasets & upload CSV files)" as datasetManagement #LightGreen
+state "Private Home Screen\n(Navigation & browse recent public datasets)" as privateHome #LightGreen
 
-state "Private Dataset Detail\n(View and manage owned dataset)" as privateDatasetView #LightYellow
+state "Private Datasets\n(Upload CSV files & browse private datasets)" as datasetManagement #LightGreen
 
-login --> datasetManagement : Authenticated
-signup --> datasetManagement : Account created
+state "Private Dataset Detail\n(View and manage owned dataset)" as privateDatasetView #LightGreen
+
+
+login --> privateHome : Authenticated
+
+privateHome --> explore
+
+privateHome --> datasetManagement
+
 
 datasetManagement --> privateDatasetView : Select dataset
 
