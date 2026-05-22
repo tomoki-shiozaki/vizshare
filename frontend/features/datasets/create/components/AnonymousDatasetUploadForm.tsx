@@ -62,11 +62,14 @@ export function AnonymousDatasetUploadForm() {
 
   const isValid = !!file && timeColumn.trim() !== "" && metrics.length > 0;
 
+  // =========================
+  // Validation
+  // =========================
   const validate = (): boolean => {
     if (!file) {
       setMessage({
         type: "error",
-        text: "ファイルを選択してください",
+        text: "CSVファイルを選択してください",
       });
 
       return false;
@@ -93,6 +96,9 @@ export function AnonymousDatasetUploadForm() {
     return true;
   };
 
+  // =========================
+  // Upload
+  // =========================
   const handleUpload = () => {
     if (!validate()) return;
     if (!file) return;
@@ -111,24 +117,101 @@ export function AnonymousDatasetUploadForm() {
     });
   };
 
-  return (
-    <Card className="w-full border-blue-200">
-      <CardContent className="space-y-6 pt-6">
-        {/* Header */}
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold">
-            CSVをアップロードして グラフを作成
-          </h2>
+  // =========================
+  // Sample CSV
+  // =========================
+  const downloadSampleCsv = () => {
+    const csvContent = `time,entity,sales,profit
+2024-01-01,Japan,100,20
+2024-01-02,Japan,120,25
+2024-01-03,Japan,115,23
+2024-01-04,Japan,130,30
+2024-01-05,Japan,140,35
+2024-01-01,USA,80,15
+2024-01-02,USA,95,18
+2024-01-03,USA,90,16
+2024-01-04,USA,105,22
+2024-01-05,USA,110,24`;
 
-          <p className="text-sm text-muted-foreground">
-            ログイン不要で試せます。 CSVをアップロードすると、
-            自動でグラフ化されます。
-          </p>
+    const BOM = "\uFEFF";
+
+    const blob = new Blob([BOM + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "sample_dataset.csv";
+
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <Card className="w-full border-blue-200 shadow-sm">
+      <CardContent className="space-y-6 pt-6">
+        {/* =========================
+            Header
+        ========================= */}
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold tracking-tight">
+              CSVをアップロードして、
+              <br />
+              すぐにグラフ化
+            </h2>
+
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              ログイン不要で試せます。
+              <br />
+              CSVをアップロードすると、 時系列グラフを自動生成します。
+            </p>
+          </div>
+
+          {/* Steps */}
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="rounded-md border bg-muted/30 p-3">
+              <p className="text-xs font-semibold text-blue-600">STEP 1</p>
+
+              <p className="mt-1 text-sm">CSVファイルを選択</p>
+            </div>
+
+            <div className="rounded-md border bg-muted/30 p-3">
+              <p className="text-xs font-semibold text-blue-600">STEP 2</p>
+
+              <p className="mt-1 text-sm">Time列とMetric列を指定</p>
+            </div>
+
+            <div className="rounded-md border bg-muted/30 p-3">
+              <p className="text-xs font-semibold text-blue-600">STEP 3</p>
+
+              <p className="mt-1 text-sm">自動でグラフ化</p>
+            </div>
+          </div>
         </div>
 
-        {/* File input */}
+        {/* =========================
+            File Input
+        ========================= */}
         <div className="space-y-2">
-          <Label htmlFor="anonymous-dataset-file">CSVファイル</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="anonymous-dataset-file">CSVファイル</Label>
+
+            <button
+              type="button"
+              onClick={downloadSampleCsv}
+              className="
+                text-xs text-blue-600
+                hover:text-blue-800 hover:underline
+              "
+            >
+              サンプルCSVをダウンロード
+            </button>
+          </div>
 
           <input
             id="anonymous-dataset-file"
@@ -154,7 +237,9 @@ export function AnonymousDatasetUploadForm() {
           )}
         </div>
 
-        {/* Schema selector */}
+        {/* =========================
+            Schema Selector
+        ========================= */}
         {headers.length > 0 && (
           <CsvSchemaSelector
             headers={headers}
@@ -169,16 +254,20 @@ export function AnonymousDatasetUploadForm() {
           />
         )}
 
-        {/* Upload button */}
+        {/* =========================
+            Upload Button
+        ========================= */}
         <Button
           className="w-full"
           onClick={handleUpload}
           disabled={uploading || !isValid}
         >
-          {uploading ? "アップロード中..." : "CSVをアップロード"}
+          {uploading ? "アップロード中..." : "グラフを生成"}
         </Button>
 
-        {/* Message */}
+        {/* =========================
+            Message
+        ========================= */}
         {message && (
           <p
             className={`text-sm ${
@@ -189,11 +278,19 @@ export function AnonymousDatasetUploadForm() {
           </p>
         )}
 
-        {/* Footer */}
+        {/* =========================
+            Footer
+        ========================= */}
         <div className="border-t pt-4 text-xs text-muted-foreground space-y-2">
-          <p>サンプルCSVで試したい場合は、 CSV仕様ページを参照してください。</p>
+          <p>
+            CSV形式について詳しく知りたい場合は、
+            CSV仕様ページを参照してください。
+          </p>
 
-          <Link href="/docs/csv-format" className="underline">
+          <Link
+            href="/docs/csv-format"
+            className="underline hover:text-foreground"
+          >
             CSVフォーマットを見る
           </Link>
         </div>

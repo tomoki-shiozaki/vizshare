@@ -47,7 +47,7 @@ class DatasetVisibilityUpdateAPIView(generics.UpdateAPIView):
 
 
 class AnonymousUploadThrottle(AnonRateThrottle):
-    rate = "10/hour"
+    rate = "30/hour"
 
 
 class DatasetAnonymousCreateAPIView(generics.CreateAPIView):
