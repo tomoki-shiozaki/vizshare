@@ -25,7 +25,8 @@ export const datasetKeys = {
 
   publicMeta: (id: string) => [...datasetKeys.all, "publicMeta", id] as const,
 
-  anonymousList: () => [...datasetKeys.all, "anonymous"] as const,
+  anonymousList: (params?: { limit?: number; offset?: number }) =>
+    [...datasetKeys.all, "anonymousList", params] as const,
 
   anonymousDetail: (publicId: string) =>
     [...datasetKeys.all, "anonymousDetail", publicId] as const,

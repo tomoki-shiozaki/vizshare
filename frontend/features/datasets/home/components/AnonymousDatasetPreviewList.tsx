@@ -1,17 +1,46 @@
+"use client";
+
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+
+import { Loading } from "@/components/common";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import type { AnonymousDatasetListResponse } from "@/features/datasets/types/dataset";
+import { fetchAnonymousDatasetList } from "@/features/datasets/list/api/fetchAnonymousDatasetList";
 
-interface AnonymousDatasetPreviewListProps {
-  data: AnonymousDatasetListResponse;
-}
+import { datasetKeys } from "@/features/datasets/queryKeys";
 
-export function AnonymousDatasetPreviewList({
-  data,
-}: AnonymousDatasetPreviewListProps) {
-  if (data.results.length === 0) {
+export function AnonymousDatasetPreviewList() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: datasetKeys.anonymousList({
+      limit: 5,
+      offset: 0,
+    }),
+    queryFn: () =>
+      fetchAnonymousDatasetList({
+        limit: 5,
+        offset: 0,
+      }),
+  });
+
+  if (isLoading) {
+    return <Loading message="Anonymous datasets を読み込み中..." />;
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Anonymous datasets の取得に失敗しました</AlertTitle>
+
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (!data || data.results.length === 0) {
     return null;
   }
 
