@@ -1,6 +1,8 @@
 from django.urls import path
 
 from apps.api.dataset.views.dataset_read import (
+    AnonymousDatasetDetailAPIView,
+    AnonymousDatasetListAPIView,
     DatasetDetailAPIView,
     DatasetListAPIView,
     PublicDatasetDetailAPIView,
@@ -8,6 +10,9 @@ from apps.api.dataset.views.dataset_read import (
     PublicDatasetListAPIView,
 )
 from apps.api.dataset.views.dataset_timeseries import (
+    AnonymousDatasetEntityComparisonAPIView,
+    AnonymousDatasetMetaAPIView,
+    AnonymousDatasetTimeSeriesAPIView,
     DatasetEntityComparisonAPIView,
     DatasetMetaAPIView,
     DatasetTimeSeriesAPIView,
@@ -16,6 +21,7 @@ from apps.api.dataset.views.dataset_timeseries import (
     PublicDatasetTimeSeriesAPIView,
 )
 from apps.api.dataset.views.dataset_write import (
+    DatasetAnonymousCreateAPIView,
     DatasetCreateAPIView,
     DatasetVisibilityUpdateAPIView,
 )
@@ -24,15 +30,45 @@ app_name = "dataset"
 
 urlpatterns = [
     path("", DatasetListAPIView.as_view(), name="list"),
+    path(
+        "anonymous/",
+        AnonymousDatasetListAPIView.as_view(),
+        name="anonymous-list",
+    ),
     path("create/", DatasetCreateAPIView.as_view(), name="create"),
+    path(
+        "anonymous/create/",
+        DatasetAnonymousCreateAPIView.as_view(),
+        name="anonymous-create",
+    ),
     path("<int:pk>/", DatasetDetailAPIView.as_view(), name="detail"),
+    path(
+        "anonymous/<uuid:public_id>/",
+        AnonymousDatasetDetailAPIView.as_view(),
+        name="anonymous-detail",
+    ),
     path("<int:pk>/timeseries/", DatasetTimeSeriesAPIView.as_view(), name="timeseries"),
+    path(
+        "anonymous/<uuid:public_id>/timeseries/",
+        AnonymousDatasetTimeSeriesAPIView.as_view(),
+        name="anonymous-timeseries",
+    ),
     path(
         "<int:pk>/timeseries/entity/",
         DatasetEntityComparisonAPIView.as_view(),
         name="timeseries-entity",
     ),
+    path(
+        "anonymous/<uuid:public_id>/timeseries/entity/",
+        AnonymousDatasetEntityComparisonAPIView.as_view(),
+        name="anonymous-timeseries-entity",
+    ),
     path("<int:pk>/meta/", DatasetMetaAPIView.as_view(), name="meta"),
+    path(
+        "anonymous/<uuid:public_id>/meta/",
+        AnonymousDatasetMetaAPIView.as_view(),
+        name="anonymous-meta",
+    ),
     path(
         "<int:pk>/visibility/",
         DatasetVisibilityUpdateAPIView.as_view(),

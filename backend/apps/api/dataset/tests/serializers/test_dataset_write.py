@@ -1,6 +1,6 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from apps.api.dataset.serializers.dataset_write import DatasetCreateSerializer
+from apps.api.dataset.serializers.dataset_write import BaseDatasetCreateSerializer
 
 
 def make_file():
@@ -12,7 +12,7 @@ def make_file():
 
 
 def test_schema_validation_success():
-    serializer = DatasetCreateSerializer(
+    serializer = BaseDatasetCreateSerializer(
         data={
             "name": "test",
             "source_file": make_file(),
@@ -28,7 +28,7 @@ def test_schema_validation_success():
 
 
 def test_schema_missing_time():
-    serializer = DatasetCreateSerializer(
+    serializer = BaseDatasetCreateSerializer(
         data={
             "name": "test",
             "source_file": make_file(),

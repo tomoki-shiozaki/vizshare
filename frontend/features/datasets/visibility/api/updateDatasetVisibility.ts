@@ -6,10 +6,10 @@ import type {
 
 export const updateDatasetVisibility = async ({
   id,
-  is_public,
+  visibility,
 }: DatasetVisibilityVars): Promise<DatasetVisibilityResponse> => {
   const { data } = await apiClient.patch(`/datasets/${id}/visibility/`, {
-    is_public,
+    visibility,
   });
 
   return data;

@@ -6,7 +6,7 @@ from django.core.files.base import ContentFile
 from django.utils.timezone import is_aware
 
 from apps.dataset.models import DataPoint, Dataset
-from apps.dataset.services.csv_parser import (
+from apps.dataset.services.ingestion.csv_parser import (
     _open_csv_text_stream,
     parse_dataset_csv,
     parse_row_time,
@@ -88,7 +88,7 @@ class TestCsvParser:
 
     def test_parse_dataset_csv_batching(self, user, monkeypatch):
         """BATCH_SIZE をまたぐ場合の動作"""
-        from apps.dataset.services import csv_parser
+        from apps.dataset.services.ingestion import csv_parser
 
         monkeypatch.setattr(csv_parser, "BATCH_SIZE", 2)
 

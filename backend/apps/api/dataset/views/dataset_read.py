@@ -3,11 +3,14 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from apps.api.dataset.serializers.dataset_read import (
+    AnonymousDatasetDetailSerializer,
+    AnonymousDatasetListSerializer,
     DatasetDetailSerializer,
     DatasetListSerializer,
     PublicDatasetDetailSerializer,
     PublicDatasetSerializer,
 )
+from apps.core.services.anonymous import get_anonymous_id
 from apps.dataset.models import Dataset
 
 
@@ -23,6 +26,19 @@ class DatasetListAPIView(generics.ListAPIView):
         return Dataset.objects.filter(owner=self.request.user).order_by("-created_at")
 
 
+class AnonymousDatasetListAPIView(generics.ListAPIView):
+    serializer_class = AnonymousDatasetListSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        anonymous_id = get_anonymous_id(self.request)
+
+        if not anonymous_id:
+            return Dataset.objects.none()
+
+        return Dataset.objects.filter(anonymous_id=anonymous_id).order_by("-created_at")
+
+
 class DatasetDetailAPIView(generics.RetrieveAPIView):
     """
     Dataset の詳細情報を返す API
@@ -33,6 +49,22 @@ class DatasetDetailAPIView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Dataset.objects.filter(owner=self.request.user)
+
+
+class AnonymousDatasetDetailAPIView(generics.RetrieveAPIView):
+    serializer_class = AnonymousDatasetDetailSerializer
+    permission_classes = [AllowAny]
+    lookup_field = "public_id"
+
+    def get_queryset(self):
+        anonymous_id = get_anonymous_id(self.request)
+
+        if not anonymous_id:
+            return Dataset.objects.none()
+
+        return Dataset.objects.filter(
+            anonymous_id=anonymous_id,
+        )
 
 
 class PublicDatasetListAPIView(generics.ListAPIView):
@@ -46,7 +78,7 @@ class PublicDatasetListAPIView(generics.ListAPIView):
     def get_queryset(self):
         return (
             Dataset.objects.filter(
-                is_public=True,
+                visibility=Dataset.Visibility.PUBLIC,
                 status=Dataset.Status.PARSED,
             )
             .select_related("owner")
@@ -63,7 +95,10 @@ class PublicDatasetDetailAPIView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return Dataset.objects.filter(is_public=True, status=Dataset.Status.PARSED)
+        return Dataset.objects.filter(
+            visibility=Dataset.Visibility.PUBLIC,
+            status=Dataset.Status.PARSED,
+        )
 
 
 class PublicDatasetDownloadAPIView(generics.GenericAPIView):
@@ -77,7 +112,7 @@ class PublicDatasetDownloadAPIView(generics.GenericAPIView):
         dataset = get_object_or_404(
             Dataset,
             pk=pk,
-            is_public=True,
+            visibility=Dataset.Visibility.PUBLIC,
             status=Dataset.Status.PARSED,
         )
 

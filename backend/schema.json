@@ -363,6 +363,304 @@
                 }
             }
         },
+        "/api/v1/datasets/anonymous/": {
+            "get": {
+                "operationId": "datasets_anonymous_list",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "required": false,
+                        "in": "query",
+                        "description": "The initial index from which to return the results.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedAnonymousDatasetListList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/datasets/anonymous/{public_id}/": {
+            "get": {
+                "operationId": "datasets_anonymous_retrieve",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "public_id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "datasets"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AnonymousDatasetDetail"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/datasets/anonymous/{public_id}/meta/": {
+            "get": {
+                "operationId": "datasets_anonymous_meta_retrieve",
+                "description": "entities / metrics の一覧を返す",
+                "summary": "匿名ユーザー Dataset メタ情報取得",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "public_id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasetMeta"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/datasets/anonymous/{public_id}/timeseries/": {
+            "get": {
+                "operationId": "datasets_anonymous_timeseries_retrieve",
+                "description": "anonymous_id に紐づく Dataset の DataPoint を entity ごとに整理して返す",
+                "summary": "匿名ユーザー Dataset の時系列データ取得",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "public_id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "description": "1つの時刻における metric データ",
+                                            "properties": {
+                                                "time": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/datasets/anonymous/{public_id}/timeseries/entity/": {
+            "get": {
+                "operationId": "datasets_anonymous_timeseries_entity_retrieve",
+                "description": "timeを軸にentityを横展開したRecharts用データ",
+                "summary": "匿名ユーザー Dataset の entity比較データ取得",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "public_id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Dataset"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "additionalProperties": {}
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/datasets/anonymous/create/": {
+            "post": {
+                "operationId": "datasets_anonymous_create_create",
+                "tags": [
+                    "datasets"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AnonymousDatasetCreate"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AnonymousDatasetCreate"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AnonymousDatasetCreate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    },
+                    {
+                        "jwtHeaderAuth": []
+                    },
+                    {
+                        "jwtCookieAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AnonymousDatasetCreate"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/datasets/create/": {
             "post": {
                 "operationId": "datasets_create_create",
@@ -1348,13 +1646,9 @@
     },
     "components": {
         "schemas": {
-            "DatasetCreate": {
+            "AnonymousDatasetCreate": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "readOnly": true
-                    },
                     "name": {
                         "type": "string",
                         "maxLength": 255
@@ -1362,6 +1656,134 @@
                     "source_file": {
                         "type": "string",
                         "format": "uri"
+                    },
+                    "schema": {},
+                    "public_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "name",
+                    "public_id",
+                    "schema",
+                    "source_file"
+                ]
+            },
+            "AnonymousDatasetDetail": {
+                "type": "object",
+                "properties": {
+                    "public_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "status": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/StatusEnum"
+                            }
+                        ],
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "schema": {
+                        "$ref": "#/components/schemas/DatasetSchema"
+                    },
+                    "parse_result": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/ParseResult"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "visibility": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/VisibilityEnum"
+                            }
+                        ],
+                        "readOnly": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "匿名データの有効期限（任意）"
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "name",
+                    "public_id",
+                    "schema",
+                    "status",
+                    "visibility"
+                ]
+            },
+            "AnonymousDatasetList": {
+                "type": "object",
+                "properties": {
+                    "public_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "status": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/StatusEnum"
+                            }
+                        ],
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "name",
+                    "public_id",
+                    "status"
+                ]
+            },
+            "DatasetCreate": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "source_file": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "schema": {},
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "public_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
                     },
                     "owner": {
                         "type": "integer",
@@ -1371,7 +1793,6 @@
                         "type": "string",
                         "readOnly": true
                     },
-                    "schema": {},
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
@@ -1383,6 +1804,7 @@
                     "id",
                     "name",
                     "owner",
+                    "public_id",
                     "schema",
                     "source_file",
                     "status"
@@ -1423,19 +1845,22 @@
                         ],
                         "nullable": true
                     },
-                    "is_public": {
-                        "type": "boolean",
-                        "readOnly": true,
-                        "description": "True の場合、誰でも閲覧可能"
+                    "visibility": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/VisibilityEnum"
+                            }
+                        ],
+                        "readOnly": true
                     }
                 },
                 "required": [
                     "created_at",
                     "id",
-                    "is_public",
                     "name",
                     "schema",
-                    "status"
+                    "status",
+                    "visibility"
                 ]
             },
             "DatasetList": {
@@ -1469,20 +1894,23 @@
                         "readOnly": true,
                         "nullable": true
                     },
-                    "is_public": {
-                        "type": "boolean",
-                        "readOnly": true,
-                        "description": "True の場合、誰でも閲覧可能"
+                    "visibility": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/VisibilityEnum"
+                            }
+                        ],
+                        "readOnly": true
                     }
                 },
                 "required": [
                     "created_at",
                     "id",
-                    "is_public",
                     "name",
                     "parse_result",
                     "schema",
-                    "status"
+                    "status",
+                    "visibility"
                 ]
             },
             "DatasetMeta": {
@@ -1531,9 +1959,8 @@
             "DatasetVisibility": {
                 "type": "object",
                 "properties": {
-                    "is_public": {
-                        "type": "boolean",
-                        "description": "True の場合、誰でも閲覧可能"
+                    "visibility": {
+                        "$ref": "#/components/schemas/VisibilityEnum"
                     }
                 }
             },
@@ -1574,6 +2001,37 @@
                 "required": [
                     "password"
                 ]
+            },
+            "PaginatedAnonymousDatasetListList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=400&limit=100"
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?offset=200&limit=100"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AnonymousDatasetList"
+                        }
+                    }
+                }
             },
             "PaginatedDatasetListList": {
                 "type": "object",
@@ -1710,9 +2168,8 @@
             "PatchedDatasetVisibility": {
                 "type": "object",
                 "properties": {
-                    "is_public": {
-                        "type": "boolean",
-                        "description": "True の場合、誰でも閲覧可能"
+                    "visibility": {
+                        "$ref": "#/components/schemas/VisibilityEnum"
                     }
                 }
             },
@@ -1954,6 +2411,15 @@
                 "required": [
                     "key"
                 ]
+            },
+            "VisibilityEnum": {
+                "enum": [
+                    "private",
+                    "unlisted",
+                    "public"
+                ],
+                "type": "string",
+                "description": "* `private` - 非公開\n* `unlisted` - 限定公開\n* `public` - 公開"
             }
         },
         "securitySchemes": {

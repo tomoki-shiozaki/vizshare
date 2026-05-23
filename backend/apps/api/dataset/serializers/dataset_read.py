@@ -17,7 +17,7 @@ class DatasetListSerializer(serializers.ModelSerializer):
             "created_at",
             "schema",
             "parse_result",
-            "is_public",
+            "visibility",
         ]
         read_only_fields = [
             "id",
@@ -26,8 +26,22 @@ class DatasetListSerializer(serializers.ModelSerializer):
             "created_at",
             "schema",
             "parse_result",
-            "is_public",
+            "visibility",
         ]
+
+
+class AnonymousDatasetListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dataset
+
+        fields = [
+            "public_id",
+            "name",
+            "status",
+            "created_at",
+        ]
+
+        read_only_fields = fields
 
 
 class DatasetDetailSerializer(serializers.ModelSerializer):
@@ -43,7 +57,7 @@ class DatasetDetailSerializer(serializers.ModelSerializer):
             "created_at",
             "schema",
             "parse_result",
-            "is_public",
+            "visibility",
         ]
         read_only_fields = [
             "id",
@@ -52,7 +66,39 @@ class DatasetDetailSerializer(serializers.ModelSerializer):
             "created_at",
             "schema",
             "parse_result",
-            "is_public",
+            "visibility",
+        ]
+
+
+class AnonymousDatasetDetailSerializer(serializers.ModelSerializer):
+    status = serializers.ChoiceField(
+        choices=Dataset.Status.choices,
+        read_only=True,
+    )
+
+    visibility = serializers.ChoiceField(
+        choices=Dataset.Visibility.choices,
+        read_only=True,
+    )
+
+    schema = DatasetSchemaSerializer()
+
+    parse_result = ParseResultSerializer(
+        required=False,
+        allow_null=True,
+    )
+
+    class Meta:
+        model = Dataset
+        fields = [
+            "public_id",
+            "name",
+            "status",
+            "created_at",
+            "schema",
+            "parse_result",
+            "visibility",
+            "expires_at",
         ]
 
 

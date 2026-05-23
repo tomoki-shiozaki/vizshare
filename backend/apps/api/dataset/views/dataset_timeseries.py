@@ -1,5 +1,8 @@
+from uuid import UUID
+
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -13,6 +16,7 @@ from apps.api.dataset.services.timeseries import build_time_series_data
 from apps.api.dataset.types.entity_comparison_types import EntityComparisonResponse
 from apps.api.dataset.types.timeseries import TimeSeriesDataByEntity
 from apps.api.utils.schema import schema
+from apps.core.services.anonymous import get_anonymous_id
 from apps.dataset.models import Dataset
 
 # ===============================
@@ -92,6 +96,119 @@ class DatasetMetaAPIView(GenericAPIView):
         return Response(serializer.data)
 
 
+class AnonymousDatasetTimeSeriesAPIView(APIView):
+    """
+    anonymous_id に紐づく Dataset の時系列データを取得
+    Recharts 形式で返す
+    """
+
+    permission_classes = [AllowAny]
+
+    @schema(
+        summary="匿名ユーザー Dataset の時系列データ取得",
+        description="anonymous_id に紐づく Dataset の DataPoint を entity ごとに整理して返す",
+        tags=["Dataset"],
+        responses=TimeSeriesDataByEntity,
+    )
+    def get(self, request, public_id):
+        anonymous_id = get_anonymous_id(request)
+
+        if not anonymous_id:
+            raise PermissionDenied("anonymous_id is required")
+
+        dataset = get_object_or_404(
+            Dataset,
+            public_id=public_id,
+            anonymous_id=anonymous_id,
+        )
+
+        # DataPoint取得
+        data_qs = dataset.data_points.all().order_by("entity", "time", "order_index")  # type: ignore
+
+        result = build_time_series_data(data_qs)
+
+        return Response(result, status=status.HTTP_200_OK)
+
+
+class AnonymousDatasetEntityComparisonAPIView(APIView):
+    """
+    anonymous_id に紐づく Dataset の entity 比較用時系列データ（wide形式）
+    Recharts でそのまま使える形
+    """
+
+    permission_classes = [AllowAny]
+
+    @schema(
+        summary="匿名ユーザー Dataset の entity比較データ取得",
+        description="timeを軸にentityを横展開したRecharts用データ",
+        tags=["Dataset"],
+        responses=EntityComparisonResponse,
+    )
+    def get(self, request, public_id: str):
+        anonymous_id = get_anonymous_id(request)
+
+        if not anonymous_id:
+            raise PermissionDenied("anonymous_id is required")
+
+        dataset = get_object_or_404(
+            Dataset,
+            public_id=public_id,
+            anonymous_id=anonymous_id,
+        )
+
+        metric = request.query_params.get("metric")
+        if not metric:
+            return Response(
+                {"detail": "metric is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        data_qs = dataset.data_points.filter(metric=metric).order_by(  # type: ignore
+            "time", "entity", "order_index"
+        )
+
+        result = build_entity_comparison_data(data_qs)
+
+        return Response(result, status=status.HTTP_200_OK)
+
+
+class AnonymousDatasetMetaAPIView(GenericAPIView):
+    """
+    anonymous_id に紐づく Dataset のメタ情報取得
+    entities / metrics 一覧
+    """
+
+    permission_classes = [AllowAny]
+    serializer_class = DatasetMetaSerializer
+
+    @schema(
+        summary="匿名ユーザー Dataset メタ情報取得",
+        description="entities / metrics の一覧を返す",
+        tags=["Dataset"],
+    )
+    def get(self, request, public_id: str):
+        anonymous_id = get_anonymous_id(request)
+
+        if not anonymous_id:
+            raise PermissionDenied("anonymous_id is required")
+
+        dataset = get_object_or_404(
+            Dataset,
+            public_id=public_id,
+            anonymous_id=anonymous_id,
+        )
+
+        qs = dataset.data_points.all()  # type: ignore
+
+        data = {
+            "entities": sorted(qs.values_list("entity", flat=True).distinct()),
+            "metrics": sorted(qs.values_list("metric", flat=True).distinct()),
+        }
+
+        serializer = self.get_serializer(instance=data)
+        return Response(serializer.data)
+
+
 class PublicDatasetTimeSeriesAPIView(APIView):
     permission_classes = [AllowAny]
 
@@ -103,7 +220,10 @@ class PublicDatasetTimeSeriesAPIView(APIView):
     )
     def get(self, request, pk: int):
         dataset = get_object_or_404(
-            Dataset, pk=pk, is_public=True, status=Dataset.Status.PARSED
+            Dataset,
+            pk=pk,
+            visibility=Dataset.Visibility.PUBLIC,
+            status=Dataset.Status.PARSED,
         )
         data_qs = dataset.data_points.all().order_by("entity", "time", "order_index")  # type: ignore
         result = build_time_series_data(data_qs)
@@ -126,7 +246,10 @@ class PublicDatasetEntityComparisonAPIView(APIView):
     )
     def get(self, request, pk: int):
         dataset = get_object_or_404(
-            Dataset, pk=pk, is_public=True, status=Dataset.Status.PARSED
+            Dataset,
+            pk=pk,
+            visibility=Dataset.Visibility.PUBLIC,
+            status=Dataset.Status.PARSED,
         )
 
         metric = request.query_params.get("metric")
@@ -158,7 +281,10 @@ class PublicDatasetMetaAPIView(APIView):
     )
     def get(self, request, pk: int):
         dataset = get_object_or_404(
-            Dataset, pk=pk, is_public=True, status=Dataset.Status.PARSED
+            Dataset,
+            pk=pk,
+            visibility=Dataset.Visibility.PUBLIC,
+            status=Dataset.Status.PARSED,
         )
 
         qs = dataset.data_points.all()  # type: ignore

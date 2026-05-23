@@ -112,8 +112,8 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
-        "user": "1000/day",
-        "anon": "100/day",
+        "user": "5000/day",
+        "anon": "500/day",
     },
 }
 
@@ -135,14 +135,21 @@ REST_AUTH = {
     "JWT_AUTH_REFRESH_COOKIE": "my-refresh-token",
 }
 
-# 本番だけ Secure + SameSite=None
+# 共通Cookie設定（anonymous_idなどにも使える想定）
+COOKIE_SAMESITE = "None" if IS_PRODUCTION else "Lax"
+COOKIE_SECURE = IS_PRODUCTION
+COOKIE_MAX_AGE = 60 * 60 * 24 * 365
+
+
+# 本番だけ Secure + SameSite=None（JWT用）
 if IS_PRODUCTION:
     REST_AUTH.update(
         {
-            "JWT_AUTH_SECURE": True,  # HTTPS 必須
+            "JWT_AUTH_SECURE": True,  # HTTPS必須
             "JWT_AUTH_SAMESITE": "None",  # クロスオリジン対応
         }
     )
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
@@ -340,3 +347,5 @@ LOGGING = {
 # ================================
 # App-specific settings
 # ================================
+
+ANONYMOUS_DATASET_TTL_DAYS = 7

@@ -8,7 +8,9 @@
 VizShare is a web application that allows users to upload CSV datasets,
 visualize them as interactive charts, and share datasets through a public dataset gallery.
 
-The application focuses on time-series data and provides a simple workflow for data visualization and sharing.
+The application focuses on time-series data and provides a simple workflow for data visualization and dataset sharing.
+
+You can use this app even if you are not logged in, but datasets uploaded anonymously are only for temporary use.
 
 ## Features
 
@@ -28,14 +30,13 @@ https://vizshare.vercel.app/
 
 ### Demo Account
 
-Use the following account to explore the application,
-including CSV upload, visualization, and dataset sharing:
+Use the following account to store your CSV files for a long time.
 
 | Username  | Password |
 | --------- | -------- |
 | demo_user | demo1234 |
 
-You can use this account to explore the application.
+You may also create an account on the signup page.
 
 ## Screenshots
 

@@ -112,6 +112,114 @@ export interface paths {
         patch: operations["datasets_visibility_partial_update"];
         trace?: never;
     };
+    "/api/v1/datasets/anonymous/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["datasets_anonymous_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/anonymous/{public_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["datasets_anonymous_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/anonymous/{public_id}/meta/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 匿名ユーザー Dataset メタ情報取得
+         * @description entities / metrics の一覧を返す
+         */
+        get: operations["datasets_anonymous_meta_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/anonymous/{public_id}/timeseries/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 匿名ユーザー Dataset の時系列データ取得
+         * @description anonymous_id に紐づく Dataset の DataPoint を entity ごとに整理して返す
+         */
+        get: operations["datasets_anonymous_timeseries_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/anonymous/{public_id}/timeseries/entity/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 匿名ユーザー Dataset の entity比較データ取得
+         * @description timeを軸にentityを横展開したRecharts用データ
+         */
+        get: operations["datasets_anonymous_timeseries_entity_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/anonymous/create/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["datasets_anonymous_create_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/create/": {
         parameters: {
             query?: never;
@@ -527,14 +635,48 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        DatasetCreate: {
-            readonly id: number;
+        AnonymousDatasetCreate: {
             name: string;
             /** Format: uri */
             source_file: string;
+            schema: unknown;
+            /** Format: uuid */
+            readonly public_id: string;
+        };
+        AnonymousDatasetDetail: {
+            /** Format: uuid */
+            readonly public_id: string;
+            name: string;
+            readonly status: components["schemas"]["StatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+            schema: components["schemas"]["DatasetSchema"];
+            parse_result?: components["schemas"]["ParseResult"] | null;
+            readonly visibility: components["schemas"]["VisibilityEnum"];
+            /**
+             * Format: date-time
+             * @description 匿名データの有効期限（任意）
+             */
+            expires_at?: string | null;
+        };
+        AnonymousDatasetList: {
+            /** Format: uuid */
+            readonly public_id: string;
+            readonly name: string;
+            readonly status: components["schemas"]["StatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        DatasetCreate: {
+            name: string;
+            /** Format: uri */
+            source_file: string;
+            schema: unknown;
+            readonly id: number;
+            /** Format: uuid */
+            readonly public_id: string;
             readonly owner: number;
             readonly status: string;
-            schema: unknown;
             /** Format: date-time */
             readonly created_at: string;
         };
@@ -546,8 +688,7 @@ export interface components {
             readonly created_at: string;
             schema: components["schemas"]["DatasetSchema"];
             parse_result?: components["schemas"]["ParseResult"] | null;
-            /** @description True の場合、誰でも閲覧可能 */
-            readonly is_public: boolean;
+            readonly visibility: components["schemas"]["VisibilityEnum"];
         };
         DatasetList: {
             readonly id: number;
@@ -557,8 +698,7 @@ export interface components {
             readonly created_at: string;
             readonly schema: unknown;
             readonly parse_result: unknown;
-            /** @description True の場合、誰でも閲覧可能 */
-            readonly is_public: boolean;
+            readonly visibility: components["schemas"]["VisibilityEnum"];
         };
         DatasetMeta: {
             entities: string[];
@@ -570,8 +710,7 @@ export interface components {
             metrics: string[];
         };
         DatasetVisibility: {
-            /** @description True の場合、誰でも閲覧可能 */
-            is_public?: boolean;
+            visibility?: components["schemas"]["VisibilityEnum"];
         };
         /** @description Serializer for JWT authentication. */
         JWT: {
@@ -584,6 +723,21 @@ export interface components {
             /** Format: email */
             email?: string;
             password: string;
+        };
+        PaginatedAnonymousDatasetListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=400&limit=100
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?offset=200&limit=100
+             */
+            previous?: string | null;
+            results: components["schemas"]["AnonymousDatasetList"][];
         };
         PaginatedDatasetListList: {
             /** @example 123 */
@@ -637,8 +791,7 @@ export interface components {
             token: string;
         };
         PatchedDatasetVisibility: {
-            /** @description True の場合、誰でも閲覧可能 */
-            is_public?: boolean;
+            visibility?: components["schemas"]["VisibilityEnum"];
         };
         /** @description User model w/o password */
         PatchedUserDetails: {
@@ -728,6 +881,13 @@ export interface components {
         VerifyEmail: {
             key: string;
         };
+        /**
+         * @description * `private` - 非公開
+         *     * `unlisted` - 限定公開
+         *     * `public` - 公開
+         * @enum {string}
+         */
+        VisibilityEnum: "private" | "unlisted" | "public";
     };
     responses: never;
     parameters: never;
@@ -901,6 +1061,145 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DatasetVisibility"];
+                };
+            };
+        };
+    };
+    datasets_anonymous_list: {
+        parameters: {
+            query?: {
+                /** @description Number of results to return per page. */
+                limit?: number;
+                /** @description The initial index from which to return the results. */
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAnonymousDatasetListList"];
+                };
+            };
+        };
+    };
+    datasets_anonymous_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                public_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnonymousDatasetDetail"];
+                };
+            };
+        };
+    };
+    datasets_anonymous_meta_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                public_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetMeta"];
+                };
+            };
+        };
+    };
+    datasets_anonymous_timeseries_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                public_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            time?: string;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    datasets_anonymous_timeseries_entity_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                public_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
+                };
+            };
+        };
+    };
+    datasets_anonymous_create_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnonymousDatasetCreate"];
+                "application/x-www-form-urlencoded": components["schemas"]["AnonymousDatasetCreate"];
+                "multipart/form-data": components["schemas"]["AnonymousDatasetCreate"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnonymousDatasetCreate"];
                 };
             };
         };

@@ -7,6 +7,9 @@ import type { components, paths } from "@/types/api";
 export type DatasetUploadResponse =
   paths["/api/v1/datasets/create/"]["post"]["responses"][201]["content"]["application/json"];
 
+export type AnonymousDatasetUploadResponse =
+  paths["/api/v1/datasets/anonymous/create/"]["post"]["responses"][201]["content"]["application/json"];
+
 export type DatasetUploadSchema = {
   time: string;
   entity?: string;
@@ -25,12 +28,18 @@ export type UploadVars = {
 export type DatasetListResponse =
   paths["/api/v1/datasets/"]["get"]["responses"][200]["content"]["application/json"];
 
+export type AnonymousDatasetListResponse =
+  paths["/api/v1/datasets/anonymous/"]["get"]["responses"][200]["content"]["application/json"];
+
 // =============================
 // Detail
 // =============================
 
 export type DatasetDetailResponse =
   paths["/api/v1/datasets/{id}/"]["get"]["responses"][200]["content"]["application/json"];
+
+export type AnonymousDatasetDetailResponse =
+  paths["/api/v1/datasets/anonymous/{public_id}/"]["get"]["responses"][200]["content"]["application/json"];
 
 // =============================
 // Common
@@ -66,7 +75,9 @@ export type DatasetMetaResponse =
 export type DatasetVisibilityResponse =
   paths["/api/v1/datasets/{id}/visibility/"]["patch"]["responses"][200]["content"]["application/json"];
 
+export type DatasetVisibility = components["schemas"]["VisibilityEnum"];
+
 export type DatasetVisibilityVars = {
   id: string;
-  is_public: boolean;
+  visibility: DatasetVisibility;
 };

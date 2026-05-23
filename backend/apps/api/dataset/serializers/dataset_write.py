@@ -3,21 +3,13 @@ from rest_framework import serializers
 from apps.dataset.models import Dataset
 
 
-class DatasetCreateSerializer(serializers.ModelSerializer):
-    owner = serializers.PrimaryKeyRelatedField(read_only=True)
-    status = serializers.CharField(read_only=True)
-    created_at = serializers.DateTimeField(read_only=True)
-
+class BaseDatasetCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dataset
         fields = [
-            "id",
             "name",
             "source_file",
-            "owner",
-            "status",
             "schema",
-            "created_at",
         ]
 
     # --------------------
@@ -52,8 +44,30 @@ class DatasetCreateSerializer(serializers.ModelSerializer):
         return value
 
 
+class DatasetCreateSerializer(BaseDatasetCreateSerializer):
+    owner = serializers.PrimaryKeyRelatedField(read_only=True)
+    status = serializers.CharField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+
+    class Meta(BaseDatasetCreateSerializer.Meta):
+        fields = BaseDatasetCreateSerializer.Meta.fields + [
+            "id",
+            "public_id",
+            "owner",
+            "status",
+            "created_at",
+        ]
+
+
 class DatasetVisibilitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Dataset
-        fields = ["is_public"]
+        fields = ["visibility"]
+
+
+class AnonymousDatasetCreateSerializer(BaseDatasetCreateSerializer):
+    class Meta(BaseDatasetCreateSerializer.Meta):
+        fields = BaseDatasetCreateSerializer.Meta.fields + [
+            "public_id",
+        ]
