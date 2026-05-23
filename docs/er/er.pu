@@ -2,6 +2,7 @@
 skinparam defaultFontName "Noto Sans CJK JP"
 
 package "Authentication" {
+
   entity "User" as User {
     +id <<PK>>
     username <<UNIQUE>>
@@ -9,44 +10,55 @@ package "Authentication" {
     password
     name
   }
+
 }
 
 package "Dataset Domain" {
-  
+
   entity "Dataset" as Dataset {
     +id <<PK>>
-    owner <<FK>>
+    public_id <<UUID, UNIQUE>>
+
+    owner <<FK, nullable>>
+    anonymous_id <<UUID, nullable>>
+
     name
     source_file
+
     status
-    schema
-    parse_result
+    visibility
+
+    schema <<JSON>>
+    parse_result <<JSON, nullable>>
+
+    expires_at <<nullable>>
     created_at
-    is_public
   }
 
   entity "DataPoint" as DataPoint {
     +id <<PK>>
+
     dataset <<FK>>
+
     raw_time
-    time
+    time <<nullable>>
+
     entity
     metric
     value
+
     order_index
+
     <<UNIQUE(dataset, entity, metric, raw_time)>>
   }
 
   User ||--o{ Dataset : owner
   Dataset ||--o{ DataPoint : dataset
+
 }
 
 note bottom of Dataset
-status: UPLOADED / PROCESSING / PARSED / FAILED
-schema and parse_result are JSONFields
-is_public:
-  false -> owner only
-  true  -> anyone can view (anonymous allowed)
+owner XOR anonymous_id
 end note
 
 @enduml

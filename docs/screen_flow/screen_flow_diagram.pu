@@ -2,27 +2,82 @@
 skinparam defaultFontName "Noto Sans CJK JP"
 hide empty description
 
-title Vizshare Screen Flow (MVP)
+title Vizshare Screen Flow
 
 legend left
-#LightBlue (Blue): Main screens
-#LightYellow (Yellow): Display screens
+#LightBlue : Public / Site screens
+#LightGreen : Authenticated screens
+#LightYellow : Dataset detail / viewer
 end legend
+
 
 [*] --> home
 
-state "Home Screen" as home #LightBlue
-state "Dataset Management Screen\n(My Datasets & Upload)\n(login required)" as datasetManagement #LightBlue
-state "Public Datasets Screen\n(Latest Public Datasets)" as publicDatasets #LightYellow
-state "Dataset Page\n(Graph View & Dataset Details)" as datasetView #LightYellow
 
-home --> datasetManagement : My datasets
-home --> publicDatasets : Browse public datasets
+' =========================
+' Public Site
+' =========================
 
-datasetManagement --> datasetView : Select dataset
-publicDatasets --> datasetView : Select dataset
+state "Home Screen\n(Upload CSV files & browse recent public and anonymous datasets)" as home #LightBlue
 
-datasetView --> datasetManagement : Back (owner view)
-datasetView --> publicDatasets : Back (public view)
+state "Explore Screen\n(Browse public datasets)" as explore #LightBlue
+
+state "Public Dataset Detail\n(View graphs, dataset details & download CSV files)" as publicDatasetView #LightYellow
+
+state "Anonymous Datasets\n(Browse datasets uploaded anonymously)" as anonymousDatasets #LightBlue
+
+state "Anonymous Dataset Detail\n(View graphs & dataset details)" as anonymousDatasetView #LightYellow
+
+
+home --> explore
+
+home --> anonymousDatasets
+
+
+explore --> publicDatasetView : Select dataset
+
+anonymousDatasets --> anonymousDatasetView : Select dataset
+
+
+' =========================
+' Authentication
+' =========================
+
+state "Login Screen\n(User authentication)" as login #LightBlue
+
+
+home --> login
+
+
+' =========================
+' Private Area
+' =========================
+
+state "Private Home Screen\n(Navigation & browse recent public datasets)" as privateHome #LightGreen
+
+state "Private Datasets\n(Upload CSV files & browse private datasets)" as datasetManagement #LightGreen
+
+state "Private Dataset Detail\n(View and manage owned dataset)" as privateDatasetView #LightGreen
+
+
+login --> privateHome : Authenticated
+
+privateHome --> explore
+
+privateHome --> datasetManagement
+
+
+datasetManagement --> privateDatasetView : Select dataset
+
+
+' =========================
+' Shared / Cross Navigation
+' =========================
+
+publicDatasetView --> explore : Back
+
+anonymousDatasetView --> anonymousDatasets : Back
+
+privateDatasetView --> datasetManagement : Back
 
 @enduml
