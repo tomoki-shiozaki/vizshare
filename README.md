@@ -5,73 +5,73 @@
 [![Terraform Plan](https://github.com/tomoki-shiozaki/vizshare/actions/workflows/terraform-plan-prod.yml/badge.svg)](https://github.com/tomoki-shiozaki/vizshare/actions/workflows/terraform-plan-prod.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-VizShare is a web application that allows users to upload CSV datasets,
-visualize them as interactive charts, and share datasets through a public dataset gallery.
+**English version is available in [README.en.md](README.en.md).**
 
-The application focuses on time-series data and provides a simple workflow for data visualization and dataset sharing.
+VizShare は、CSV データセットをアップロードし、インタラクティブなグラフで可視化し、公開データセットとして共有できる Web アプリケーションです。
 
-You can use this app even if you are not logged in, but datasets uploaded anonymously are only for temporary use.
+時系列データの可視化に特化しており、CSV のアップロードから可視化、共有までをシンプルな操作で行えます。
 
-## Features
+ログインしなくても利用できますが、匿名でアップロードしたデータセットは一時的な保存となります。
 
-### Core Features
+## 主な機能
 
-- Upload CSV files (time-series data)
-- Automatic parsing of uploaded data (schema detection, time handling)
-- Interactive visualization of time-series datasets
-- Browse and visualize public datasets
-- CSV download for shared datasets
+### コア機能
 
-## Live Demo
+- CSV ファイル（時系列データ）のアップロード
+- CSV データの自動解析（スキーマ検出・日時データの解析）
+- 時系列データのインタラクティブな可視化
+- 公開データセットの閲覧・可視化
+- 共有データセットの CSV ダウンロード
 
-Try VizShare here:
+## デモ
+
+以下の URL からアプリをお試しいただけます。
 
 https://vizshare.vercel.app/
 
-### Demo Account
+### デモアカウント
 
-Use the following account to store your CSV files for a long time.
+CSV データを長期間保存したい場合は、以下のデモアカウントをご利用ください。
 
-| Username  | Password |
-| --------- | -------- |
-| demo_user | demo1234 |
+| ユーザー名 | パスワード |
+| ---------- | ---------- |
+| demo_user  | demo1234   |
 
-You may also create an account on the signup page.
+もちろん、サインアップページから新しいアカウントを作成することもできます。
 
-## Screenshots
+## スクリーンショット
 
-### Time-Series Visualization
+### 時系列データの可視化
 
 ![time-series-visualization](docs/screenshots/time-series-visualization.png)
 
-Interactive charts for exploring time-series data across entities and metrics.
+エンティティやメトリクスを切り替えながら、時系列データをインタラクティブに可視化できます。
 
-### CSV Upload & Schema Detection
+### CSV アップロード・スキーマ検出
 
 <img src="docs/screenshots/csv-upload-ui.png" width="600" />
 
-Parses CSV headers and identifies candidate time, entity, and metric columns, with basic automatic pre-selection based on common keywords.
+CSV のヘッダーを解析し、日時列・エンティティ列・メトリクス列の候補を検出します。一般的な列名については自動で選択候補を設定します。
 
-## Tech Stack
+## 技術スタック
 
-- Backend: Django
-- Frontend: React / Next.js
-- Infrastructure: Terraform
-- Storage: Google Cloud Storage (CSV file storage)
+- バックエンド: Django
+- フロントエンド: React / Next.js
+- インフラ: Terraform
+- ストレージ: Google Cloud Storage（CSV ファイル保存）
 
-## Architecture
+## アーキテクチャ
 
-### System Overview
+### システム構成
 
-VizShare uses a frontend–backend architecture for data upload,
-processing, and visualization.
+VizShare は、フロントエンドとバックエンドを分離した構成を採用し、CSV のアップロード・解析・可視化を行います。
 
 ```mermaid
 flowchart LR
-    User[User Browser]
-    Frontend[Frontend - Next.js]
-    Backend[Backend - Django API]
-    DB[(Database - Dataset Storage)]
+    User[ユーザー]
+    Frontend[フロントエンド - Next.js]
+    Backend[バックエンド - Django API]
+    DB[(データベース)]
     GCS[(Google Cloud Storage)]
 
     User --> Frontend
@@ -80,26 +80,27 @@ flowchart LR
     Backend --> GCS
 ```
 
-### Data Flow
+### データの流れ
 
-1. User uploads a time-series CSV file.
-2. Backend parses and validates the dataset.
-3. Processed data is stored as structured datasets.
-4. Datasets may be published to the public dataset gallery.
-5. Users explore datasets and visualize them as interactive charts.
-6. Original CSV files can be downloaded from dataset pages.
+1. ユーザーが時系列データの CSV ファイルをアップロードします。
+2. バックエンドが CSV を解析し、データを検証します。
+3. 解析済みのデータをデータセットとして保存します。
+4. データセットは公開設定を行うことで公開ギャラリーに掲載できます。
+5. 他のユーザーは公開データセットを閲覧・可視化できます。
+6. データセットページから元の CSV ファイルをダウンロードできます。
 
-## Repository Structure
+## リポジトリ構成
 
-- `backend/` – Django backend application
-- `frontend/` – Frontend application
-- `infra/` – Infrastructure as code (Terraform)
+- `backend/` - Django バックエンド
+- `frontend/` - React / Next.js フロントエンド
+- `infra/` - Terraform によるインフラ構成
 
-## License
+## ライセンス
 
-This project is licensed under the MIT License.
-See [LICENSE](LICENSE) for details.
+このプロジェクトは MIT License のもとで公開されています。
 
-## Development Documentation
+詳細は [LICENSE](LICENSE) をご覧ください。
 
-- [Development Documentation](docs/) — project specifications, design documents, and development setup
+## 開発ドキュメント
+
+- [開発ドキュメント](docs/) - 設計資料、仕様書、開発環境の構築手順など
